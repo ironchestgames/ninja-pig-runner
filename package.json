@@ -1,0 +1,27 @@
+{
+  "name": "ninjaswing",
+  "version": "1.0.0",
+  "description": "Ninja Swing",
+  "main": "src/js/index.js",
+  "scripts": {
+    "init:dirs": "mkdir -p src/js src/lib assets/images assetsources",
+    "init:gitignore": "echo \"node_modules/\nnpm-debug.log\ndist/\" > .gitignore",
+    "init": "npm run init:gitignore && npm run init:dirs",
+    "create-dist-dirs": "mkdir -p dist/js && mkdir -p dist/assets/images",
+    "copy-assets": "cp -r assets/* dist/assets/",
+    "prebuild": "rm -rf dist/ && npm run create-dist-dirs && npm run copy-assets && cp src/index.html dist/index.html",
+    "build": "browserify src/js/index.js | uglifyjs > dist/js/bundle.js",
+    "dev": "beefy src/js/index.js:js/bundle.js 1234 --index=src/index.html"
+  },
+  "author": "Fredrik Järnbröst",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "beefy": "^2.1.8",
+    "browserify": "^13.1.1",
+    "uglify-js": "^2.7.5"
+  },
+  "dependencies": {
+    "console.js": "^1.1.0",
+    "phaser": "^2.6.2"
+  }
+}
