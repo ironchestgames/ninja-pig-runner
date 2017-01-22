@@ -56,7 +56,7 @@ var Vector = Matter.Vector
                 width: 800,
                 height: 600,
                 pixelRatio: 1,
-                background: '#000',
+                background: '#eee',
                 wireframeBackground: '#000',
                 hasBounds: !!options.bounds,
                 enabled: true,
