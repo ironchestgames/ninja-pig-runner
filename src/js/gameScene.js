@@ -6,12 +6,21 @@ var isDown = false
 
 var graphics
 
-var onDown = function () {
-  isDown = true
+var hookPoint
+
+var onDown = function (event) {
+  if (isDown === false) {
+    isDown = true
+    hookPoint = event.data.global
+    setupHook()
+  }
 }
 
 var onUp = function () {
-  isDown = false
+  if (isDown === true) {
+    isDown = false
+    removeHook()
+  }
 }
 
 var World = Matter.World,
@@ -25,25 +34,33 @@ var engine = Matter.Engine.create(),
   world = engine.world,
   render;
 
+var ninjaBody, hookConstraint
 
-var setupPhysics = function() {
-  var group = Body.nextGroup(true);
+var setupNinja = function() {
    
-  var ropeA = Composites.stack(400, 0, 5, 2, 10, 10, function(x, y) {
-      return Bodies.rectangle(x, y, 50, 20, { collisionFilter: { group: group } });
-  });
-  
-  Composites.chain(ropeA, 0.5, 0, -0.5, 0, { stiffness: 0.8, length: 2 });
-  Composite.add(ropeA, Constraint.create({ 
-      bodyB: ropeA.bodies[0],
-      pointB: { x: 0, y: 0 },
-      pointA: { x: 400, y: 0 },
-      stiffness: 0.5
-  }));
-  
-  World.add(world, ropeA);
+  ninjaBody = Bodies.rectangle(400, 000, 50, 50, {
+    mass: 8,
+    frictionAir: 0,
+  })
 
-};
+  World.add(world, ninjaBody)
+
+}
+
+var setupHook = function () {
+  hookConstraint = Constraint.create({
+    bodyB: ninjaBody,
+    pointB: { x: 0, y: 0 },
+    pointA: hookPoint,
+    stiffness: 0.1,
+  })
+
+  World.add(world, hookConstraint)
+}
+
+var removeHook = function () {
+  World.remove(world, hookConstraint)
+}
 
 
 var gameScene = {
@@ -55,27 +72,25 @@ var gameScene = {
     graphics = new PIXI.Graphics()
 
     // input area
-    // var inputArea = new PIXI.Graphics()
+    var inputArea = new PIXI.Graphics()
 
-    // inputArea.beginFill(0x00ff00, 0)
-    // inputArea.drawRect(0, 0, 4, 4)
-    // inputArea.endFill()
+    inputArea.beginFill(0x00ff00, 0)
+    inputArea.drawRect(0, 0, 4, 4)
+    inputArea.endFill()
 
-    // inputArea.interactive = true
-    // inputArea.on('mousedown', onDown)
-    // inputArea.on('touchstart', onDown)
-    // inputArea.on('mouseup', onUp)
-    // inputArea.on('touchend', onUp)
+    inputArea.interactive = true
+    inputArea.on('mousedown', onDown)
+    inputArea.on('touchstart', onDown)
+    inputArea.on('mouseup', onUp)
+    inputArea.on('touchend', onUp)
 
-    // inputArea.scale.x = window.innerWidth / 4
-    // inputArea.scale.y = window.innerHeight / 4
+    inputArea.scale.x = window.innerWidth / 4
+    inputArea.scale.y = window.innerHeight / 4
 
-    // // chainSprite = new PIXI.Sprite(PIXI.loader.resources['chain'].texture)
-
-    // this.stage.addChild(inputArea)
+    this.stage.addChild(inputArea)
     this.stage.addChild(graphics)
 
-    setupPhysics()
+    setupNinja()
 
     render = DebugRenderer.create({
       canvas: this.renderView,
@@ -84,9 +99,12 @@ var gameScene = {
         width: this.renderView.width,
         height: this.renderView.height,
       },
+      background: '#f00',
     })
 
     window.world = world
+
+    // chainSprite = new PIXI.Sprite(PIXI.loader.resources['chain'].texture)
 
   },
   destroy: function () {
@@ -94,7 +112,9 @@ var gameScene = {
   },
   update: function (step) {
 
-    if (paused) { return }
+    if (paused) {
+      return
+    }
 
     Matter.Engine.update(engine, step)
 
