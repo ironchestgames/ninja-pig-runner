@@ -3,8 +3,6 @@ var DebugRenderer = require('./DebugRenderer')
 
 var DEBUG_DRAW = !false
 
-var paused = false
-
 var isDown = false
 
 var hookPoint
@@ -106,10 +104,6 @@ var gameScene = {
     this.stage = null
   },
   update: function (step) {
-
-    if (paused) {
-      return
-    }
 
     Matter.Engine.update(engine, step)
 
