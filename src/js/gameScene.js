@@ -107,16 +107,16 @@ var gameScene = {
 
     Matter.Engine.update(engine, step)
 
-    // shipPosition.prevX = shipPosition.x
-    // shipPosition.prevY = shipPosition.y
-    // shipPosition.x += shipVelocity.x * step
-    // shipPosition.y += shipVelocity.y * step
+    // update objects
+    // leave previous/next positions accessible
+    // velocities are in units(pixels)/ms
 
   },
   draw: function (renderer, ratio) {
-    // console.log(ratio)
-    // chainSprite.x = (shipPosition.x * ratio) + (shipPosition.prevX * (1 - ratio))
-    // chainSprite.y = (shipPosition.y * ratio) + (shipPosition.prevY * (1 - ratio))
+
+    // interpolate position between current and previous/next position
+    // (ratio is how far in the frame we've gone represented as a percentage, 0 - 1)
+    // currentPosition * ratio + previousPosition * (1 - ratio)
 
     if (DEBUG_DRAW) {
       var context = this.renderView.getContext('2d')
