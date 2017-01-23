@@ -1,8 +1,6 @@
 var Matter = require('matter-js')
 var DebugRenderer = require('./DebugRenderer')
 
-var DEBUG_DRAW = !false
-
 var isDown = false
 
 var hookPoint
@@ -88,7 +86,7 @@ var gameScene = {
 
     setupNinja()
 
-    if (DEBUG_DRAW) {
+    if (global.DEBUG_DRAW) {
       render = DebugRenderer.create({
         canvas: this.renderView,
         engine: engine,
@@ -118,14 +116,14 @@ var gameScene = {
     // (ratio is how far in the frame we've gone represented as a percentage, 0 - 1)
     // currentPosition * ratio + previousPosition * (1 - ratio)
 
-    if (DEBUG_DRAW) {
+    if (global.DEBUG_DRAW) {
       var context = this.renderView.getContext('2d')
       context.save()
     }
 
     renderer.render(this.stage)
 
-    if (DEBUG_DRAW) {
+    if (global.DEBUG_DRAW) {
       context.restore()
       DebugRenderer.world(render)
     }

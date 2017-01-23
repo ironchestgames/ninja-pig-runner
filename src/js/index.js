@@ -5,10 +5,13 @@ var loadGameScene = require('./loadGameScene.js')
 var ob = require('obscen')
 var windowLoad = require('window-load')
 
+global.DEBUG_DRAW = !false
+
 windowLoad(function () {
 
   // init pixi renderer
-  var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight, {}, true)
+  var noWebgl = global.DEBUG_DRAW
+  var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight, {}, noWebgl)
   document.body.appendChild(renderer.view)
   renderer.backgroundColor = 0x000000
 
