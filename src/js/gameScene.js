@@ -53,7 +53,7 @@ var setupHook = function () {
     bodyB: ninjaBody,
     pointB: { x: 0, y: 0 },
     pointA: hookPoint,
-    stiffness: 0.1,
+    stiffness: 1,
   })
 
   World.add(world, hookConstraint)
