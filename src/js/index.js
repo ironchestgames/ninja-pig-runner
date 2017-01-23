@@ -1,3 +1,4 @@
+var DebugConsole = require('./DebugConsole')
 var PIXI = require('pixi.js')
 var browserGameLoop = require('browser-game-loop')
 var gameScene = require('./gameScene.js')
@@ -5,9 +6,9 @@ var loadGameScene = require('./loadGameScene.js')
 var ob = require('obscen')
 var windowLoad = require('window-load')
 
-global.DEBUG_DRAW = !false
-
 windowLoad(function () {
+
+  DebugConsole.init()
 
   // init pixi renderer
   var noWebgl = global.DEBUG_DRAW

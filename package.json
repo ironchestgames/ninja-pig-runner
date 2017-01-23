@@ -10,7 +10,7 @@
     "create-dist-dirs": "mkdir -p dist/js && mkdir -p dist/assets/images",
     "copy-assets": "cp -r assets/* dist/assets/",
     "prebuild": "rm -rf dist/ && npm run create-dist-dirs && npm run copy-assets && cp src/index.html dist/index.html",
-    "build": "browserify src/js/index.js | uglifyjs > dist/js/bundle.js",
+    "build": "browserify src/js/index.js -u src/js/DebugConsole.js -u src/js/DebugRenderer.js -o dist/js/bundle.js",
     "dev": "beefy src/js/index.js:js/bundle.js 1234 --index=src/index.html"
   },
   "author": "Fredrik Järnbröst",
@@ -22,6 +22,7 @@
   "dependencies": {
     "browser-game-loop": "^1.4.0",
     "console.js": "^1.1.0",
+    "local-preferences": "^2.1.2",
     "matter-js": "^0.11.1",
     "obscen": "^0.x",
     "pixi.js": "^4.2.2",
