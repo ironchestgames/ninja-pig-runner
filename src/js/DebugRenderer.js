@@ -56,8 +56,8 @@ var Vector = Matter.Vector
                 width: 800,
                 height: 600,
                 pixelRatio: 1,
-                background: '#eee',
-                wireframeBackground: '#000',
+                background: 'rgba(245, 245, 245, 1)',
+                wireframeBackground: 'rgba(0, 0, 0, 1)',
                 hasBounds: !!options.bounds,
                 enabled: true,
                 wireframes: false,
@@ -192,7 +192,7 @@ var Vector = Matter.Vector
 
         Events.trigger(render, 'beforeRender', event);
 
-        // apply background if it has changed
+        // apply background
         context.fillStyle = background;
         context.fillRect(0, 0, canvas.width, canvas.height)
 
