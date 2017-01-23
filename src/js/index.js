@@ -1,4 +1,3 @@
-var Console = require('console.js')
 var PIXI = require('pixi.js')
 var browserGameLoop = require('browser-game-loop')
 var gameScene = require('./gameScene.js')
@@ -7,8 +6,6 @@ var ob = require('obscen')
 var windowLoad = require('window-load')
 
 windowLoad(function () {
-
-  new Console()
 
   // init pixi renderer
   var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight, {}, true)
