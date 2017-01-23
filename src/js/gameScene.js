@@ -1,10 +1,11 @@
 var Matter = require('matter-js')
 var DebugRenderer = require('./DebugRenderer')
+
+var DEBUG_DRAW = !false
+
 var paused = false
 
 var isDown = false
-
-var graphics
 
 var hookPoint
 
@@ -69,8 +70,6 @@ var gameScene = {
 
     this.stage = new PIXI.Container()
 
-    graphics = new PIXI.Graphics()
-
     // input area
     var inputArea = new PIXI.Graphics()
 
@@ -88,23 +87,19 @@ var gameScene = {
     inputArea.scale.y = window.innerHeight / 4
 
     this.stage.addChild(inputArea)
-    this.stage.addChild(graphics)
 
     setupNinja()
 
-    render = DebugRenderer.create({
-      canvas: this.renderView,
-      engine: engine,
-      options: {
-        width: this.renderView.width,
-        height: this.renderView.height,
-      },
-      background: '#f00',
-    })
-
-    window.world = world
-
-    // chainSprite = new PIXI.Sprite(PIXI.loader.resources['chain'].texture)
+    if (DEBUG_DRAW) {
+      render = DebugRenderer.create({
+        canvas: this.renderView,
+        engine: engine,
+        options: {
+          width: this.renderView.width,
+          height: this.renderView.height,
+        },
+      })
+    }
 
   },
   destroy: function () {
@@ -129,9 +124,17 @@ var gameScene = {
     // chainSprite.x = (shipPosition.x * ratio) + (shipPosition.prevX * (1 - ratio))
     // chainSprite.y = (shipPosition.y * ratio) + (shipPosition.prevY * (1 - ratio))
 
+    if (DEBUG_DRAW) {
+      var context = this.renderView.getContext('2d')
+      context.save()
+    }
+
     renderer.render(this.stage)
 
-    DebugRenderer.world(render)
+    if (DEBUG_DRAW) {
+      context.restore()
+      DebugRenderer.world(render)
+    }
 
   },
 }
