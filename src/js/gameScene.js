@@ -36,7 +36,7 @@ var ninjaBody, hookConstraint
 var setupNinja = function() {
    
   ninjaBody = Bodies.rectangle(400, 000, 50, 50, {
-    mass: 8,
+    mass: 0.01,
     frictionAir: 0,
   })
 
@@ -85,6 +85,8 @@ var gameScene = {
     this.stage.addChild(inputArea)
 
     setupNinja()
+
+    world.gravity.y = 0
 
     if (global.DEBUG_DRAW) {
       render = DebugRenderer.create({
