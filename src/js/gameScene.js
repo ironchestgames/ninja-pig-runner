@@ -24,8 +24,11 @@ var lineGraphics
 var onDown = function (event) {
   if (isDown === false) {
     isDown = true
-    hookPoint = [event.x / pixelsPerMeter, event.y / pixelsPerMeter]
-    // console.log(hookPoint)
+    hookPoint = [
+      (-this.stage.x + event.x) / pixelsPerMeter,
+      event.y / pixelsPerMeter,
+    ]
+    console.log(hookPoint)
     setupHook()
   }
 }
@@ -147,7 +150,7 @@ var gameScene = {
 
     world.on('postStep', postStep)
 
-    this.renderer.view.onmousedown = onDown
+    this.renderer.view.onmousedown = onDown.bind(this)
     this.renderer.view.onmouseup = onUp
 
   },
@@ -182,6 +185,10 @@ var gameScene = {
       lineGraphics.lineStyle(4, 0x663311)
       lineGraphics.moveTo(ninjaSprite.x, ninjaSprite.y)
       lineGraphics.lineTo(hookBodyX, hookBodyY)
+    }
+
+    if (ninjaSprite.x > this.renderer.view.width / 2) {
+      this.stage.x = -ninjaSprite.x + this.renderer.view.width / 2
     }
 
   },
