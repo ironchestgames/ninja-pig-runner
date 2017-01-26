@@ -24,7 +24,7 @@ var lineGraphics
 var onDown = function (event) {
   if (isDown === false) {
     isDown = true
-    hookPoint = [event.data.global.x / pixelsPerMeter, event.data.global.y / pixelsPerMeter]
+    hookPoint = [event.x / pixelsPerMeter, event.y / pixelsPerMeter]
     // console.log(hookPoint)
     setupHook()
   }
@@ -127,24 +127,6 @@ var gameScene = {
 
     this.baseStage.addChild(this.stage)
 
-    // input area
-    var inputArea = new PIXI.Graphics()
-
-    inputArea.beginFill(0x000000, 0)
-    inputArea.drawRect(0, 0, 4, 4)
-    inputArea.endFill()
-
-    inputArea.interactive = true
-    inputArea.on('mousedown', onDown)
-    inputArea.on('touchstart', onDown)
-    inputArea.on('mouseup', onUp)
-    inputArea.on('touchend', onUp)
-
-    inputArea.scale.x = window.innerWidth / 4
-    inputArea.scale.y = window.innerHeight / 4
-
-    this.stage.addChild(inputArea)
-
     lineGraphics = new PIXI.Graphics()
 
     this.stage.addChild(lineGraphics)
@@ -157,8 +139,6 @@ var gameScene = {
     ninjaSprite.anchor.x = 0.5
     ninjaSprite.anchor.y = 0.5
 
-    // ninjaSprite
-
     this.stage.addChild(ninjaSprite)
 
     console.log(ninjaSprite)
@@ -166,6 +146,9 @@ var gameScene = {
     console.log(world)
 
     world.on('postStep', postStep)
+
+    this.renderer.view.onmousedown = onDown
+    this.renderer.view.onmouseup = onUp
 
   },
   destroy: function () {

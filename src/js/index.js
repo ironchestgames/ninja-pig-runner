@@ -1,4 +1,4 @@
-var DebugConsole = require('./DebugConsole')
+// var DebugConsole = require('./DebugConsole')
 var PIXI = require('pixi.js')
 var browserGameLoop = require('browser-game-loop')
 var gameScene = require('./gameScene.js')
