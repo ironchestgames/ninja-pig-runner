@@ -23,8 +23,8 @@
     "browser-game-loop": "^1.4.0",
     "console.js": "^1.1.0",
     "local-preferences": "^2.1.2",
-    "matter-js": "^0.11.1",
     "obscen": "^0.x",
+    "p2": "^0.7.1",
     "pixi.js": "^4.2.2",
     "window-load": "^1.0.0"
   }

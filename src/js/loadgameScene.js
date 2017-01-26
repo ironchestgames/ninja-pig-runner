@@ -1,12 +1,11 @@
 var loadGameScene = {
   name: 'loadGame',
   create: function () {
-    // PIXI.loader
-    // .add('input', 'assets/images/chain.png')
-    // .load(function () {
-    //   this.changeScene('game')
-    // }.bind(this))
-    this.changeScene('game')
+    PIXI.loader
+    .add('ninja', 'assets/images/ninja.png')
+    .load(function () {
+      this.changeScene('game')
+    }.bind(this))
   },
   destroy: function () {
 

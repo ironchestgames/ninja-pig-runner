@@ -8,13 +8,14 @@ var windowLoad = require('window-load')
 
 windowLoad(function () {
 
-  DebugConsole.init()
+  // DebugConsole.init()
 
   // init pixi renderer
-  var noWebgl = global.DEBUG_DRAW
-  var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight, {}, noWebgl)
+  // var noWebgl = global.DEBUG_DRAW
+  var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight)
+  // var renderer = PIXI.autoDetectRenderer(window.innerWidth - 100, window.innerHeight - 100, {}, noWebgl)
   document.body.appendChild(renderer.view)
-  renderer.backgroundColor = 0x000000
+  renderer.backgroundColor = 0xffffcc
 
   window.onresize = function () {
     renderer.resize(window.innerWidth - 100, window.innerHeight - 100)
@@ -28,6 +29,12 @@ windowLoad(function () {
     gameScene,
     ])
 
+  var baseStage = new PIXI.Container()
+
+  var text = new PIXI.Text('This is a pixi text')
+
+  baseStage.addChild(text)
+
   // init browserGameLoop
   var loop = browserGameLoop({
       updateTimeStep: 1000 / 30,
@@ -39,11 +46,14 @@ windowLoad(function () {
       },
       render: function(ratio) {
         sceneManager.draw(renderer, ratio)
+        text.text = 'fps: ' + Math.round(loop.getFps())
+        renderer.render(baseStage)
       },
   })
 
   // start it!
-  gameScene.renderView = renderer.view
+  gameScene.renderer = renderer
+  gameScene.baseStage = baseStage
   sceneManager.changeScene('loadGame')
 
   loop.start()
