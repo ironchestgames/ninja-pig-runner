@@ -23,10 +23,14 @@ var lineGraphics
 
 var onDown = function (event) {
   if (isDown === false) {
+    if (event.changedTouches) {
+      event.clientX = event.changedTouches[0].clientX
+      event.clientY = event.changedTouches[0].clientY
+    }
     isDown = true
     hookPoint = [
-      (-this.stage.x + event.x) / pixelsPerMeter,
-      event.y / pixelsPerMeter,
+      (-this.stage.x + event.clientX) / pixelsPerMeter,
+      event.clientY / pixelsPerMeter,
     ]
     console.log(hookPoint)
     setupHook()
@@ -150,8 +154,13 @@ var gameScene = {
 
     world.on('postStep', postStep)
 
-    this.renderer.view.onmousedown = onDown.bind(this)
+    var onDownBinded = onDown.bind(this)
+
+    this.renderer.view.onmousedown = onDownBinded
     this.renderer.view.onmouseup = onUp
+
+    this.renderer.view.addEventListener('touchstart', onDownBinded)
+    this.renderer.view.addEventListener('touchend', onUp)
 
   },
   destroy: function () {
