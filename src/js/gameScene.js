@@ -183,8 +183,6 @@ var postStep = function () {
     hookBody.position = hookPoint
     hookBody.previousPosition = hookPoint
     world.addConstraint(hookConstraint)
-    hookConstraint.upperLimit = p2.vec2.distance(hookPoint, ninjaBody.position)
-    hookConstraint.update()
     shouldAddHook = false
     isHooked = true
   }
@@ -194,6 +192,7 @@ var postStep = function () {
     ninjaBody.applyForce([6, 0])
   }
   if (isHooked) {
+    hookConstraint.upperLimit = p2.vec2.distance(hookPoint, ninjaBody.position)
     hookConstraint.upperLimit -= 0.022
     hookConstraint.update()
   }
