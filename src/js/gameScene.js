@@ -13,6 +13,7 @@ var isDown = false
 var hookPoint
 var hookBody
 var hookConstraint
+var isHooked = false
 var shouldRemoveHook = false
 var shouldAddHook = false
 
@@ -108,6 +109,7 @@ var postStep = function () {
   if (shouldRemoveHook) {
     world.removeConstraint(hookConstraint)
     shouldRemoveHook = false
+    isHooked = false
   }
   if (shouldAddHook) {
     hookPoint[1] = 0
@@ -117,6 +119,7 @@ var postStep = function () {
     hookConstraint.upperLimit = p2.vec2.distance(hookPoint, ninjaBody.position)
     hookConstraint.update()
     shouldAddHook = false
+    isHooked = true
   }
   if (isDown) {
     hookConstraint.upperLimit -= 0.022
@@ -188,7 +191,7 @@ var gameScene = {
     ninjaSprite.y = (ninjaBody.position[1] * ratio + ninjaBody.previousPosition[1] * (1 - ratio)) * pixelsPerMeter
 
     lineGraphics.clear()
-    if (isDown) {
+    if (isHooked) {
       var hookBodyX = (hookBody.position[0] * ratio + hookBody.previousPosition[0] * (1 - ratio)) * pixelsPerMeter
       var hookBodyY = (hookBody.position[1] * ratio + hookBody.previousPosition[1] * (1 - ratio)) * pixelsPerMeter
       lineGraphics.lineStyle(4, 0x663311)
