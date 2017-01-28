@@ -112,7 +112,7 @@ var postStep = function () {
     isHooked = false
   }
   if (shouldAddHook) {
-    hookPoint[1] = 0
+    // hookPoint[1] = 0
     hookBody.position = hookPoint
     hookBody.previousPosition = hookPoint
     world.addConstraint(hookConstraint)
@@ -199,8 +199,8 @@ var gameScene = {
       lineGraphics.lineTo(hookBodyX, hookBodyY)
     }
 
-    if (ninjaSprite.x > this.renderer.view.width / 2) {
-      this.stage.x = -ninjaSprite.x + this.renderer.view.width / 2
+    if (ninjaSprite.x > this.renderer.view.width / 4) {
+      this.stage.x = -ninjaSprite.x + this.renderer.view.width / 4
     }
 
   },
