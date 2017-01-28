@@ -1,10 +1,15 @@
 var p2 = require('p2')
 
 var pixelsPerMeter = 50
+var widthInMeters
+var heightInMeters
 
 var world = new p2.World({
   gravity: [0, 10]
 })
+
+var ninjaMaterial
+var wallMaterial
 
 window.world = world
 
@@ -33,7 +38,6 @@ var onDown = function (event) {
       (-this.stage.x + event.clientX) / pixelsPerMeter,
       event.clientY / pixelsPerMeter,
     ]
-    console.log(hookPoint)
     setupHook()
   }
 }
@@ -46,19 +50,26 @@ var onUp = function () {
 }
 
 var setupNinjaAndHook = function() {
+
+  ninjaMaterial = new p2.Material()
+
   ninjaBody = new p2.Body({
-    mass: 1,
+    mass: 0.5,
     position: [3, 0],
   })
 
-  var circleShape = new p2.Circle({ radius: 0.02 });
+  var circleShape = new p2.Circle({ radius: (64 / 2) / pixelsPerMeter });
+  circleShape.material = ninjaMaterial
   ninjaBody.addShape(circleShape)
+
+  ninjaBody.damping = 0
+  ninjaBody.angularDamping = 0
 
   world.addBody(ninjaBody)
 
   // setup hook body
   hookBody = new p2.Body({
-    position: [0, 0],
+    position: [10, 0],
     mass: 0, // static
   })
 
@@ -70,8 +81,8 @@ var setupNinjaAndHook = function() {
   hookConstraint.lowerLimitEnabled = true
   hookConstraint.upperLimit = 1
   hookConstraint.lowerLimit = 0
-  hookConstraint.setStiffness(100)
-  hookConstraint.setRelaxation(1)
+  // hookConstraint.setStiffness(100)
+  // hookConstraint.setRelaxation(4)
 
 }
 
@@ -83,26 +94,82 @@ var removeHook = function () {
   shouldRemoveHook = true
 }
 
-var constrainVelocity = function (body, maxVelocity) {
-  var angle
-  var currVelocitySqr
-  var vx
-  var vy
-  var newx
-  var newy
+// var constrainVelocity = function (body, maxVelocity) {
+//   var angle
+//   var currVelocitySqr
+//   var vx
+//   var vy
+//   var newx
+//   var newy
 
-  vx = body.velocity[0]
-  vy = body.velocity[1]
-  currVelocitySqr = vx * vx + vy * vy
+//   vx = body.velocity[0]
+//   vy = body.velocity[1]
+//   currVelocitySqr = vx * vx + vy * vy
 
-  if (currVelocitySqr > maxVelocity * maxVelocity) {
-    angle = Math.atan2(vy, vx)
-    newx = Math.cos(angle) * maxVelocity
-    newy = Math.sin(angle) * maxVelocity
-    body.velocity[0] = newx
-    body.velocity[1] = newy
-    // console.log('limited speed to', maxVelocity)
+//   if (currVelocitySqr > maxVelocity * maxVelocity) {
+//     angle = Math.atan2(vy, vx)
+//     newx = Math.cos(angle) * maxVelocity
+//     newy = Math.sin(angle) * maxVelocity
+//     body.velocity[0] = newx
+//     body.velocity[1] = newy
+//     // console.log('limited speed to', maxVelocity)
+//   }
+// }
+
+var setupMap = function (stage) {
+
+  wallMaterial = new p2.Material()
+  var offsetX = widthInMeters * 0.5
+  var boxWidth = widthInMeters / 3
+
+  for (var i = 0; i < 100; i++) {
+    var shapeWidth = boxWidth
+    var shapeHeight = heightInMeters / 6
+    var shapeX = offsetX + (widthInMeters / 1.5) * i
+    var shapeY = heightInMeters * 0.22
+    if (i % 2 === 1) {
+      shapeY = heightInMeters * 0.35
+      shapeHeight = heightInMeters / 4
+    } else if (i % 3 === 1) {
+      shapeHeight = heightInMeters / 4
+      shapeWidth = 10
+      shapeY = heightInMeters - shapeHeight / 2
+    }
+
+    var body = new p2.Body({
+      mass: 0,
+      position: [shapeX, shapeY],
+    })
+
+    var shape = new p2.Box({
+      width: shapeWidth,
+      height: shapeHeight,
+      position: [0, 0],
+    })
+
+    shape.material = wallMaterial
+
+    body.addShape(shape)
+    world.addBody(body)
+
+    var sprite = new PIXI.Graphics()
+    sprite.beginFill(0x003333)
+    sprite.drawRect(
+      (shapeX - shapeWidth / 2) * pixelsPerMeter,
+      (shapeY - shapeHeight / 2) * pixelsPerMeter,
+      shapeWidth * pixelsPerMeter,
+      shapeHeight * pixelsPerMeter)
+    stage.addChild(sprite)
   }
+
+}
+
+var setupMaterials = function () {
+  var contactMaterial = new p2.ContactMaterial(wallMaterial, ninjaMaterial, {
+    restitution: 0.65,
+    // friction: 1,
+  })
+  world.addContactMaterial(contactMaterial)
 }
 
 var postStep = function () {
@@ -121,10 +188,14 @@ var postStep = function () {
     shouldAddHook = false
     isHooked = true
   }
-  if (isDown) {
+
+  // console.log(hookBody.position[0] - ninjaBody.position[0])
+  if (isHooked && hookBody.position[0] - ninjaBody.position[0] < 0.1) {
+    ninjaBody.applyForce([6, 0])
+  }
+  if (isHooked) {
     hookConstraint.upperLimit -= 0.022
     hookConstraint.update()
-    // constrainVelocity(ninjaBody, 10.5)
   }
 }
 
@@ -132,6 +203,9 @@ var postStep = function () {
 var gameScene = {
   name: 'game',
   create: function () {
+
+    widthInMeters = this.renderer.view.width / pixelsPerMeter
+    heightInMeters = this.renderer.view.height / pixelsPerMeter
 
     this.stage = new PIXI.Container()
 
@@ -142,6 +216,10 @@ var gameScene = {
     this.stage.addChild(lineGraphics)
 
     setupNinjaAndHook()
+
+    setupMap(this.stage)
+
+    setupMaterials()
 
     ninjaSprite = new PIXI.Sprite(PIXI.loader.resources['ninja'].texture)
 
