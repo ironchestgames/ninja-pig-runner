@@ -221,17 +221,16 @@ var postStep = function () {
   }
   if (shouldAddHook) {
 
-    // var dx = touchPointInMeters[0] - ninjaBody.position[0]
-    // var dy = touchPointInMeters[1] - ninjaBody.position[1]
-    // var angle = Math.atan2(dy, dx)
-    // var h = ninjaBody.position[1] / Math.sin(angle) // is this even right?
-    // var toX = Math.cos(angle) * h + touchPointInMeters[0]
-    // console.log(toX, 0)
+    var dx = touchPointInMeters[0] - ninjaBody.position[0]
+    var dy = touchPointInMeters[1] - ninjaBody.position[1]
+    var angle = Math.atan2(dy, dx)
+    var toX = Math.cos(angle) * 40 + ninjaBody.position[0]
+    var toY = Math.sin(angle) * 40 + ninjaBody.position[1]
 
     var ray = new p2.Ray({
       mode: p2.Ray.CLOSEST,
       from: [ninjaBody.position[0], ninjaBody.position[1]],
-      to: [touchPointInMeters[0], touchPointInMeters[1]],
+      to: [toX, toY],
       collisionMask: WALL,
     })
     var result = new p2.RaycastResult()
@@ -241,16 +240,13 @@ var postStep = function () {
       // Get the hit point
       var hitPoint = p2.vec2.create()
       result.getHitPoint(hitPoint, ray)
-      // console.log('Hit point: ', hitPoint[0], hitPoint[1], ' at distance ' + result.getHitDistance(ray))
-
-      // hookPoint = touchPointInMeters
       hookPoint = hitPoint
       hookBody.position = hookPoint
       hookBody.previousPosition = hookPoint
       world.addConstraint(hookConstraint)
-      shouldAddHook = false
       isHooked = true
     }
+    shouldAddHook = false
   }
 
   // console.log(hookBody.position[0] - ninjaBody.position[0])
@@ -344,6 +340,11 @@ var gameScene = {
       lineGraphics.moveTo(ninjaSprite.x, ninjaSprite.y)
       lineGraphics.lineTo(hookBodyX, hookBodyY)
     }
+    // if (touchPointInMeters)
+    // lineGraphics.drawCircle(
+    //     touchPointInMeters[0] * pixelsPerMeter,
+    //     touchPointInMeters[1] * pixelsPerMeter,
+    //     10)
 
     if (ninjaSprite.x > this.renderer.view.width / 4) {
       this.stage.x = -ninjaSprite.x + this.renderer.view.width / 4
