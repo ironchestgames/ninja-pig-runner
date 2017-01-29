@@ -8,12 +8,16 @@ var world = new p2.World({
   gravity: [0, 10]
 })
 
+var PLAYER = Math.pow(2, 0)
+var WALL = Math.pow(2, 1)
+
 var ninjaMaterial
 var wallMaterial
 
 window.world = world
 
 var isDown = false
+var touchPointInMeters
 
 var hookPoint
 var hookBody
@@ -28,13 +32,13 @@ var ninjaSprite
 var lineGraphics
 
 var onDown = function (event) {
-  if (isDown === false) {
+  if (isDown === false) { // isHooked === false instead
     if (event.changedTouches) {
       event.clientX = event.changedTouches[0].clientX
       event.clientY = event.changedTouches[0].clientY
     }
     isDown = true
-    hookPoint = [
+    touchPointInMeters = [
       (-this.stage.x + event.clientX) / pixelsPerMeter,
       event.clientY / pixelsPerMeter,
     ]
@@ -58,7 +62,11 @@ var setupNinjaAndHook = function() {
     position: [3, 0],
   })
 
-  var circleShape = new p2.Circle({ radius: (64 / 2) / pixelsPerMeter });
+  var circleShape = new p2.Circle({
+    radius: (64 / 2) / pixelsPerMeter,
+    collisionGroup: PLAYER,
+    collisionMask: PLAYER | WALL,
+  })
   circleShape.material = ninjaMaterial
   ninjaBody.addShape(circleShape)
 
@@ -145,6 +153,8 @@ var setupMap = function (stage) {
       width: shapeWidth,
       height: shapeHeight,
       position: [0, 0],
+      collisionGroup: WALL,
+      collisionMask: PLAYER | WALL,
     })
 
     shape.material = wallMaterial
@@ -179,12 +189,37 @@ var postStep = function () {
     isHooked = false
   }
   if (shouldAddHook) {
-    // hookPoint[1] = 0
-    hookBody.position = hookPoint
-    hookBody.previousPosition = hookPoint
-    world.addConstraint(hookConstraint)
-    shouldAddHook = false
-    isHooked = true
+
+    // var dx = touchPointInMeters[0] - ninjaBody.position[0]
+    // var dy = touchPointInMeters[1] - ninjaBody.position[1]
+    // var angle = Math.atan2(dy, dx)
+    // var h = ninjaBody.position[1] / Math.sin(angle) // is this even right?
+    // var toX = Math.cos(angle) * h + touchPointInMeters[0]
+    // console.log(toX, 0)
+
+    var ray = new p2.Ray({
+      mode: p2.Ray.CLOSEST,
+      from: [ninjaBody.position[0], ninjaBody.position[1]],
+      to: [touchPointInMeters[0], touchPointInMeters[1]],
+      collisionMask: WALL,
+    })
+    var result = new p2.RaycastResult()
+    world.raycast(result, ray)
+
+    if (result.hasHit()) {
+      // Get the hit point
+      var hitPoint = p2.vec2.create()
+      result.getHitPoint(hitPoint, ray)
+      // console.log('Hit point: ', hitPoint[0], hitPoint[1], ' at distance ' + result.getHitDistance(ray))
+
+      // hookPoint = touchPointInMeters
+      hookPoint = hitPoint
+      hookBody.position = hookPoint
+      hookBody.previousPosition = hookPoint
+      world.addConstraint(hookConstraint)
+      shouldAddHook = false
+      isHooked = true
+    }
   }
 
   // console.log(hookBody.position[0] - ninjaBody.position[0])
