@@ -133,7 +133,7 @@ var setupMap = function (stage) {
   for (var i = 0; i < 100; i++) {
     var shapeWidth = boxWidth
     var shapeHeight = heightInMeters / 6
-    var shapeX = offsetX + (widthInMeters / 1.5) * i
+    var shapeX = offsetX + (widthInMeters / 1.7) * i
     var shapeY = heightInMeters * 0.22
     if (i % 2 === 1) {
       shapeY = heightInMeters * 0.35
@@ -143,6 +143,37 @@ var setupMap = function (stage) {
       shapeWidth = 10
       shapeY = heightInMeters - shapeHeight / 2
     }
+    shapeY = Math.random() * heightInMeters
+
+    var body = new p2.Body({
+      mass: 0,
+      position: [shapeX, shapeY],
+    })
+
+    var shape = new p2.Box({
+      width: shapeWidth,
+      height: shapeHeight,
+      position: [0, 0],
+      collisionGroup: WALL,
+      collisionMask: PLAYER | WALL,
+    })
+
+    shape.material = wallMaterial
+
+    body.addShape(shape)
+    world.addBody(body)
+
+    var sprite = new PIXI.Graphics()
+    sprite.beginFill(0x003333)
+    sprite.drawRect(
+      (shapeX - shapeWidth / 2) * pixelsPerMeter,
+      (shapeY - shapeHeight / 2) * pixelsPerMeter,
+      shapeWidth * pixelsPerMeter,
+      shapeHeight * pixelsPerMeter)
+    stage.addChild(sprite)
+
+    // another one at the same x
+    shapeY = Math.random() * heightInMeters
 
     var body = new p2.Body({
       mass: 0,
