@@ -65,7 +65,7 @@ var setupNinjaAndHook = function() {
   var circleShape = new p2.Circle({
     radius: (64 / 2) / pixelsPerMeter,
     collisionGroup: PLAYER,
-    collisionMask: PLAYER | WALL,
+    collisionMask: WALL,
   })
   circleShape.material = ninjaMaterial
   ninjaBody.addShape(circleShape)
@@ -155,7 +155,7 @@ var setupMap = function (stage) {
       height: shapeHeight,
       position: [0, 0],
       collisionGroup: WALL,
-      collisionMask: PLAYER | WALL,
+      collisionMask: PLAYER,
     })
 
     shape.material = wallMaterial
