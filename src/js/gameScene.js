@@ -10,9 +10,7 @@ var world = new p2.World({
 
 var PLAYER = Math.pow(2, 0)
 var WALL = Math.pow(2, 1)
-
-var ninjaMaterial
-var wallMaterial
+var SENSOR = Math.pow(2, 2)
 
 window.world = world
 
@@ -28,6 +26,10 @@ var shouldAddHook = false
 
 var ninjaBody
 var ninjaSprite
+
+var ninjaRunSensorShape
+
+var isRunning = 0
 
 var lineGraphics
 
@@ -55,24 +57,37 @@ var onUp = function () {
 
 var setupNinjaAndHook = function() {
 
-  ninjaMaterial = new p2.Material()
 
   ninjaBody = new p2.Body({
     mass: 0.5,
     position: [3, 0],
+    velocity: [0.5, 0],
   })
+  ninjaBody.fixedRotation = true
 
   var circleShape = new p2.Circle({
     radius: (64 / 2) / pixelsPerMeter,
     collisionGroup: PLAYER,
     collisionMask: WALL,
   })
-  circleShape.material = ninjaMaterial
   ninjaBody.addShape(circleShape)
+  circleShape.name = 'ninjaShape'
+
+  ninjaRunSensorShape = new p2.Circle({
+    radius: 0.2,
+    collisionGroup: SENSOR,
+    collisionMask: WALL,
+    sensor: true,
+  })
+  ninjaBody.addShape(ninjaRunSensorShape)
+  ninjaRunSensorShape.position = [0, 0.7]
+  ninjaRunSensorShape.worldPosition = [0, 0]
+  ninjaRunSensorShape.previousWorldPosition = [0, 0]
+  ninjaRunSensorShape.name = 'ninjaRunSensorShape'
 
   ninjaBody.damping = 0
   ninjaBody.angularDamping = 0
-
+  ninjaBody.name = 'ninjaBody'
   world.addBody(ninjaBody)
 
   // setup hook body
@@ -102,31 +117,8 @@ var removeHook = function () {
   shouldRemoveHook = true
 }
 
-// var constrainVelocity = function (body, maxVelocity) {
-//   var angle
-//   var currVelocitySqr
-//   var vx
-//   var vy
-//   var newx
-//   var newy
-
-//   vx = body.velocity[0]
-//   vy = body.velocity[1]
-//   currVelocitySqr = vx * vx + vy * vy
-
-//   if (currVelocitySqr > maxVelocity * maxVelocity) {
-//     angle = Math.atan2(vy, vx)
-//     newx = Math.cos(angle) * maxVelocity
-//     newy = Math.sin(angle) * maxVelocity
-//     body.velocity[0] = newx
-//     body.velocity[1] = newy
-//     // console.log('limited speed to', maxVelocity)
-//   }
-// }
-
 var setupMap = function (stage) {
 
-  wallMaterial = new p2.Material()
   var offsetX = widthInMeters * 0.5
   var boxWidth = widthInMeters / 3
 
@@ -149,16 +141,17 @@ var setupMap = function (stage) {
       mass: 0,
       position: [shapeX, shapeY],
     })
+    body.name = 'wall1'
 
     var shape = new p2.Box({
       width: shapeWidth,
       height: shapeHeight,
       position: [0, 0],
       collisionGroup: WALL,
-      collisionMask: PLAYER,
+      collisionMask: PLAYER | SENSOR,
     })
 
-    shape.material = wallMaterial
+    shape.name = 'wall'
 
     body.addShape(shape)
     world.addBody(body)
@@ -179,16 +172,16 @@ var setupMap = function (stage) {
       mass: 0,
       position: [shapeX, shapeY],
     })
+    body.name = 'wall2'
 
     var shape = new p2.Box({
       width: shapeWidth,
       height: shapeHeight,
       position: [0, 0],
       collisionGroup: WALL,
-      collisionMask: PLAYER | WALL,
+      collisionMask: PLAYER | SENSOR,
     })
-
-    shape.material = wallMaterial
+    shape.name = 'wall2'
 
     body.addShape(shape)
     world.addBody(body)
@@ -205,20 +198,8 @@ var setupMap = function (stage) {
 
 }
 
-var setupMaterials = function () {
-  var contactMaterial = new p2.ContactMaterial(wallMaterial, ninjaMaterial, {
-    restitution: 0.65,
-    // friction: 1,
-  })
-  world.addContactMaterial(contactMaterial)
-}
-
 var postStep = function () {
-  if (shouldRemoveHook) {
-    world.removeConstraint(hookConstraint)
-    shouldRemoveHook = false
-    isHooked = false
-  }
+
   if (shouldAddHook) {
 
     var dx = touchPointInMeters[0] - ninjaBody.position[0]
@@ -243,6 +224,7 @@ var postStep = function () {
       hookPoint = hitPoint
       hookBody.position = hookPoint
       hookBody.previousPosition = hookPoint
+      hookConstraint.upperLimit = p2.vec2.distance(hookPoint, ninjaBody.position)
       world.addConstraint(hookConstraint)
       isHooked = true
     }
@@ -257,12 +239,40 @@ var postStep = function () {
     ninjaBody.applyForce([6, 0])
   }
   if (isHooked) {
-    hookConstraint.upperLimit = p2.vec2.distance(hookPoint, ninjaBody.position)
     hookConstraint.upperLimit -= 0.022
     hookConstraint.update()
   }
+
+  if (!isHooked && isRunning > 0) {
+    // is on top of wall and should be running
+
+    ninjaBody.velocity[0] = 8
+    console.log('RUNNING')
+  }
+
+  if (shouldRemoveHook) {
+    world.removeConstraint(hookConstraint)
+    shouldRemoveHook = false
+    isHooked = false
+  }
+
+  ninjaRunSensorShape.previousWorldPosition = p2.vec2.clone(ninjaRunSensorShape.worldPosition)
+  ninjaBody.toWorldFrame(ninjaRunSensorShape.worldPosition, ninjaRunSensorShape.position)
 }
 
+var beginContact = function (contactEvent) {
+  // console.log('beginContact', contactEvent.shapeA.name, contactEvent.shapeB.name, contactEvent)
+  if (contactEvent.shapeA === ninjaRunSensorShape || contactEvent.shapeB === ninjaRunSensorShape) {
+    isRunning++
+  }
+}
+
+var endContact = function (contactEvent) {
+  // console.log('endContact',  contactEvent.shapeA.name, contactEvent.shapeB.name, contactEvent)
+  if (contactEvent.shapeA === ninjaRunSensorShape || contactEvent.shapeB === ninjaRunSensorShape) {
+    isRunning--
+  }
+}
 
 var gameScene = {
   name: 'game',
@@ -283,8 +293,6 @@ var gameScene = {
 
     setupMap(this.stage)
 
-    setupMaterials()
-
     ninjaSprite = new PIXI.Sprite(PIXI.loader.resources['ninja'].texture)
 
     // center the sprite's anchor point
@@ -297,6 +305,8 @@ var gameScene = {
 
     console.log(world)
 
+    world.on('beginContact', beginContact)
+    world.on('endContact', endContact)
     world.on('postStep', postStep)
 
     var onDownBinded = onDown.bind(this)
@@ -317,8 +327,6 @@ var gameScene = {
     // leave previous/next positions accessible
     // (velocities are in units/ms)
 
-    // console.log(ninjaBody.position[0], ninjaBody.position[1])
-
     var stepInSeconds = stepInMilliseconds / 1000
     world.step(stepInSeconds)
 
@@ -331,6 +339,7 @@ var gameScene = {
 
     ninjaSprite.x = (ninjaBody.position[0] * ratio + ninjaBody.previousPosition[0] * (1 - ratio)) * pixelsPerMeter
     ninjaSprite.y = (ninjaBody.position[1] * ratio + ninjaBody.previousPosition[1] * (1 - ratio)) * pixelsPerMeter
+    ninjaSprite.rotation = (ninjaBody.angle * ratio + ninjaBody.previousAngle * (1 - ratio))
 
     lineGraphics.clear()
     if (isHooked) {
@@ -340,11 +349,15 @@ var gameScene = {
       lineGraphics.moveTo(ninjaSprite.x, ninjaSprite.y)
       lineGraphics.lineTo(hookBodyX, hookBodyY)
     }
-    // if (touchPointInMeters)
-    // lineGraphics.drawCircle(
-    //     touchPointInMeters[0] * pixelsPerMeter,
-    //     touchPointInMeters[1] * pixelsPerMeter,
-    //     10)
+      
+    var x = (ninjaRunSensorShape.worldPosition[0] * ratio + ninjaRunSensorShape.previousWorldPosition[0] * (1 - ratio)) * pixelsPerMeter
+    var y = (ninjaRunSensorShape.worldPosition[1] * ratio + ninjaRunSensorShape.previousWorldPosition[1] * (1 - ratio)) * pixelsPerMeter
+
+    lineGraphics.lineStyle(2, 0xff0000)
+    lineGraphics.drawCircle(
+        x,
+        y,
+        ninjaRunSensorShape.radius * pixelsPerMeter)
 
     if (ninjaSprite.x > this.renderer.view.width / 4) {
       this.stage.x = -ninjaSprite.x + this.renderer.view.width / 4
