@@ -13,12 +13,11 @@ windowLoad(function () {
   // init pixi renderer
   // var noWebgl = global.DEBUG_DRAW
   var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight)
-  // var renderer = PIXI.autoDetectRenderer(window.innerWidth - 100, window.innerHeight - 100, {}, noWebgl)
   document.body.appendChild(renderer.view)
-  renderer.backgroundColor = 0xffffcc
+  renderer.backgroundColor = 0x666611
 
   window.onresize = function () {
-    renderer.resize(window.innerWidth - 100, window.innerHeight - 100)
+    renderer.resize(window.innerWidth, window.innerHeight)
   }
 
   // init obscen
@@ -56,6 +55,9 @@ windowLoad(function () {
   gameScene.baseStage = baseStage
   sceneManager.changeScene('loadGame')
 
-  loop.start()
+  setTimeout(function () {
+    console.log('starting')
+    loop.start()
+  }, 1000)
   
 })
