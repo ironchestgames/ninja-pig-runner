@@ -2,14 +2,20 @@ var PIXI = require('pixi.js')
 
 var bodyGraphics = {}
 
+var tempVec = [0, 0]
+
+var calcInterpolatedPosition = function (position, previousPosition, interpolationRatio) {
+  tempVec[0] = position[0] * interpolationRatio + previousPosition[0] * (1 - interpolationRatio)
+  tempVec[1] = position[1] * interpolationRatio + previousPosition[1] * (1 - interpolationRatio)
+  return tempVec
+}
+
 var bodyDraw = function (pixiContainer, world, pixelsPerMeter, interpolationRatio) {
   var bodies
   var body
   var graphics
   var i
   var worldPosition
-  var x
-  var y
 
   // TODO: delete graphics for bodies not present anymore
 
@@ -36,12 +42,10 @@ var bodyDraw = function (pixiContainer, world, pixelsPerMeter, interpolationRati
     } else {
       graphics = bodyGraphics[body.id]
 
-      // currentPosition * ratio + previousPosition * (1 - ratio)
-      x = body.position[0] * interpolationRatio + body.previousPosition[0] * (1 - interpolationRatio)
-      y = body.position[1] * interpolationRatio + body.previousPosition[1] * (1 - interpolationRatio)
+      tempVec = calcInterpolatedPosition(body.position, body.previousPosition, interpolationRatio)
 
-      graphics.x = x * pixelsPerMeter
-      graphics.y = y * pixelsPerMeter
+      graphics.x = tempVec[0] * pixelsPerMeter
+      graphics.y = tempVec[1] * pixelsPerMeter
 
     }
   }
