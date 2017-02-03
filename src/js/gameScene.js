@@ -1,4 +1,5 @@
 var p2 = require('p2')
+var DebugDraw = require('./DebugDraw')
 
 var pixelsPerMeter = 50
 var widthInMeters
@@ -317,6 +318,10 @@ var gameScene = {
     this.renderer.view.addEventListener('touchstart', onDownBinded)
     this.renderer.view.addEventListener('touchend', onUp)
 
+    this.debugDrawContainer = new PIXI.Container()
+
+    this.stage.addChild(this.debugDrawContainer)
+
   },
   destroy: function () {
     this.stage = null
@@ -362,6 +367,8 @@ var gameScene = {
     if (ninjaSprite.x > this.renderer.view.width / 4) {
       this.stage.x = -ninjaSprite.x + this.renderer.view.width / 4
     }
+
+    DebugDraw.draw(this.debugDrawContainer, world, pixelsPerMeter, ratio)
 
   },
 }
