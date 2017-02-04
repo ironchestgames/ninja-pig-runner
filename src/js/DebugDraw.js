@@ -22,6 +22,10 @@ var calcInterpolatedPosition = function (position, previousPosition, interpolati
   return tempVec
 }
 
+var calcInterpolatedAngle = function (angle, previousAngle, interpolationRatio) {
+  return angle * interpolationRatio + previousAngle * (1 - interpolationRatio)
+}
+
 var setShapeGraphicsColors = function (shape, graphics) {
   if (shape.sensor) {
     graphics.lineStyle(1, lineStyleSensor)
@@ -57,10 +61,13 @@ var bodyDraw = function (pixiContainer, world, pixelsPerMeter, interpolationRati
       graphics.drawCircle(
           0,
           0,
-          0.08 * pixelsPerMeter)
+          0.09 * pixelsPerMeter)
+      graphics.moveTo(0, 0)
+      graphics.lineTo(0.09 * pixelsPerMeter, 0)
 
       graphics.x = body.position[0] * pixelsPerMeter
       graphics.y = body.position[1] * pixelsPerMeter
+      graphics.rotation = body.angle
 
       bodyGraphics[body.id] = graphics
 
@@ -74,6 +81,7 @@ var bodyDraw = function (pixiContainer, world, pixelsPerMeter, interpolationRati
 
       graphics.x = tempVec[0] * pixelsPerMeter
       graphics.y = tempVec[1] * pixelsPerMeter
+      graphics.rotation = calcInterpolatedAngle(body.angle, body.previousAngle, interpolationRatio)
 
     }
   }
