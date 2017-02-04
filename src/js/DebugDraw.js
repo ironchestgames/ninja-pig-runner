@@ -8,13 +8,23 @@ var lineStyleDynamic = 0xdddddd
 var lineStyleSensor = 0x993333
 var lineStyleSensorActive = 0xff3333
 var lineStyleBody = 0x9999ff
+var lineStyleConstraint = 0xffff33
 
 var bodyGraphics = {}
+var constraintGraphics = {}
 var shapeGraphics = {}
+
+var constraintIdCount = 1
 
 var tempVec = [0, 0]
 var tempPositionVec = [0, 0]
 var tempPreviousPositionVec = [0, 0]
+
+var bodyATempVec = [0, 0]
+var bodyBTempVec = [0, 0]
+
+var bodyATemp
+var bodyBTemp
 
 var calcInterpolatedPosition = function (position, previousPosition, interpolationRatio) {
   tempVec[0] = position[0] * interpolationRatio + previousPosition[0] * (1 - interpolationRatio)
@@ -115,7 +125,7 @@ var shapeDraw = function (pixiContainer, world, pixelsPerMeter, interpolationRat
         body.toWorldFrame(tempVec, shape.position)
 
         // box
-        if (shape instanceof p2.Box) {
+        if (shape instanceof p2.Box) { // TODO: check .type instead
           setShapeGraphicsColors(shape, graphics)
 
           graphics.drawRect(
@@ -134,7 +144,7 @@ var shapeDraw = function (pixiContainer, world, pixelsPerMeter, interpolationRat
         }
 
         // circle
-        if (shape instanceof p2.Circle) {
+        if (shape instanceof p2.Circle) { // TODO: check .type instead
           setShapeGraphicsColors(shape, graphics)
 
           graphics.drawCircle(
@@ -175,10 +185,86 @@ var shapeDraw = function (pixiContainer, world, pixelsPerMeter, interpolationRat
   }
 }
 
+var distanceConstraintDraw = function (pixiContainer, world, pixelsPerMeter, interpolationRatio) {
+  var constraint
+  var constraints
+  var i
+  var k
+
+  constraints = world.constraints
+
+  for (i = 0; i < constraints.length; i++) {
+    constraint = constraints[i]
+
+    // constraints does not have id's in p2
+    if (!constraint.id) {
+      constraint.id = constraintIdCount + '' // must be string because reasons ("idk")
+      constraintIdCount++
+    }
+
+    // create it if it doesn't exist
+    if (!constraintGraphics[constraint.id]) {
+
+      graphics = new PIXI.Graphics()
+
+      graphics.lineStyle(1, lineStyleConstraint)
+
+      // distance constraint
+      if (constraint.type === p2.Constraint.DISTANCE) {
+        bodyATemp = constraint.bodyA
+        bodyBTemp = constraint.bodyB
+
+        bodyATemp.toWorldFrame(bodyATempVec, constraint.localAnchorA)
+        bodyBTemp.toWorldFrame(bodyBTempVec, constraint.localAnchorB)
+
+        graphics.moveTo(bodyATempVec[0] * pixelsPerMeter, bodyATempVec[1] * pixelsPerMeter)
+        graphics.lineTo(bodyBTempVec[0] * pixelsPerMeter, bodyBTempVec[1] * pixelsPerMeter)
+      }
+
+      constraintGraphics[constraint.id] = graphics
+
+      pixiContainer.addChild(graphics)
+
+    // move it if it already exists
+    } else {
+
+      graphics = constraintGraphics[constraint.id]
+
+      // distance constraint
+      if (constraint.type === p2.Constraint.DISTANCE) {
+        bodyATemp = constraint.bodyA
+        bodyBTemp = constraint.bodyB
+
+        bodyATemp.toWorldFrame(bodyATempVec, constraint.localAnchorA)
+        bodyBTemp.toWorldFrame(bodyBTempVec, constraint.localAnchorB)
+
+        graphics.visible = true
+        graphics.clear()
+        graphics.lineStyle(1, lineStyleConstraint)
+        graphics.moveTo(bodyATempVec[0] * pixelsPerMeter, bodyATempVec[1] * pixelsPerMeter)
+        graphics.lineTo(bodyBTempVec[0] * pixelsPerMeter, bodyBTempVec[1] * pixelsPerMeter)
+      }
+
+    }
+  }
+
+  for (k in constraintGraphics) {
+    if (constraintGraphics.hasOwnProperty(k)) {
+      if (!constraints.find(function (constraint) {
+        return constraint.id === k
+      })) {
+        constraintGraphics[k].visible = false
+      }
+    }
+  }
+
+}
+
 var draw = function (pixiContainer, world, pixelsPerMeter, interpolationRatio) {
   // TODO: if interpolationRatio is undefined/null set to 1
   shapeDraw(pixiContainer, world, pixelsPerMeter, interpolationRatio)
   bodyDraw(pixiContainer, world, pixelsPerMeter, interpolationRatio)
+  distanceConstraintDraw(pixiContainer, world, pixelsPerMeter, interpolationRatio)
 }
 
 module.exports = {
