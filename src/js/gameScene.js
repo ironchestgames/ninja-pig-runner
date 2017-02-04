@@ -157,14 +157,14 @@ var setupMap = function (stage) {
     body.addShape(shape)
     world.addBody(body)
 
-    var sprite = new PIXI.Graphics()
-    sprite.beginFill(0x003333)
-    sprite.drawRect(
-      (shapeX - shapeWidth / 2) * pixelsPerMeter,
-      (shapeY - shapeHeight / 2) * pixelsPerMeter,
-      shapeWidth * pixelsPerMeter,
-      shapeHeight * pixelsPerMeter)
-    stage.addChild(sprite)
+    // var sprite = new PIXI.Graphics()
+    // sprite.beginFill(0x003333)
+    // sprite.drawRect(
+    //   (shapeX - shapeWidth / 2) * pixelsPerMeter,
+    //   (shapeY - shapeHeight / 2) * pixelsPerMeter,
+    //   shapeWidth * pixelsPerMeter,
+    //   shapeHeight * pixelsPerMeter)
+    // stage.addChild(sprite)
 
     // another one at the same x
     shapeY = Math.random() * heightInMeters
@@ -172,6 +172,7 @@ var setupMap = function (stage) {
     var body = new p2.Body({
       mass: 0,
       position: [shapeX, shapeY],
+      angle: Math.PI * 0.25,
     })
     body.name = 'wall2'
 
@@ -185,16 +186,17 @@ var setupMap = function (stage) {
     shape.name = 'wall2'
 
     body.addShape(shape)
+    shape.angle = Math.PI * 0.125,
     world.addBody(body)
 
-    var sprite = new PIXI.Graphics()
-    sprite.beginFill(0x003333)
-    sprite.drawRect(
-      (shapeX - shapeWidth / 2) * pixelsPerMeter,
-      (shapeY - shapeHeight / 2) * pixelsPerMeter,
-      shapeWidth * pixelsPerMeter,
-      shapeHeight * pixelsPerMeter)
-    stage.addChild(sprite)
+    // var sprite = new PIXI.Graphics()
+    // sprite.beginFill(0x003333)
+    // sprite.drawRect(
+    //   (shapeX - shapeWidth / 2) * pixelsPerMeter,
+    //   (shapeY - shapeHeight / 2) * pixelsPerMeter,
+    //   shapeWidth * pixelsPerMeter,
+    //   shapeHeight * pixelsPerMeter)
+    // stage.addChild(sprite)
   }
 
 }
@@ -299,6 +301,7 @@ var gameScene = {
     // center the sprite's anchor point
     ninjaSprite.anchor.x = 0.5
     ninjaSprite.anchor.y = 0.5
+    ninjaSprite.visible = false
 
     this.stage.addChild(ninjaSprite)
 
@@ -354,15 +357,6 @@ var gameScene = {
       lineGraphics.moveTo(ninjaSprite.x, ninjaSprite.y)
       lineGraphics.lineTo(hookBodyX, hookBodyY)
     }
-      
-    var x = (ninjaRunSensorShape.worldPosition[0] * ratio + ninjaRunSensorShape.previousWorldPosition[0] * (1 - ratio)) * pixelsPerMeter
-    var y = (ninjaRunSensorShape.worldPosition[1] * ratio + ninjaRunSensorShape.previousWorldPosition[1] * (1 - ratio)) * pixelsPerMeter
-
-    lineGraphics.lineStyle(2, 0xff0000)
-    lineGraphics.drawCircle(
-        x,
-        y,
-        ninjaRunSensorShape.radius * pixelsPerMeter)
 
     if (ninjaSprite.x > this.renderer.view.width / 4) {
       this.stage.x = -ninjaSprite.x + this.renderer.view.width / 4
