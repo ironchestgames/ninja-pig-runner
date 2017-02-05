@@ -104,7 +104,7 @@ var setupNinjaAndHook = function() {
   hookConstraint.upperLimitEnabled = true
   hookConstraint.lowerLimitEnabled = true
   hookConstraint.upperLimit = 1
-  hookConstraint.lowerLimit = 0
+  hookConstraint.lowerLimit = 1.18
   // hookConstraint.setStiffness(100)
   // hookConstraint.setRelaxation(4)
 
@@ -241,8 +241,9 @@ var postStep = function () {
       ninjaBody.velocity[1] < 0) {
     ninjaBody.applyForce([6, 0])
   }
-  if (isHooked) {
-    hookConstraint.upperLimit -= 0.022 // TODO: check for lowerlimit, also set lowerlimit
+  if (isHooked && hookConstraint.upperLimit > hookConstraint.lowerLimit) {
+
+    hookConstraint.upperLimit -= 0.022
     hookConstraint.update()
   }
 
