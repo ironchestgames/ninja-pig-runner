@@ -26,13 +26,16 @@ var shouldRemoveHook = false
 var shouldAddHook = false
 var shouldJump = false
 var isRunning = false
+var pushedLeft = false
 
 var ninjaBody
 var ninjaSprite
 
 var ninjaBottomSensor
+var ninjaLeftSensor
 
 var ninjaBottomSensorContactCount = 0
+var ninjaLeftSensorContactCount = 0
 
 var lineGraphics
 
@@ -91,6 +94,18 @@ var setupNinja = function() {
   ninjaBottomSensor.worldPosition = [0, 0]
   ninjaBottomSensor.previousWorldPosition = [0, 0]
   ninjaBottomSensor.name = 'ninjaBottomSensor'
+
+  ninjaLeftSensor = new p2.Circle({
+    radius: 0.2,
+    collisionGroup: SENSOR,
+    collisionMask: WALL,
+    sensor: true,
+  })
+  ninjaBody.addShape(ninjaLeftSensor)
+  ninjaLeftSensor.position = [-0.7, 0]
+  ninjaLeftSensor.worldPosition = [0, 0]
+  ninjaLeftSensor.previousWorldPosition = [0, 0]
+  ninjaLeftSensor.name = 'ninjaLeftSensor'
 
   ninjaBody.damping = 0
   ninjaBody.angularDamping = 0
@@ -233,22 +248,37 @@ var postStep = function () {
   }
 
   // console.log(hookBody.position[0] - ninjaBody.position[0])
-  if (isHooked &&
-      hookBody.position[0] - ninjaBody.position[0] < 0.1 &&
-      ninjaBody.velocity[0] > 0 &&
-      ninjaBody.velocity[1] < 0) {
-    ninjaBody.applyForce([6, 0])
-  }
+  // if (isHooked &&
+  //     hookBody.position[0] - ninjaBody.position[0] < 0.1 &&
+  //     ninjaBody.velocity[0] > 0 &&
+  //     ninjaBody.velocity[1] < 0) {
+  //   ninjaBody.applyForce([6, 0])
+  // }
   if (isHooked && hookConstraint.upperLimit > hookConstraint.lowerLimit) {
 
     hookConstraint.upperLimit -= 0.022
     hookConstraint.update()
   }
 
+  // determine if isRunning
   if (ninjaBottomSensorContactCount > 0) {
     isRunning = true
   } else {
     isRunning = false
+  }
+
+  // push away from wall on left side
+  if (isHooked && ninjaLeftSensorContactCount > 0 && !pushedLeft) {
+    if (ninjaBody.velocity[0] < 0) {
+      ninjaBody.velocity[0] = 0
+    }
+    ninjaBody.applyForce([100, 0])
+    pushedLeft = true
+    console.log('PUSHED LEFT')
+  }
+
+  if (ninjaLeftSensorContactCount === 0) {
+    pushedLeft = false
   }
 
   if (shouldJump) {
@@ -282,12 +312,20 @@ var beginContact = function (contactEvent) {
   if (contactEvent.shapeA === ninjaBottomSensor || contactEvent.shapeB === ninjaBottomSensor) {
     ninjaBottomSensorContactCount++
   }
+
+  if (contactEvent.shapeA === ninjaLeftSensor || contactEvent.shapeB === ninjaLeftSensor) {
+    ninjaLeftSensorContactCount++
+  }
 }
 
 var endContact = function (contactEvent) {
   // console.log('endContact',  contactEvent.shapeA.name, contactEvent.shapeB.name, contactEvent)
   if (contactEvent.shapeA === ninjaBottomSensor || contactEvent.shapeB === ninjaBottomSensor) {
     ninjaBottomSensorContactCount--
+  }
+
+  if (contactEvent.shapeA === ninjaLeftSensor || contactEvent.shapeB === ninjaLeftSensor) {
+    ninjaLeftSensorContactCount--
   }
 }
 
