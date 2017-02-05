@@ -265,12 +265,15 @@ var postStep = function () {
   }
 
   // console.log(hookBody.position[0] - ninjaBody.position[0])
-  // if (isHooked &&
-  //     hookBody.position[0] - ninjaBody.position[0] < 0.1 &&
-  //     ninjaBody.velocity[0] > 0 &&
-  //     ninjaBody.velocity[1] < 0) {
-  //   ninjaBody.applyForce([6, 0])
-  // }
+  if (isHooked &&
+      hookBody.position[0] - ninjaBody.position[0] < 1 &&
+      hookBody.position[0] - ninjaBody.position[0] > 0 &&
+      ninjaBody.velocity[0] > 0 &&
+      ninjaBody.velocity[1] < 0) {
+    ninjaBody.applyForce([6, 0])
+    console.log('PRESSING')
+  }
+
   if (isHooked && hookConstraint.upperLimit > hookConstraint.lowerLimit) {
 
     hookConstraint.upperLimit -= 0.022
