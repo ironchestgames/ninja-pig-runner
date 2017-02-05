@@ -152,81 +152,96 @@ var setupHook = function () {
 
 var setupMap = function (stage) {
 
-  var offsetX = widthInMeters * 0.5
-  var boxWidth = widthInMeters / 3
+  var bodiesData
+  var body
+  var bodyData
+  var bodyType
+  var bodyTypeMap
+  var box
+  var boxHeight
+  var boxPositionX
+  var boxPositionY
+  var boxWidth
+  var fixtureData
+  var fixturesData
+  var i
+  var j
+  var sprite
+  var spriteX
+  var spriteY
+  var worldPosition
 
-  for (var i = 0; i < 100; i++) {
-    var shapeWidth = boxWidth
-    var shapeHeight = heightInMeters / 6
-    var shapeX = offsetX + (widthInMeters / 1.7) * i
-    var shapeY = heightInMeters * 0.22
-    if (i % 2 === 1) {
-      shapeY = heightInMeters * 0.35
-      shapeHeight = heightInMeters / 4
-    } else if (i % 3 === 1) {
-      shapeHeight = heightInMeters / 4
-      shapeWidth = 10
-      shapeY = heightInMeters - shapeHeight / 2
+  var worldPosition = [0, 0]
+
+  // rube/box2d to p2 mapping of body type
+  bodyTypeMap = {
+    [0]: 2,
+    [1]: 4,
+    [2]: 1,
+  }
+
+  bodiesData = PIXI.loader.resources['level1'].data.body
+
+  for (i = 0; i < bodiesData.length; i++) {
+
+    bodyData = bodiesData[i]
+
+    if (bodyData.name === 'ninja') {
+
+      ninjaBody.position = [bodyData.position.x, -bodyData.position.y]
+
+    } else {
+
+      body = new p2.Body({
+        position: [bodyData.position.x, -bodyData.position.y],
+        angle: bodyData.angle,
+        mass: bodyData['massData-mass'] || 0,
+      })
+
+      body.type = bodyTypeMap[bodyData.type]
+      body.name = bodyData.name // NOTE: not in p2 spec, but a nice-to-have for debugging purposes
+
+      world.addBody(body)
+
+      // NOTE: this code assumes that all fixtures are box-shaped
+      fixturesData = bodyData.fixture
+
+      for (j = 0; j < fixturesData.length; j++) {
+        fixtureData = fixturesData[j]
+
+        boxWidth = Math.abs(fixtureData.polygon.vertices.x[0] - fixtureData.polygon.vertices.x[2])
+        boxHeight = Math.abs(fixtureData.polygon.vertices.y[0] - fixtureData.polygon.vertices.y[2])
+
+        boxPositionX = fixtureData.polygon.vertices.x[0] + fixtureData.polygon.vertices.x[2]
+        boxPositionY = fixtureData.polygon.vertices.y[0] + fixtureData.polygon.vertices.y[2]
+
+        box = new p2.Box({
+          width: boxWidth,
+          height: boxHeight,
+          position: [boxPositionX, boxPositionY],
+          // NOTE: angle for fixtures in rube does not exist
+          collisionGroup: WALL,
+          collisionMask: PLAYER | SENSOR,
+        })
+
+        body.addShape(box)
+
+        // create the sprite for this shape
+        var sprite = new PIXI.Sprite(PIXI.loader.resources['static_texture_8x8'].texture)
+
+        body.toWorldFrame(worldPosition, [boxPositionX, boxPositionY])
+        sprite.anchor.x = 0.5
+        sprite.anchor.y = 0.5
+        sprite.x = worldPosition[0] * pixelsPerMeter
+        sprite.y = worldPosition[1] * pixelsPerMeter
+        sprite.rotation = body.angle
+        sprite.width = boxWidth * pixelsPerMeter
+        sprite.height = boxHeight * pixelsPerMeter
+        stage.addChild(sprite)
+      }
+
     }
-    shapeY = Math.random() * heightInMeters
 
-    var body = new p2.Body({
-      mass: 0,
-      position: [shapeX, shapeY],
-    })
-    body.name = 'wall1'
-
-    var shape = new p2.Box({
-      width: shapeWidth,
-      height: shapeHeight,
-      position: [0, 0],
-      collisionGroup: WALL,
-      collisionMask: PLAYER | SENSOR,
-    })
-
-    shape.name = 'wall'
-
-    body.addShape(shape)
-    world.addBody(body)
-
-    var wallSprite = new PIXI.Sprite(PIXI.loader.resources['static_texture_8x8'].texture)
-    wallSprite.anchor.x = 0.5
-    wallSprite.anchor.y = 0.5
-    wallSprite.x = shapeX * pixelsPerMeter
-    wallSprite.y = shapeY * pixelsPerMeter
-    wallSprite.width = shapeWidth * pixelsPerMeter
-    wallSprite.height = shapeHeight * pixelsPerMeter
-    stage.addChild(wallSprite)
-
-    // another one at the same x
-    shapeY = Math.random() * heightInMeters / 1.5
-
-    var body = new p2.Body({
-      mass: 0,
-      position: [shapeX, shapeY],
-    })
-    body.name = 'wall2'
-
-    var shape = new p2.Box({
-      width: shapeWidth,
-      height: shapeHeight,
-      position: [0, 0],
-      collisionGroup: WALL,
-      collisionMask: PLAYER | SENSOR,
-    })
-    shape.name = 'wall2'
-
-    body.addShape(shape)
-    world.addBody(body)
-
-    var wallSprite = new PIXI.Sprite(PIXI.loader.resources['static_texture_8x8'].texture)
-    wallSprite.anchor.x = 0.5
-    wallSprite.anchor.y = 0.5
-    wallSprite.x = shapeX * pixelsPerMeter
-    wallSprite.y = shapeY * pixelsPerMeter
-    wallSprite.width = shapeWidth * pixelsPerMeter
-    wallSprite.height = shapeHeight * pixelsPerMeter
-    stage.addChild(wallSprite)
   }
 
 }
