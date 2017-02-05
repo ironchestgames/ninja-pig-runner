@@ -63,7 +63,7 @@ var onUp = function () {
   }
 }
 
-var setupNinjaAndHook = function() {
+var setupNinja = function() {
 
   ninjaBody = new p2.Body({
     mass: 0.5,
@@ -97,6 +97,9 @@ var setupNinjaAndHook = function() {
   ninjaBody.name = 'ninjaBody'
   world.addBody(ninjaBody)
 
+}
+
+var setupHook = function () {
   // setup hook body
   hookBody = new p2.Body({
     position: [10, 0],
@@ -113,7 +116,6 @@ var setupNinjaAndHook = function() {
   hookConstraint.lowerLimit = 1.18
   // hookConstraint.setStiffness(100)
   // hookConstraint.setRelaxation(4)
-
 }
 
 var setupMap = function (stage) {
@@ -304,7 +306,8 @@ var gameScene = {
 
     this.stage.addChild(lineGraphics)
 
-    setupNinjaAndHook()
+    setupNinja()
+    setupHook()
 
     setupMap(this.stage)
 
