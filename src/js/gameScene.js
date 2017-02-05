@@ -189,14 +189,14 @@ var setupMap = function (stage) {
     body.addShape(shape)
     world.addBody(body)
 
-    // var sprite = new PIXI.Graphics()
-    // sprite.beginFill(0x003333)
-    // sprite.drawRect(
-    //   (shapeX - shapeWidth / 2) * pixelsPerMeter,
-    //   (shapeY - shapeHeight / 2) * pixelsPerMeter,
-    //   shapeWidth * pixelsPerMeter,
-    //   shapeHeight * pixelsPerMeter)
-    // stage.addChild(sprite)
+    var wallSprite = new PIXI.Sprite(PIXI.loader.resources['static_texture_8x8'].texture)
+    wallSprite.anchor.x = 0.5
+    wallSprite.anchor.y = 0.5
+    wallSprite.x = shapeX * pixelsPerMeter
+    wallSprite.y = shapeY * pixelsPerMeter
+    wallSprite.width = shapeWidth * pixelsPerMeter
+    wallSprite.height = shapeHeight * pixelsPerMeter
+    stage.addChild(wallSprite)
 
     // another one at the same x
     shapeY = Math.random() * heightInMeters / 1.5
@@ -219,14 +219,14 @@ var setupMap = function (stage) {
     body.addShape(shape)
     world.addBody(body)
 
-    // var sprite = new PIXI.Graphics()
-    // sprite.beginFill(0x003333)
-    // sprite.drawRect(
-    //   (shapeX - shapeWidth / 2) * pixelsPerMeter,
-    //   (shapeY - shapeHeight / 2) * pixelsPerMeter,
-    //   shapeWidth * pixelsPerMeter,
-    //   shapeHeight * pixelsPerMeter)
-    // stage.addChild(sprite)
+    var wallSprite = new PIXI.Sprite(PIXI.loader.resources['static_texture_8x8'].texture)
+    wallSprite.anchor.x = 0.5
+    wallSprite.anchor.y = 0.5
+    wallSprite.x = shapeX * pixelsPerMeter
+    wallSprite.y = shapeY * pixelsPerMeter
+    wallSprite.width = shapeWidth * pixelsPerMeter
+    wallSprite.height = shapeHeight * pixelsPerMeter
+    stage.addChild(wallSprite)
   }
 
 }
@@ -425,7 +425,6 @@ var gameScene = {
     // center the sprite's anchor point
     ninjaSprite.anchor.x = 0.5
     ninjaSprite.anchor.y = 0.5
-    ninjaSprite.visible = false
 
     this.stage.addChild(ninjaSprite)
 
@@ -446,8 +445,8 @@ var gameScene = {
     this.renderer.view.addEventListener('touchend', onUp)
 
 
-    this.debugDrawContainer = new PIXI.Container()
-    this.stage.addChild(this.debugDrawContainer)
+    // this.debugDrawContainer = new PIXI.Container()
+    // this.stage.addChild(this.debugDrawContainer)
 
   },
   destroy: function () {
@@ -486,7 +485,7 @@ var gameScene = {
       this.stage.x = -ninjaSprite.x + this.renderer.view.width / 4
     }
 
-    DebugDraw.draw(this.debugDrawContainer, world, pixelsPerMeter, ratio)
+    // DebugDraw.draw(this.debugDrawContainer, world, pixelsPerMeter, ratio)
 
   },
 }
