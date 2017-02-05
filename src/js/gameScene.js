@@ -28,15 +28,19 @@ var shouldJump = false
 var isRunning = false
 var pushedLeft = false
 var bounceLeft = false
+var pushedRight = false
+var bounceRight = false
 
 var ninjaBody
 var ninjaSprite
 
 var ninjaBottomSensor
 var ninjaLeftSensor
+var ninjaRightSensor
 
 var ninjaBottomSensorContactCount = 0
 var ninjaLeftSensorContactCount = 0
+var ninjaRightSensorContactCount = 0
 
 var lineGraphics
 
@@ -107,6 +111,18 @@ var setupNinja = function() {
   ninjaLeftSensor.worldPosition = [0, 0]
   ninjaLeftSensor.previousWorldPosition = [0, 0]
   ninjaLeftSensor.name = 'ninjaLeftSensor'
+
+  ninjaRightSensor = new p2.Circle({
+    radius: 0.2,
+    collisionGroup: SENSOR,
+    collisionMask: WALL,
+    sensor: true,
+  })
+  ninjaBody.addShape(ninjaRightSensor)
+  ninjaRightSensor.position = [0.7, 0]
+  ninjaRightSensor.worldPosition = [0, 0]
+  ninjaRightSensor.previousWorldPosition = [0, 0]
+  ninjaRightSensor.name = 'ninjaRightSensor'
 
   ninjaBody.damping = 0
   ninjaBody.angularDamping = 0
@@ -288,9 +304,36 @@ var postStep = function () {
     console.log('BOUNCE LEFT')
   }
 
+  // reset left sensor logic
   if (ninjaLeftSensorContactCount === 0) {
     pushedLeft = false
     bounceLeft = false
+  }
+
+  // push away from wall on right side
+  if (isHooked && ninjaRightSensorContactCount > 0 && !pushedRight) {
+    if (ninjaBody.velocity[0] < 0) {
+      ninjaBody.velocity[0] = 0
+    }
+    ninjaBody.applyForce([100, 0])
+    pushedRight = true
+    console.log('PUSHED RIGHT')
+  }
+
+  // jump away from wall on right side
+  if (!bounceRight && !isHooked && ninjaRightSensorContactCount > 0 && !isRunning) {
+    if (ninjaBody.velocity[0] > 0) {
+      ninjaBody.velocity[0] = 0
+    }
+    ninjaBody.applyForce([-100, 0])
+    bounceRight = true
+    console.log('BOUNCE RIGHT')
+  }
+
+  // reset right sensor logic
+  if (ninjaRightSensorContactCount === 0) {
+    pushedRight = false
+    bounceRight = false
   }
 
   if (shouldJump) {
@@ -328,6 +371,10 @@ var beginContact = function (contactEvent) {
   if (contactEvent.shapeA === ninjaLeftSensor || contactEvent.shapeB === ninjaLeftSensor) {
     ninjaLeftSensorContactCount++
   }
+
+  if (contactEvent.shapeA === ninjaRightSensor || contactEvent.shapeB === ninjaRightSensor) {
+    ninjaRightSensorContactCount++
+  }
 }
 
 var endContact = function (contactEvent) {
@@ -338,6 +385,10 @@ var endContact = function (contactEvent) {
 
   if (contactEvent.shapeA === ninjaLeftSensor || contactEvent.shapeB === ninjaLeftSensor) {
     ninjaLeftSensorContactCount--
+  }
+
+  if (contactEvent.shapeA === ninjaRightSensor || contactEvent.shapeB === ninjaRightSensor) {
+    ninjaRightSensorContactCount--
   }
 }
 
