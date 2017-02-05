@@ -285,7 +285,7 @@ var postStep = function () {
       hookBody.position[0] - ninjaBody.position[0] > 0 &&
       ninjaBody.velocity[0] > 0 &&
       ninjaBody.velocity[1] < 0) {
-    ninjaBody.applyForce([6, 0])
+    ninjaBody.applyForce([8, 0])
     console.log('PRESSING')
   }
 
