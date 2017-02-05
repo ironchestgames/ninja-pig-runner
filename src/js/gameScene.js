@@ -30,7 +30,7 @@ var ninjaSprite
 
 var ninjaBottomSensor
 
-var isRunning = 0
+var ninjaBottomSensorContactCount = 0
 
 var lineGraphics
 
@@ -247,7 +247,13 @@ var postStep = function () {
     hookConstraint.update()
   }
 
-  if (!isHooked && isRunning > 0) {
+  if (ninjaBottomSensorContactCount > 0) {
+    isRunning = true
+  } else {
+    isRunning = false
+  }
+
+  if (!isHooked && isRunning) {
     // is on top of wall and should be running
 
     ninjaBody.velocity[0] = 8
@@ -267,14 +273,14 @@ var postStep = function () {
 var beginContact = function (contactEvent) {
   // console.log('beginContact', contactEvent.shapeA.name, contactEvent.shapeB.name, contactEvent)
   if (contactEvent.shapeA === ninjaBottomSensor || contactEvent.shapeB === ninjaBottomSensor) {
-    isRunning++
+    ninjaBottomSensorContactCount++
   }
 }
 
 var endContact = function (contactEvent) {
   // console.log('endContact',  contactEvent.shapeA.name, contactEvent.shapeB.name, contactEvent)
   if (contactEvent.shapeA === ninjaBottomSensor || contactEvent.shapeB === ninjaBottomSensor) {
-    isRunning--
+    ninjaBottomSensorContactCount--
   }
 }
 

@@ -186,6 +186,7 @@ var shapeDraw = function (pixiContainer, world, pixelsPerMeter, interpolationRat
 }
 
 var distanceConstraintDraw = function (pixiContainer, world, pixelsPerMeter, interpolationRatio) {
+  // TODO: draw upper/lower limits
   var constraint
   var constraints
   var i
