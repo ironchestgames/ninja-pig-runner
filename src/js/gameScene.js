@@ -27,6 +27,7 @@ var shouldAddHook = false
 var shouldJump = false
 var isRunning = false
 var pushedLeft = false
+var bounceLeft = false
 
 var ninjaBody
 var ninjaSprite
@@ -277,8 +278,19 @@ var postStep = function () {
     console.log('PUSHED LEFT')
   }
 
+  // jump away from wall on left side
+  if (!bounceLeft && !isHooked && ninjaLeftSensorContactCount > 0 && !isRunning) {
+    if (ninjaBody.velocity[0] < 0) {
+      ninjaBody.velocity[0] = 0
+    }
+    ninjaBody.applyForce([100, 0])
+    bounceLeft = true
+    console.log('BOUNCE LEFT')
+  }
+
   if (ninjaLeftSensorContactCount === 0) {
     pushedLeft = false
+    bounceLeft = false
   }
 
   if (shouldJump) {
