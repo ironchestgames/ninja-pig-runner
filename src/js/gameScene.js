@@ -28,7 +28,7 @@ var shouldAddHook = false
 var ninjaBody
 var ninjaSprite
 
-var ninjaRunSensorShape
+var ninjaBottomSensor
 
 var isRunning = 0
 
@@ -74,17 +74,17 @@ var setupNinjaAndHook = function() {
   ninjaBody.addShape(circleShape)
   circleShape.name = 'ninjaShape'
 
-  ninjaRunSensorShape = new p2.Circle({
+  ninjaBottomSensor = new p2.Circle({
     radius: 0.2,
     collisionGroup: SENSOR,
     collisionMask: WALL,
     sensor: true,
   })
-  ninjaBody.addShape(ninjaRunSensorShape)
-  ninjaRunSensorShape.position = [0, 0.7]
-  ninjaRunSensorShape.worldPosition = [0, 0]
-  ninjaRunSensorShape.previousWorldPosition = [0, 0]
-  ninjaRunSensorShape.name = 'ninjaRunSensorShape'
+  ninjaBody.addShape(ninjaBottomSensor)
+  ninjaBottomSensor.position = [0, 0.7]
+  ninjaBottomSensor.worldPosition = [0, 0]
+  ninjaBottomSensor.previousWorldPosition = [0, 0]
+  ninjaBottomSensor.name = 'ninjaBottomSensor'
 
   ninjaBody.damping = 0
   ninjaBody.angularDamping = 0
@@ -242,7 +242,7 @@ var postStep = function () {
     ninjaBody.applyForce([6, 0])
   }
   if (isHooked) {
-    hookConstraint.upperLimit -= 0.022
+    hookConstraint.upperLimit -= 0.022 // TODO: check for lowerlimit, also set lowerlimit
     hookConstraint.update()
   }
 
@@ -259,20 +259,20 @@ var postStep = function () {
     isHooked = false
   }
 
-  ninjaRunSensorShape.previousWorldPosition = p2.vec2.clone(ninjaRunSensorShape.worldPosition)
-  ninjaBody.toWorldFrame(ninjaRunSensorShape.worldPosition, ninjaRunSensorShape.position)
+  ninjaBottomSensor.previousWorldPosition = p2.vec2.clone(ninjaBottomSensor.worldPosition)
+  ninjaBody.toWorldFrame(ninjaBottomSensor.worldPosition, ninjaBottomSensor.position)
 }
 
 var beginContact = function (contactEvent) {
   // console.log('beginContact', contactEvent.shapeA.name, contactEvent.shapeB.name, contactEvent)
-  if (contactEvent.shapeA === ninjaRunSensorShape || contactEvent.shapeB === ninjaRunSensorShape) {
+  if (contactEvent.shapeA === ninjaBottomSensor || contactEvent.shapeB === ninjaBottomSensor) {
     isRunning++
   }
 }
 
 var endContact = function (contactEvent) {
   // console.log('endContact',  contactEvent.shapeA.name, contactEvent.shapeB.name, contactEvent)
-  if (contactEvent.shapeA === ninjaRunSensorShape || contactEvent.shapeB === ninjaRunSensorShape) {
+  if (contactEvent.shapeA === ninjaBottomSensor || contactEvent.shapeB === ninjaBottomSensor) {
     isRunning--
   }
 }
@@ -321,8 +321,8 @@ var gameScene = {
     this.renderer.view.addEventListener('touchstart', onDownBinded)
     this.renderer.view.addEventListener('touchend', onUp)
 
-    this.debugDrawContainer = new PIXI.Container()
 
+    this.debugDrawContainer = new PIXI.Container()
     this.stage.addChild(this.debugDrawContainer)
 
   },
