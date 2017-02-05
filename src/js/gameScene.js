@@ -51,7 +51,7 @@ var onDown = function (event) {
     if (isRunning) {
       shouldJump = true
     } else {
-      setupHook()
+      shouldAddHook = true
     }
   }
 }
@@ -59,12 +59,11 @@ var onDown = function (event) {
 var onUp = function () {
   if (isDown === true) {
     isDown = false
-    removeHook()
+    shouldRemoveHook = true
   }
 }
 
 var setupNinjaAndHook = function() {
-
 
   ninjaBody = new p2.Body({
     mass: 0.5,
@@ -115,14 +114,6 @@ var setupNinjaAndHook = function() {
   // hookConstraint.setStiffness(100)
   // hookConstraint.setRelaxation(4)
 
-}
-
-var setupHook = function () {
-  shouldAddHook = true
-}
-
-var removeHook = function () {
-  shouldRemoveHook = true
 }
 
 var setupMap = function (stage) {
@@ -270,7 +261,7 @@ var postStep = function () {
   if (!isHooked && isRunning) {
     // is on top of wall and should be running
 
-    ninjaBody.velocity[0] = 8
+    ninjaBody.velocity[0] = 8 // TODO: don't set velocity, check velocity and apply force instead
     console.log('RUNNING')
   }
 
