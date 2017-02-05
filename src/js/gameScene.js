@@ -167,12 +167,11 @@ var setupMap = function (stage) {
     // stage.addChild(sprite)
 
     // another one at the same x
-    shapeY = Math.random() * heightInMeters
+    shapeY = Math.random() * heightInMeters / 1.5
 
     var body = new p2.Body({
       mass: 0,
       position: [shapeX, shapeY],
-      angle: Math.PI * 0.25,
     })
     body.name = 'wall2'
 
@@ -186,7 +185,6 @@ var setupMap = function (stage) {
     shape.name = 'wall2'
 
     body.addShape(shape)
-    shape.angle = Math.PI * 0.125,
     world.addBody(body)
 
     // var sprite = new PIXI.Graphics()
