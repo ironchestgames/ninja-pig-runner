@@ -175,9 +175,9 @@ var setupMap = function (stage) {
 
   // rube/box2d to p2 mapping of body type
   bodyTypeMap = {
-    [0]: 2,
-    [1]: 4,
-    [2]: 1,
+    [0]: p2.Body.STATIC,
+    [1]: p2.Body.KINEMATIC,
+    [2]: p2.Body.DYNAMIC,
   }
 
   bodiesData = PIXI.loader.resources['level1'].data.body
