@@ -1,6 +1,8 @@
 var PIXI = require('pixi.js')
 var p2 = require('p2')
 
+console.log(PIXI)
+
 var fillColorStatic = 0x333333
 var fillColorDynamic = 0x339933
 var lineStyleStatic = 0xdddddd
@@ -120,12 +122,13 @@ var shapeDraw = function (pixiContainer, world, pixelsPerMeter, interpolationRat
       // create it if it doesn't exist
       if (!shapeGraphics[shape.id]) {
 
-        graphics = new PIXI.Graphics()
-
         body.toWorldFrame(tempVec, shape.position)
 
         // box
         if (shape instanceof p2.Box) { // TODO: check .type instead
+
+          graphics = new PIXI.Graphics()
+
           setShapeGraphicsColors(shape, graphics)
 
           graphics.drawRect(
@@ -145,6 +148,9 @@ var shapeDraw = function (pixiContainer, world, pixelsPerMeter, interpolationRat
 
         // circle
         if (shape instanceof p2.Circle) { // TODO: check .type instead
+
+          graphics = new PIXI.Graphics()
+
           setShapeGraphicsColors(shape, graphics)
 
           graphics.drawCircle(
