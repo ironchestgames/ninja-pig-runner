@@ -312,10 +312,10 @@ var postStep = function () {
 
   // push away from wall on right side
   if (isHooked && ninjaRightSensorContactCount > 0 && !pushedRight) {
-    if (ninjaBody.velocity[0] < 0) {
+    if (ninjaBody.velocity[0] > 0) {
       ninjaBody.velocity[0] = 0
     }
-    ninjaBody.applyForce([100, 0])
+    ninjaBody.applyForce([-100, 0])
     pushedRight = true
     console.log('PUSHED RIGHT')
   }
