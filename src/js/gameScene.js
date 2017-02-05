@@ -31,6 +31,10 @@ var bounceLeft = false
 var pushedRight = false
 var bounceRight = false
 
+var wallPushForce = 100
+var wallBounceForce = 100
+var jumpUpForce = 100
+
 var ninjaBody
 var ninjaSprite
 
@@ -279,7 +283,7 @@ var postStep = function () {
     shouldAddHook = false
   }
 
-  // console.log(hookBody.position[0] - ninjaBody.position[0])
+  // pressing (leaning back when swinging kind of)
   if (isHooked &&
       hookBody.position[0] - ninjaBody.position[0] < 1 &&
       hookBody.position[0] - ninjaBody.position[0] > 0 &&
@@ -307,7 +311,7 @@ var postStep = function () {
     if (ninjaBody.velocity[0] < 0) {
       ninjaBody.velocity[0] = 0
     }
-    ninjaBody.applyForce([100, 0])
+    ninjaBody.applyForce([wallPushForce, 0])
     pushedLeft = true
     console.log('PUSHED LEFT')
   }
@@ -321,7 +325,7 @@ var postStep = function () {
     if (ninjaBody.velocity[1] <= 0) {
       y = -80
     }
-    ninjaBody.applyForce([100, y])
+    ninjaBody.applyForce([wallBounceForce, y])
     bounceLeft = true
     console.log('BOUNCE LEFT', y)
   }
@@ -337,7 +341,7 @@ var postStep = function () {
     if (ninjaBody.velocity[0] > 0) {
       ninjaBody.velocity[0] = 0
     }
-    ninjaBody.applyForce([-100, 0])
+    ninjaBody.applyForce([-wallPushForce, 0])
     pushedRight = true
     console.log('PUSHED RIGHT')
   }
@@ -351,7 +355,7 @@ var postStep = function () {
     if (ninjaBody.velocity[1] <= 0) {
       y = -80
     }
-    ninjaBody.applyForce([-100, y])
+    ninjaBody.applyForce([-wallBounceForce, y])
     bounceRight = true
     console.log('BOUNCE RIGHT', y)
   }
@@ -362,11 +366,12 @@ var postStep = function () {
     bounceRight = false
   }
 
+  // jump up
   if (shouldJump) {
     if (ninjaBody.velocity[1] > 0) {
       ninjaBody.velocity[1] = 0
     }
-    ninjaBody.applyForce([0, -100])
+    ninjaBody.applyForce([0, -jumpUpForce])
     shouldJump = false
     console.log('JUMP')
   }
