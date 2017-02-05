@@ -25,6 +25,7 @@ var isHooked = false
 var shouldRemoveHook = false
 var shouldAddHook = false
 var shouldJump = false
+var isRunning = false
 
 var ninjaBody
 var ninjaSprite
