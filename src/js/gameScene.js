@@ -296,12 +296,16 @@ var postStep = function () {
 
   // jump away from wall on left side
   if (!bounceLeft && !isHooked && ninjaLeftSensorContactCount > 0 && !isRunning) {
+    var y = 0
     if (ninjaBody.velocity[0] < 0) {
       ninjaBody.velocity[0] = 0
     }
-    ninjaBody.applyForce([100, 0])
+    if (ninjaBody.velocity[1] <= 0) {
+      y = -80
+    }
+    ninjaBody.applyForce([100, y])
     bounceLeft = true
-    console.log('BOUNCE LEFT')
+    console.log('BOUNCE LEFT', y)
   }
 
   // reset left sensor logic
@@ -322,12 +326,16 @@ var postStep = function () {
 
   // jump away from wall on right side
   if (!bounceRight && !isHooked && ninjaRightSensorContactCount > 0 && !isRunning) {
+    var y = 0
     if (ninjaBody.velocity[0] > 0) {
       ninjaBody.velocity[0] = 0
     }
-    ninjaBody.applyForce([-100, 0])
+    if (ninjaBody.velocity[1] <= 0) {
+      y = -80
+    }
+    ninjaBody.applyForce([-100, y])
     bounceRight = true
-    console.log('BOUNCE RIGHT')
+    console.log('BOUNCE RIGHT', y)
   }
 
   // reset right sensor logic
