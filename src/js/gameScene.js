@@ -24,6 +24,7 @@ var hookConstraint
 var isHooked = false
 var shouldRemoveHook = false
 var shouldAddHook = false
+var shouldJump = false
 
 var ninjaBody
 var ninjaSprite
@@ -45,7 +46,12 @@ var onDown = function (event) {
       (-this.stage.x + event.clientX) / pixelsPerMeter,
       event.clientY / pixelsPerMeter,
     ]
-    setupHook()
+
+    if (isRunning) {
+      shouldJump = true
+    } else {
+      setupHook()
+    }
   }
 }
 
@@ -249,6 +255,15 @@ var postStep = function () {
     isRunning = true
   } else {
     isRunning = false
+  }
+
+  if (shouldJump) {
+    if (ninjaBody.velocity[1] > 0) {
+      ninjaBody.velocity[1] = 0
+    }
+    ninjaBody.applyForce([0, -100])
+    shouldJump = false
+    console.log('JUMP')
   }
 
   if (!isHooked && isRunning) {
