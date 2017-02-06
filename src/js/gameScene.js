@@ -35,6 +35,7 @@ var wallBounceForce = 100
 var jumpUpForce = 100
 
 var ninjaBody
+var ninjaStartPosition
 var ninjaSprite
 var ropeSprite
 var backgroundSprite
@@ -75,6 +76,18 @@ var onUp = function () {
   if (isDown === true) {
     isDown = false
     shouldRemoveHook = true
+  }
+}
+
+var onKeyPress = function (event) {
+  if (event.key === 'r') {
+    ninjaBody.position[0] = ninjaStartPosition[0]
+    ninjaBody.position[1] = ninjaStartPosition[1]
+
+    ninjaBody.velocity[0] = 0
+    ninjaBody.velocity[1] = 0
+
+    this.stage.x = 0
   }
 }
 
@@ -212,6 +225,7 @@ var setupMap = function (stage) {
 
     if (bodyData.name === 'ninja') {
 
+      ninjaStartPosition = [bodyData.position.x, -bodyData.position.y]
       ninjaBody.position = [bodyData.position.x, -bodyData.position.y]
 
     } else {
@@ -480,6 +494,8 @@ var gameScene = {
 
     this.renderer.view.addEventListener('touchstart', onDownBinded)
     this.renderer.view.addEventListener('touchend', onUp)
+
+    document.addEventListener('keypress', onKeyPress.bind(this))
 
 
     // this.debugDrawContainer = new PIXI.Container()
