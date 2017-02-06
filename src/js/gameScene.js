@@ -218,7 +218,7 @@ var setupMap = function (stage) {
 
       body = new p2.Body({
         position: [bodyData.position.x, -bodyData.position.y],
-        angle: bodyData.angle,
+        angle: -bodyData.angle,
         mass: bodyData['massData-mass'] || 0,
       })
 
