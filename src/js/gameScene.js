@@ -2,7 +2,6 @@ var p2 = require('p2')
 var DebugDraw = require('./DebugDraw')
 
 var pixelsPerMeter = 50
-var widthInMeters
 var heightInMeters
 
 var world = new p2.World({
@@ -432,8 +431,8 @@ var gameScene = {
   name: 'game',
   create: function () {
 
-    widthInMeters = this.renderer.view.width / pixelsPerMeter
-    heightInMeters = this.renderer.view.height / pixelsPerMeter
+    heightInMeters = 16
+    pixelsPerMeter = this.renderer.view.height / 16
 
     this.stage = new PIXI.Container()
 
