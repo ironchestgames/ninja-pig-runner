@@ -46,8 +46,6 @@ var ninjaBottomSensorContactCount = 0
 var ninjaLeftSensorContactCount = 0
 var ninjaRightSensorContactCount = 0
 
-var lineGraphics
-
 var calcInterpolatedValue = function (value, previousValue, interpolationRatio) {
   return value * interpolationRatio + previousValue * (1 - interpolationRatio)
 }
@@ -454,10 +452,6 @@ var gameScene = {
     this.stage = new PIXI.Container()
 
     this.baseStage.addChild(this.stage)
-
-    lineGraphics = new PIXI.Graphics()
-
-    this.stage.addChild(lineGraphics)
 
     setupNinja(this.stage)
     setupHook(this.stage)
