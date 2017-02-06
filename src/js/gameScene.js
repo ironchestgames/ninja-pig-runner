@@ -37,6 +37,7 @@ var jumpUpForce = 100
 
 var ninjaBody
 var ninjaSprite
+var ropeSprite
 
 var ninjaBottomSensor
 var ninjaLeftSensor
@@ -47,6 +48,10 @@ var ninjaLeftSensorContactCount = 0
 var ninjaRightSensorContactCount = 0
 
 var lineGraphics
+
+var calcInterpolatedValue = function (value, previousValue, interpolationRatio) {
+  return value * interpolationRatio + previousValue * (1 - interpolationRatio)
+}
 
 var onDown = function (event) {
   if (isDown === false) { // isHooked === false instead
@@ -451,9 +456,10 @@ var gameScene = {
 
     this.stage.addChild(ninjaSprite)
 
-    console.log(ninjaSprite)
+    ropeSprite = new PIXI.Sprite(PIXI.loader.resources['rope'].texture)
+    ropeSprite.anchor.y = 0.5
 
-    console.log(world)
+    this.stage.addChild(ropeSprite)
 
     world.on('beginContact', beginContact)
     world.on('endContact', endContact)
@@ -487,21 +493,50 @@ var gameScene = {
   },
   draw: function (renderer, ratio) {
 
+    var a
+    var b
+    var hookBodyX
+    var hookBodyY
+
     // interpolate position between current and previous/next position
     // (ratio is how far in the frame we've gone represented as a percentage, 0 - 1)
     // currentPosition * ratio + previousPosition * (1 - ratio)
 
-    ninjaSprite.x = (ninjaBody.position[0] * ratio + ninjaBody.previousPosition[0] * (1 - ratio)) * pixelsPerMeter
-    ninjaSprite.y = (ninjaBody.position[1] * ratio + ninjaBody.previousPosition[1] * (1 - ratio)) * pixelsPerMeter
-    ninjaSprite.rotation = (ninjaBody.angle * ratio + ninjaBody.previousAngle * (1 - ratio))
+    ninjaSprite.x = calcInterpolatedValue(
+        ninjaBody.position[0],
+        ninjaBody.previousPosition[0],
+        ratio) * pixelsPerMeter
+    ninjaSprite.y = calcInterpolatedValue(
+        ninjaBody.position[1],
+        ninjaBody.previousPosition[1],
+        ratio) * pixelsPerMeter
+    ninjaSprite.rotation = calcInterpolatedValue(
+        ninjaBody.angle,
+        ninjaBody.previousAngle,
+        ratio) * pixelsPerMeter
 
-    lineGraphics.clear()
     if (isHooked) {
-      var hookBodyX = (hookBody.position[0] * ratio + hookBody.previousPosition[0] * (1 - ratio)) * pixelsPerMeter
-      var hookBodyY = (hookBody.position[1] * ratio + hookBody.previousPosition[1] * (1 - ratio)) * pixelsPerMeter
-      lineGraphics.lineStyle(4, 0x663311)
-      lineGraphics.moveTo(ninjaSprite.x, ninjaSprite.y)
-      lineGraphics.lineTo(hookBodyX, hookBodyY)
+      ropeSprite.visible = true
+
+      hookBodyX = calcInterpolatedValue(
+          hookBody.position[0],
+          hookBody.previousPosition[0],
+          ratio) * pixelsPerMeter
+      hookBodyY = calcInterpolatedValue(
+          hookBody.position[1],
+          hookBody.previousPosition[1],
+          ratio) * pixelsPerMeter
+
+      a = hookBodyX - ninjaSprite.x
+      b = hookBodyY - ninjaSprite.y
+      ropeSprite.x = ninjaSprite.x
+      ropeSprite.y = ninjaSprite.y
+      ropeSprite.width = Math.sqrt(a * a + b * b)
+      ropeSprite.rotation = Math.atan2(b, a)
+
+    } else {
+
+      ropeSprite.visible = false
     }
 
     if (ninjaSprite.x > this.renderer.view.width / 4) {
