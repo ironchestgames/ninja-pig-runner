@@ -14,7 +14,7 @@ windowLoad(function () {
   // var noWebgl = global.DEBUG_DRAW
   var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight)
   document.body.appendChild(renderer.view)
-  renderer.backgroundColor = 0x666611
+  renderer.backgroundColor = 0xcbdbfc
 
   window.onresize = function () {
     renderer.resize(window.innerWidth, window.innerHeight)
