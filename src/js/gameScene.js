@@ -37,6 +37,7 @@ var jumpUpForce = 100
 var ninjaBody
 var ninjaSprite
 var ropeSprite
+var backgroundSprite
 
 var ninjaBottomSensor
 var ninjaLeftSensor
@@ -449,6 +450,13 @@ var gameScene = {
     heightInMeters = 16
     pixelsPerMeter = this.renderer.view.height / 16
 
+    backgroundSprite = new PIXI.extras.TilingSprite(
+        PIXI.loader.resources['background1'].texture,
+        1024,
+        1024)
+
+    this.baseStage.addChild(backgroundSprite)
+
     this.stage = new PIXI.Container()
 
     this.baseStage.addChild(this.stage)
@@ -537,6 +545,7 @@ var gameScene = {
 
     if (ninjaSprite.x > this.renderer.view.width / 4) {
       this.stage.x = -ninjaSprite.x + this.renderer.view.width / 4
+      backgroundSprite.tilePosition.x = this.stage.x * 0.1
     }
 
     // DebugDraw.draw(this.debugDrawContainer, world, pixelsPerMeter, ratio)
