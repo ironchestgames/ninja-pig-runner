@@ -452,8 +452,12 @@ var gameScene = {
 
     backgroundSprite = new PIXI.extras.TilingSprite(
         PIXI.loader.resources['background1'].texture,
-        1024,
-        1024)
+        512,
+        512)
+    backgroundSprite.tileScale.x = this.renderer.view.height / 512
+    backgroundSprite.tileScale.y = this.renderer.view.height / 512
+    backgroundSprite.height = this.renderer.view.height
+    backgroundSprite.width = this.renderer.view.width
 
     this.baseStage.addChild(backgroundSprite)
 
