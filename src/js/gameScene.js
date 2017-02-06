@@ -151,7 +151,7 @@ var setupNinja = function(stage) {
 
 }
 
-var setupHook = function () {
+var setupHook = function (stage) {
   // setup hook body
   hookBody = new p2.Body({
     position: [10, 0],
@@ -168,6 +168,11 @@ var setupHook = function () {
   hookConstraint.lowerLimit = 1.18
   // hookConstraint.setStiffness(100)
   // hookConstraint.setRelaxation(4)
+
+  ropeSprite = new PIXI.Sprite(PIXI.loader.resources['rope'].texture)
+  ropeSprite.anchor.y = 0.5
+
+  stage.addChild(ropeSprite)
 }
 
 var setupMap = function (stage) {
@@ -455,14 +460,8 @@ var gameScene = {
     this.stage.addChild(lineGraphics)
 
     setupNinja(this.stage)
-    setupHook()
-
+    setupHook(this.stage)
     setupMap(this.stage)
-
-    ropeSprite = new PIXI.Sprite(PIXI.loader.resources['rope'].texture)
-    ropeSprite.anchor.y = 0.5
-
-    this.stage.addChild(ropeSprite)
 
     world.on('beginContact', beginContact)
     world.on('endContact', endContact)
