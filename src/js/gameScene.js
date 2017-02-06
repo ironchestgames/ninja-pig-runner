@@ -79,7 +79,9 @@ var onUp = function () {
   }
 }
 
-var setupNinja = function() {
+var setupNinja = function(stage) {
+
+  var ninjaRadius = 0.64
 
   ninjaBody = new p2.Body({
     mass: 0.5,
@@ -89,7 +91,7 @@ var setupNinja = function() {
   ninjaBody.fixedRotation = true
 
   var circleShape = new p2.Circle({
-    radius: (64 / 2) / pixelsPerMeter,
+    radius: ninjaRadius,
     collisionGroup: PLAYER,
     collisionMask: WALL,
   })
@@ -136,6 +138,16 @@ var setupNinja = function() {
   ninjaBody.angularDamping = 0
   ninjaBody.name = 'ninjaBody'
   world.addBody(ninjaBody)
+
+  ninjaSprite = new PIXI.Sprite(PIXI.loader.resources['ninja'].texture)
+
+  // center the sprite's anchor point
+  ninjaSprite.anchor.x = 0.5
+  ninjaSprite.anchor.y = 0.5
+  ninjaSprite.width = ninjaRadius * 2 * pixelsPerMeter
+  ninjaSprite.height = ninjaRadius * 2 * pixelsPerMeter
+
+  stage.addChild(ninjaSprite)
 
 }
 
@@ -442,18 +454,10 @@ var gameScene = {
 
     this.stage.addChild(lineGraphics)
 
-    setupNinja()
+    setupNinja(this.stage)
     setupHook()
 
     setupMap(this.stage)
-
-    ninjaSprite = new PIXI.Sprite(PIXI.loader.resources['ninja'].texture)
-
-    // center the sprite's anchor point
-    ninjaSprite.anchor.x = 0.5
-    ninjaSprite.anchor.y = 0.5
-
-    this.stage.addChild(ninjaSprite)
 
     ropeSprite = new PIXI.Sprite(PIXI.loader.resources['rope'].texture)
     ropeSprite.anchor.y = 0.5
