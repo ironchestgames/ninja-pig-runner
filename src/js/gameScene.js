@@ -465,10 +465,16 @@ var gameScene = {
     heightInMeters = 16
     pixelsPerMeter = this.renderer.view.height / 16
 
+    // NOTE: bc of the nature of the image it has to be this exact square (suns/moons are round)
     skySprite = new PIXI.Sprite(PIXI.loader.resources['backgroundsky1'].texture)
+    skySprite.anchor.x = 0.5
+    skySprite.anchor.y = 0.5
+    skySprite.position.x = this.renderer.view.width / 2
+    skySprite.position.y = this.renderer.view.height / 2
     skySprite.width = this.renderer.view.width
-    skySprite.height = this.renderer.view.height
+    skySprite.height = this.renderer.view.width
 
+    // NOTE: bc of the nature of the image it doesn't matter that much to stretch it
     backgroundSprite = new PIXI.extras.TilingSprite(
         PIXI.loader.resources['background1'].texture,
         512,
