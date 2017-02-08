@@ -15,7 +15,8 @@ var SENSOR = Math.pow(2, 2)
 window.world = world
 
 var isDown = false
-var touchPointInMeters
+var downEvent
+var touchPointInMeters = [0, 0]
 
 var hookPoint
 var hookBody
@@ -60,10 +61,7 @@ var onDown = function (event) {
       event.clientY = event.changedTouches[0].clientY
     }
     isDown = true
-    touchPointInMeters = [
-      (-this.stage.x + event.clientX) / pixelsPerMeter,
-      event.clientY / pixelsPerMeter,
-    ]
+    downEvent = event
 
     if (isRunning) {
       shouldJump = true
@@ -289,6 +287,9 @@ var postStep = function () {
 
   if (shouldAddHook) {
 
+    touchPointInMeters[0] = (-this.stage.x + downEvent.clientX) / pixelsPerMeter
+    touchPointInMeters[1] = downEvent.clientY / pixelsPerMeter
+
     var dx = touchPointInMeters[0] - ninjaBody.position[0]
     var dy = touchPointInMeters[1] - ninjaBody.position[1]
     var angle = Math.atan2(dy, dx)
@@ -496,7 +497,7 @@ var gameScene = {
 
     world.on('beginContact', beginContact)
     world.on('endContact', endContact)
-    world.on('postStep', postStep)
+    world.on('postStep', postStep.bind(this))
 
     var onDownBinded = onDown.bind(this)
 
