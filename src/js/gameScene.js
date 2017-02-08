@@ -39,6 +39,7 @@ var ninjaStartPosition
 var ninjaSprite
 var ropeSprite
 var backgroundSprite
+var skySprite
 
 var ninjaBottomSensor
 var ninjaLeftSensor
@@ -464,6 +465,10 @@ var gameScene = {
     heightInMeters = 16
     pixelsPerMeter = this.renderer.view.height / 16
 
+    skySprite = new PIXI.Sprite(PIXI.loader.resources['backgroundsky1'].texture)
+    skySprite.width = this.renderer.view.width
+    skySprite.height = this.renderer.view.height
+
     backgroundSprite = new PIXI.extras.TilingSprite(
         PIXI.loader.resources['background1'].texture,
         512,
@@ -473,6 +478,7 @@ var gameScene = {
     backgroundSprite.height = this.renderer.view.height
     backgroundSprite.width = this.renderer.view.width
 
+    this.baseStage.addChild(skySprite)
     this.baseStage.addChild(backgroundSprite)
 
     this.stage = new PIXI.Container()

@@ -6,6 +6,7 @@ var loadGameScene = {
     .add('rope', 'assets/images/rope.png')
     .add('static_texture_8x8', 'assets/images/static_texture_8x8.png')
     .add('background1', 'assets/images/background1.png')
+    .add('backgroundsky1', 'assets/images/backgroundsky1.png')
     .add('level1', 'assets/json/level1.json') // TODO: bake this into bundle.js instead
     .load(function () {
       this.changeScene('game')
