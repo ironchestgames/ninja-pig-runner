@@ -2,7 +2,7 @@ var p2 = require('p2')
 var DebugDraw = require('./DebugDraw')
 
 var pixelsPerMeter = 50
-var heightInMeters = 16
+var heightInMeters = 10
 
 var world = new p2.World({
   gravity: [0, 10]
@@ -31,9 +31,14 @@ var bounceLeft = false
 var pushedRight = false
 var bounceRight = false
 
-var wallPushForce = 100
-var wallBounceForce = 100
-var jumpUpForce = 100
+var wallPushForce = 65
+var wallBounceForceX = 65
+var wallBounceForceY = -50
+var jumpUpForce = 80
+var pressingForce = 6
+var runningVelocity = 5
+var hookPullDistance = 0.01375
+var ninjaMass = 0.45
 
 var ninjaBody
 var ninjaStartPosition
@@ -92,12 +97,12 @@ var onKeyPress = function (event) {
 
 var setupNinja = function(stage) {
 
-  var ninjaRadius = 0.64
+  var ninjaRadius = 0.5
 
   ninjaBody = new p2.Body({
-    mass: 0.5,
+    mass: ninjaMass,
     position: [3, 0],
-    velocity: [0.5, 0],
+    velocity: [0.5, -3],
   })
   ninjaBody.fixedRotation = true
 
@@ -116,7 +121,7 @@ var setupNinja = function(stage) {
     sensor: true,
   })
   ninjaBody.addShape(ninjaBottomSensor)
-  ninjaBottomSensor.position = [0, 0.7]
+  ninjaBottomSensor.position = [0, ninjaRadius]
   ninjaBottomSensor.worldPosition = [0, 0]
   ninjaBottomSensor.previousWorldPosition = [0, 0]
   ninjaBottomSensor.name = 'ninjaBottomSensor'
@@ -128,7 +133,7 @@ var setupNinja = function(stage) {
     sensor: true,
   })
   ninjaBody.addShape(ninjaLeftSensor)
-  ninjaLeftSensor.position = [-0.7, 0]
+  ninjaLeftSensor.position = [-ninjaRadius, 0]
   ninjaLeftSensor.worldPosition = [0, 0]
   ninjaLeftSensor.previousWorldPosition = [0, 0]
   ninjaLeftSensor.name = 'ninjaLeftSensor'
@@ -140,7 +145,7 @@ var setupNinja = function(stage) {
     sensor: true,
   })
   ninjaBody.addShape(ninjaRightSensor)
-  ninjaRightSensor.position = [0.7, 0]
+  ninjaRightSensor.position = [ninjaRadius, 0]
   ninjaRightSensor.worldPosition = [0, 0]
   ninjaRightSensor.previousWorldPosition = [0, 0]
   ninjaRightSensor.name = 'ninjaRightSensor'
@@ -154,9 +159,9 @@ var setupNinja = function(stage) {
 
   // center the sprite's anchor point
   ninjaSprite.anchor.x = 0.5
-  ninjaSprite.anchor.y = 0.5
-  ninjaSprite.width = ninjaRadius * 2 * pixelsPerMeter
-  ninjaSprite.height = ninjaRadius * 2 * pixelsPerMeter
+  ninjaSprite.anchor.y = 0.7 // the head will be a bit further up
+  ninjaSprite.width = ninjaRadius * 1.5 * 2 * pixelsPerMeter // times 1.5 to cater for sensors
+  ninjaSprite.height = ninjaRadius * 1.5 * 2 * pixelsPerMeter
 
   stage.addChild(ninjaSprite)
 
@@ -325,13 +330,13 @@ var postStep = function () {
       hookBody.position[0] - ninjaBody.position[0] > 0 &&
       ninjaBody.velocity[0] > 0 &&
       ninjaBody.velocity[1] < 0) {
-    ninjaBody.applyForce([8, 0])
+    ninjaBody.applyForce([pressingForce, 0])
     console.log('PRESSING')
   }
 
   if (isHooked && hookConstraint.upperLimit > hookConstraint.lowerLimit) {
 
-    hookConstraint.upperLimit -= 0.022
+    hookConstraint.upperLimit -= hookPullDistance
     hookConstraint.update()
   }
 
@@ -359,9 +364,9 @@ var postStep = function () {
       ninjaBody.velocity[0] = 0
     }
     if (ninjaBody.velocity[1] <= 0) {
-      y = -80
+      y = wallBounceForceY
     }
-    ninjaBody.applyForce([wallBounceForce, y])
+    ninjaBody.applyForce([wallBounceForceX, y])
     bounceLeft = true
     console.log('BOUNCE LEFT', y)
   }
@@ -389,9 +394,9 @@ var postStep = function () {
       ninjaBody.velocity[0] = 0
     }
     if (ninjaBody.velocity[1] <= 0) {
-      y = -80
+      y = wallBounceForceY
     }
-    ninjaBody.applyForce([-wallBounceForce, y])
+    ninjaBody.applyForce([-wallBounceForceX, y])
     bounceRight = true
     console.log('BOUNCE RIGHT', y)
   }
@@ -415,7 +420,7 @@ var postStep = function () {
   if (!isHooked && isRunning) {
     // is on top of wall and should be running
 
-    ninjaBody.velocity[0] = 8 // TODO: don't set velocity, check velocity and apply force instead
+    ninjaBody.velocity[0] = runningVelocity // TODO: don't set velocity, check velocity and apply force instead
     console.log('RUNNING')
   }
 
