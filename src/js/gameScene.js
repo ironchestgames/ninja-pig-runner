@@ -2,7 +2,7 @@ var p2 = require('p2')
 var DebugDraw = require('./DebugDraw')
 
 var pixelsPerMeter = 50
-var heightInMeters
+var heightInMeters = 16
 
 var world = new p2.World({
   gravity: [0, 10]
@@ -462,8 +462,7 @@ var gameScene = {
   name: 'game',
   create: function () {
 
-    heightInMeters = 16
-    pixelsPerMeter = this.renderer.view.height / 16
+    pixelsPerMeter = this.renderer.view.height / heightInMeters
 
     // NOTE: bc of the nature of the image it has to be this exact square (suns/moons are round)
     skySprite = new PIXI.Sprite(PIXI.loader.resources['backgroundsky1'].texture)
