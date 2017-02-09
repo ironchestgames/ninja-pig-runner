@@ -11,10 +11,11 @@
     "copy-assets": "cp -r assets/* dist/assets/",
     "prebuild": "rm -rf dist/ && npm run create-dist-dirs && npm run copy-assets && cp src/index.html dist/index.html",
     "build": "browserify src/js/index.js -u src/js/DebugConsole.js -o dist/js/bundle.js",
-    "publish:gh": "npm run build && rm -rf docs && mkdir -p docs && cp -r dist/* docs/",
+    "build:gh": "npm run build && rm -rf docs && mkdir -p docs && cp -r dist/* docs/",
     "dev": "beefy src/js/index.js:js/bundle.js 1234 --index=src/index.html",
-    "preversion": "npm run publish:gh",
-    "version": "git add -A"
+    "preversion": "npm run build:gh",
+    "version": "npm run export:version-js && git add -A",
+    "export:version-js": "ver=`node -pe \"require('./package.json').version\"` && echo \"module.exports = \\\"$ver\"\\\" > src/js/version.js"
   },
   "author": "Fredrik Järnbröst",
   "license": "UNLICENSED",
