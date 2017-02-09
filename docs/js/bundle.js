@@ -52330,6 +52330,6 @@ var loadGameScene = {
 module.exports = loadGameScene
 
 },{}],258:[function(require,module,exports){
-module.exports = "1.0.0-2"
+module.exports = "1.0.0-4"
 
 },{}]},{},[256]);
