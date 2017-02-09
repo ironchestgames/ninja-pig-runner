@@ -51674,13 +51674,15 @@ var bounceLeft = false
 var pushedRight = false
 var bounceRight = false
 
-var wallPushForce = 65
-var wallBounceForceX = 65
-var wallBounceForceY = -50
+var wallPushForce = 85
+var wallBounceForceX = 100
+var wallBounceForceY = -70
+var wallBounceThreshold = 1
 var jumpUpForce = 80
-var pressingForce = 6
-var runningVelocity = 5
-var hookPullDistance = 0.01375
+var pressingForce = 12
+var minimumRunningSpeed = 6
+var currentRunningSpeed = 0
+var hookPullDistance = 0.014
 var ninjaMass = 0.45
 
 var ninjaBody
@@ -51984,7 +51986,15 @@ var postStep = function () {
   }
 
   // determine if isRunning
+
   if (ninjaBottomSensorContactCount > 0) {
+    if (!isRunning) {
+      if (ninjaBody.velocity[0] < minimumRunningSpeed) {
+        currentRunningSpeed = minimumRunningSpeed
+      } else {
+        currentRunningSpeed = ninjaBody.velocity[0]
+      }
+    }
     isRunning = true
   } else {
     isRunning = false
@@ -52006,7 +52016,7 @@ var postStep = function () {
     if (ninjaBody.velocity[0] < 0) {
       ninjaBody.velocity[0] = 0
     }
-    if (ninjaBody.velocity[1] <= 0) {
+    if (ninjaBody.velocity[1] <= wallBounceThreshold) {
       y = wallBounceForceY
     }
     ninjaBody.applyForce([wallBounceForceX, y])
@@ -52036,7 +52046,7 @@ var postStep = function () {
     if (ninjaBody.velocity[0] > 0) {
       ninjaBody.velocity[0] = 0
     }
-    if (ninjaBody.velocity[1] <= 0) {
+    if (ninjaBody.velocity[1] <= wallBounceThreshold) {
       y = wallBounceForceY
     }
     ninjaBody.applyForce([-wallBounceForceX, y])
@@ -52063,7 +52073,7 @@ var postStep = function () {
   if (!isHooked && isRunning) {
     // is on top of wall and should be running
 
-    ninjaBody.velocity[0] = runningVelocity // TODO: don't set velocity, check velocity and apply force instead
+    ninjaBody.velocity[0] = currentRunningSpeed // TODO: don't set velocity, check velocity and apply force instead
     console.log('RUNNING')
   }
 
@@ -52330,6 +52340,6 @@ var loadGameScene = {
 module.exports = loadGameScene
 
 },{}],258:[function(require,module,exports){
-module.exports = "1.0.0-4"
+module.exports = "1.0.0-5"
 
 },{}]},{},[256]);
