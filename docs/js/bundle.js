@@ -52237,6 +52237,7 @@ module.exports = gameScene
 
 },{"./DebugDraw":254,"p2":49}],256:[function(require,module,exports){
 // var DebugConsole = require('./DebugConsole')
+console.log(require('./version'))
 var PIXI = require('pixi.js')
 var browserGameLoop = require('browser-game-loop')
 var gameScene = require('./gameScene.js')
@@ -52300,7 +52301,7 @@ windowLoad(function () {
   
 })
 
-},{"./gameScene.js":255,"./loadGameScene.js":257,"browser-game-loop":2,"obscen":16,"pixi.js":203,"window-load":253}],257:[function(require,module,exports){
+},{"./gameScene.js":255,"./loadGameScene.js":257,"./version":258,"browser-game-loop":2,"obscen":16,"pixi.js":203,"window-load":253}],257:[function(require,module,exports){
 var loadGameScene = {
   name: 'loadGame',
   create: function () {
@@ -52327,5 +52328,8 @@ var loadGameScene = {
 }
 
 module.exports = loadGameScene
+
+},{}],258:[function(require,module,exports){
+module.exports = "1.0.0-2"
 
 },{}]},{},[256]);
