@@ -3,8 +3,6 @@ var p2 = require('p2')
 var DebugDraw = require('./DebugDraw')
 var Hook = require('./Hook')
 
-localStorage.debug = 'logic:buttons'
-
 var actionsLog = debug('logic:actions')
 var buttonsLog = debug('logic:buttons')
 
@@ -83,23 +81,23 @@ var calcInterpolatedValue = function (value, previousValue, interpolationRatio) 
   return value * interpolationRatio + previousValue * (1 - interpolationRatio)
 }
 
-var onLeftDown = function () {
-  buttonsLog('onLeftDown')
+var onLeftDown = function (event) {
+  buttonsLog('onLeftDown', event)
   buttonEventQueue.push(BUTTON_UPWARD_DOWN)
 }
 
-var onLeftUp = function () {
-  buttonsLog('onLeftUp')
+var onLeftUp = function (event) {
+  buttonsLog('onLeftUp', event)
   buttonEventQueue.push(BUTTON_UPWARD_UP)
 }
 
-var onRightDown = function () {
-  buttonsLog('onRightDown')
+var onRightDown = function (event) {
+  buttonsLog('onRightDown', event)
   buttonEventQueue.push(BUTTON_FORWARD_DOWN)
 }
 
-var onRightUp = function () {
-  buttonsLog('onRightUp')
+var onRightUp = function (event) {
+  buttonsLog('onRightUp', event)
   buttonEventQueue.push(BUTTON_FORWARD_UP)
 }
 
@@ -582,18 +580,14 @@ var gameScene = {
     // this.debugDrawContainer = new PIXI.Container()
     // this.stage.addChild(this.debugDrawContainer)
 
-    // TODO: maybe use touches instead?
-
     leftButton = new PIXI.Sprite(PIXI.Texture.EMPTY)
     leftButton.renderable = false
     leftButton.interactive = true
     leftButton.width = this.renderer.view.width / 2
     leftButton.height = this.renderer.view.height
 
-    leftButton.on('pointerdown', onLeftDown)
-    leftButton.on('pointerup', onLeftUp)
-    leftButton.on('pointerupoutside', onLeftUp)
-    leftButton.on('pointerout', onLeftUp)
+    leftButton.on('touchstart', onLeftDown)
+    leftButton.on('touchend', onLeftUp)
 
     rightButton = new PIXI.Sprite(PIXI.Texture.EMPTY)
     rightButton.renderable = false
@@ -602,10 +596,8 @@ var gameScene = {
     rightButton.height = this.renderer.view.height
     rightButton.position.x = this.renderer.view.width / 2
 
-    rightButton.on('pointerdown', onRightDown)
-    rightButton.on('pointerup', onRightUp)
-    rightButton.on('pointerupoutside', onRightUp)
-    rightButton.on('pointerout', onRightUp)
+    rightButton.on('touchstart', onRightDown)
+    rightButton.on('touchend', onRightUp)
 
     var guiLayer = new PIXI.Container()
     this.baseStage.addChild(guiLayer)
