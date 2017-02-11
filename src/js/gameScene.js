@@ -1,5 +1,6 @@
 var p2 = require('p2')
 var DebugDraw = require('./DebugDraw')
+var Hook = require('./Hook')
 
 var pixelsPerMeter = 50
 var heightInMeters = 10
@@ -19,11 +20,7 @@ var isDown = false
 var isInputUsed = true
 var downEvent
 
-var forwardHookAimPoint = [0, 0]
-var forwardHookPoint
-var forwardHookBody
-var forwardHookConstraint
-var isForwardHooked = false
+var forwardHook
 var shouldRemoveForwardHook = false
 var shouldAddForwardHook = false
 
@@ -168,22 +165,13 @@ var setupNinja = function(stage) {
 }
 
 var setupForwardHook = function (stage) {
-  // setup forwardHook body
-  forwardHookBody = new p2.Body({
-    position: [10, 0],
-    mass: 0, // static
+  
+  forwardHook = new Hook({
+    world: world,
+    source: ninjaBody,
+    relativeAimPoint: [5, 0],
+    collisionMask: WALL,
   })
-
-  world.addBody(forwardHookBody)
-
-  // setup forwardHook constraint
-  forwardHookConstraint = new p2.DistanceConstraint(forwardHookBody, ninjaBody)
-  forwardHookConstraint.upperLimitEnabled = true
-  forwardHookConstraint.lowerLimitEnabled = true
-  forwardHookConstraint.upperLimit = 1
-  forwardHookConstraint.lowerLimit = 1.18
-  // forwardHookConstraint.setStiffness(100)
-  // forwardHookConstraint.setRelaxation(4)
 
   ropeSprite = new PIXI.Sprite(PIXI.loader.resources['rope'].texture)
   ropeSprite.anchor.y = 0.5
@@ -308,47 +296,24 @@ var postStep = function () {
   }
 
   if (shouldAddForwardHook) {
-
-    var dx = forwardHookAimPoint[0] + ninjaBody.position[0]
-    var dy = -0.1
-
-    var ray = new p2.Ray({ // TODO: reuse instead
-      mode: p2.Ray.CLOSEST,
-      from: [ninjaBody.position[0], ninjaBody.position[1]],
-      to: [dx, dy],
-      collisionMask: WALL,
-    })
-    var result = new p2.RaycastResult()
-    world.raycast(result, ray)
-
-    if (result.hasHit()) {
-      // Get the hit point
-      var hitPoint = p2.vec2.create()
-      result.getHitPoint(hitPoint, ray)
-      forwardHookPoint = hitPoint
-      forwardHookBody.position = forwardHookPoint
-      forwardHookBody.previousPosition = forwardHookPoint
-      forwardHookConstraint.upperLimit = p2.vec2.distance(forwardHookPoint, ninjaBody.position)
-      world.addConstraint(forwardHookConstraint)
-      isForwardHooked = true
-    }
+    forwardHook.setHook()
     shouldAddForwardHook = false
   }
 
   // pressing (leaning back when swinging kind of)
-  if (isForwardHooked &&
-      forwardHookBody.position[0] - ninjaBody.position[0] < 1 &&
-      forwardHookBody.position[0] - ninjaBody.position[0] > 0 &&
+  if (forwardHook.isHooked &&
+      forwardHook.body.position[0] - ninjaBody.position[0] < 1 &&
+      forwardHook.body.position[0] - ninjaBody.position[0] > 0 &&
       ninjaBody.velocity[0] > 0 &&
       ninjaBody.velocity[1] < 0) {
     ninjaBody.applyForce([pressingForce, 0])
     console.log('PRESSING')
   }
 
-  if (isForwardHooked && forwardHookConstraint.upperLimit > forwardHookConstraint.lowerLimit) {
+  if (forwardHook.isHooked && forwardHook.constraint.upperLimit > forwardHook.constraint.lowerLimit) {
 
-    forwardHookConstraint.upperLimit -= forwardHookPullDistance
-    forwardHookConstraint.update()
+    forwardHook.constraint.upperLimit -= forwardHookPullDistance
+    forwardHook.constraint.update()
   }
 
   // determine if isRunning
@@ -366,7 +331,7 @@ var postStep = function () {
   }
 
   // push away from wall on left side
-  if (isForwardHooked && ninjaLeftSensorContactCount > 0 && !pushedLeft) {
+  if (forwardHook.isHooked && ninjaLeftSensorContactCount > 0 && !pushedLeft) {
     if (ninjaBody.velocity[0] < 0) {
       ninjaBody.velocity[0] = 0
     }
@@ -376,7 +341,7 @@ var postStep = function () {
   }
 
   // jump away from wall on left side
-  if (!bounceLeft && !isForwardHooked && ninjaLeftSensorContactCount > 0 && !isRunning) {
+  if (!bounceLeft && !forwardHook.isHooked && ninjaLeftSensorContactCount > 0 && !isRunning) {
     var y = 0
     if (ninjaBody.velocity[0] < 0) {
       ninjaBody.velocity[0] = 0
@@ -396,7 +361,7 @@ var postStep = function () {
   }
 
   // push away from wall on right side
-  if (isForwardHooked && ninjaRightSensorContactCount > 0 && !pushedRight) {
+  if (forwardHook.isHooked && ninjaRightSensorContactCount > 0 && !pushedRight) {
     if (ninjaBody.velocity[0] > 0) {
       ninjaBody.velocity[0] = 0
     }
@@ -406,7 +371,7 @@ var postStep = function () {
   }
 
   // jump away from wall on right side
-  if (!bounceRight && !isForwardHooked && ninjaRightSensorContactCount > 0 && !isRunning) {
+  if (!bounceRight && !forwardHook.isHooked && ninjaRightSensorContactCount > 0 && !isRunning) {
     var y = 0
     if (ninjaBody.velocity[0] > 0) {
       ninjaBody.velocity[0] = 0
@@ -435,7 +400,7 @@ var postStep = function () {
     console.log('JUMP')
   }
 
-  if (!isForwardHooked && isRunning) {
+  if (!forwardHook.isHooked && isRunning) {
     // is on top of wall and should be running
 
     ninjaBody.velocity[0] = currentRunningSpeed // TODO: don't set velocity, check velocity and apply force instead
@@ -443,9 +408,10 @@ var postStep = function () {
   }
 
   if (shouldRemoveForwardHook) {
-    world.removeConstraint(forwardHookConstraint)
+    // world.removeConstraint(forwardHook.constraint)
+    forwardHook.unsetHook()
     shouldRemoveForwardHook = false
-    isForwardHooked = false
+    // forwardHook.isHooked = false
   }
 
   ninjaBottomSensor.previousWorldPosition = p2.vec2.clone(ninjaBottomSensor.worldPosition)
@@ -490,7 +456,6 @@ var gameScene = {
 
     widthInPixels = this.renderer.view.width
     pixelsPerMeter = this.renderer.view.height / heightInMeters
-    forwardHookAimPoint[0] = (widthInPixels / pixelsPerMeter) * 0.3
 
     // NOTE: bc of the nature of the image it has to be this exact square (suns/moons are round)
     skySprite = new PIXI.Sprite(PIXI.loader.resources['backgroundsky1'].texture)
@@ -578,16 +543,16 @@ var gameScene = {
         ninjaBody.previousAngle,
         ratio) * pixelsPerMeter
 
-    if (isForwardHooked) {
+    if (forwardHook.isHooked) {
       ropeSprite.visible = true
 
       forwardHookBodyX = calcInterpolatedValue(
-          forwardHookBody.position[0],
-          forwardHookBody.previousPosition[0],
+          forwardHook.body.position[0],
+          forwardHook.body.previousPosition[0],
           ratio) * pixelsPerMeter
       forwardHookBodyY = calcInterpolatedValue(
-          forwardHookBody.position[1],
-          forwardHookBody.previousPosition[1],
+          forwardHook.body.position[1],
+          forwardHook.body.previousPosition[1],
           ratio) * pixelsPerMeter
 
       a = forwardHookBodyX - ninjaSprite.x
