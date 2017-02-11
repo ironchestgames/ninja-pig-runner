@@ -5,6 +5,7 @@ var Hook = function (config) {
   this.source = config.source
   this.relativeAimPoint = config.relativeAimPoint
   this.collisionMask = config.collisionMask
+  this.shortenSpeed = config.shortenSpeed
   this.isHooked = false
   this.body = new p2.Body({
     position: [10, 0],
@@ -50,6 +51,13 @@ Hook.prototype.setHook = function() {
 Hook.prototype.unsetHook = function () {
   this.world.removeConstraint(this.constraint)
   this.isHooked = false
+}
+
+Hook.prototype.shorten = function () {
+  if (this.isHooked && this.constraint.upperLimit > this.constraint.lowerLimit) {
+    this.constraint.upperLimit -= this.shortenSpeed
+    this.constraint.update()
+  }
 }
 
 module.exports = Hook

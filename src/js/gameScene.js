@@ -39,7 +39,7 @@ var jumpUpForce = 80
 var pressingForce = 12
 var minimumRunningSpeed = 9
 var currentRunningSpeed = 0
-var forwardHookPullDistance = 0.014
+var forwardHookShortenSpeed = 0.014
 var ninjaMass = 0.45
 
 var ninjaBody
@@ -171,6 +171,7 @@ var setupForwardHook = function (stage) {
     source: ninjaBody,
     relativeAimPoint: [5, 0],
     collisionMask: WALL,
+    shortenSpeed: forwardHookShortenSpeed,
   })
 
   ropeSprite = new PIXI.Sprite(PIXI.loader.resources['rope'].texture)
@@ -310,11 +311,7 @@ var postStep = function () {
     console.log('PRESSING')
   }
 
-  if (forwardHook.isHooked && forwardHook.constraint.upperLimit > forwardHook.constraint.lowerLimit) {
-
-    forwardHook.constraint.upperLimit -= forwardHookPullDistance
-    forwardHook.constraint.update()
-  }
+  forwardHook.shorten()
 
   // determine if isRunning
   if (ninjaBottomSensorContactCount > 0) {
