@@ -372,6 +372,11 @@ var postStep = function () {
     }
   }
 
+  if (currentHook && ninjaBody.position[1] < 0) {
+    currentHook.unsetHook()
+    currentHook = null
+  }
+
   // if hooked
   if (currentHook) {
 

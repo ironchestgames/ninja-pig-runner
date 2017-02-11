@@ -25,6 +25,7 @@ var Hook = function (config) {
 Hook.prototype.setHook = function() {
   var dx = this.relativeAimX + this.source.position[0]
   var dy = -0.1
+  var hookPoint = [0, 0]
 
   var ray = new p2.Ray({ // TODO: reuse instead
     mode: p2.Ray.CLOSEST,
@@ -39,12 +40,19 @@ Hook.prototype.setHook = function() {
     // Get the hit point
     var hitPoint = p2.vec2.create()
     result.getHitPoint(hitPoint, ray)
-    this.body.position = hitPoint
-    this.body.previousPosition = hitPoint
-    this.constraint.upperLimit = p2.vec2.distance(hitPoint, this.source.position)
-    this.world.addConstraint(this.constraint)
-    this.isHooked = true 
+    hookPoint = hitPoint
+
+  } else {
+    // hook on to the ceiling
+    hookPoint[0] = dx
+    hookPoint[1] = dy
   }
+
+  this.body.position = hookPoint
+  this.body.previousPosition = hookPoint
+  this.constraint.upperLimit = p2.vec2.distance(hookPoint, this.source.position)
+  this.world.addConstraint(this.constraint)
+  this.isHooked = true 
 
 }
 
