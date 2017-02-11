@@ -3,7 +3,7 @@ var p2 = require('p2')
 var Hook = function (config) {
   this.world = config.world
   this.source = config.source
-  this.relativeAimPoint = config.relativeAimPoint // TODO: refactor to relativeAimX
+  this.relativeAimX = config.relativeAimX
   this.collisionMask = config.collisionMask
   this.shortenSpeed = config.shortenSpeed
   this.isHooked = false
@@ -23,7 +23,7 @@ var Hook = function (config) {
 }
 
 Hook.prototype.setHook = function() {
-  var dx = this.relativeAimPoint[0] + this.source.position[0]
+  var dx = this.relativeAimX + this.source.position[0]
   var dy = -0.1
 
   var ray = new p2.Ray({ // TODO: reuse instead

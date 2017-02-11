@@ -52,6 +52,8 @@ var minimumRunningSpeed = 9
 var currentRunningSpeed = 0
 var forwardHookShortenSpeed = 0.014
 var ninjaMass = 0.45
+var forwardHookRelativeAimX = 6
+var upwardHookRelativeAimX = 0
 
 var ninjaBody
 var ninjaStartPosition
@@ -205,7 +207,7 @@ var setupHooks = function (stage) {
   forwardHook = new Hook({
     world: world,
     source: ninjaBody,
-    relativeAimPoint: [5, 0],
+    relativeAimX: forwardHookRelativeAimX,
     collisionMask: WALL,
     shortenSpeed: forwardHookShortenSpeed,
   })
@@ -213,7 +215,7 @@ var setupHooks = function (stage) {
   upwardHook = new Hook({
     world: world,
     source: ninjaBody,
-    relativeAimPoint: [0, 0],
+    relativeAimX: upwardHookRelativeAimX,
     collisionMask: WALL,
     shortenSpeed: forwardHookShortenSpeed,
   })
