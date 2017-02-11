@@ -16,9 +16,14 @@ var SENSOR = Math.pow(2, 2)
 
 window.world = world
 
-var isDown = false
-var isInputUsed = true
-var downEvent
+var buttonEventQueue = []
+var BUTTON_LEFT_DOWN = 'BUTTON_LEFT_DOWN'
+var BUTTON_LEFT_UP = 'BUTTON_LEFT_UP'
+var BUTTON_RIGHT_DOWN = 'BUTTON_RIGHT_DOWN'
+var BUTTON_RIGHT_UP = 'BUTTON_RIGHT_UP'
+
+var leftButton
+var rightButton
 
 var forwardHook
 var shouldRemoveForwardHook = false
@@ -67,23 +72,20 @@ var calcInterpolatedValue = function (value, previousValue, interpolationRatio) 
   return value * interpolationRatio + previousValue * (1 - interpolationRatio)
 }
 
-var onDown = function (event) {
-  if (isDown === false) {
-    if (event.changedTouches) {
-      event.clientX = event.changedTouches[0].clientX
-      event.clientY = event.changedTouches[0].clientY
-    }
-    isDown = true
-    downEvent = event
-    isInputUsed = false
-  }
+var onLeftDown = function () {
+  buttonEventQueue.push(BUTTON_LEFT_DOWN)
 }
 
-var onUp = function () {
-  if (isDown === true) {
-    isDown = false
-    isInputUsed = false
-  }
+var onLeftUp = function () {
+  buttonEventQueue.push(BUTTON_LEFT_UP)
+}
+
+var onRightDown = function () {
+  buttonEventQueue.push(BUTTON_RIGHT_DOWN)
+}
+
+var onRightUp = function () {
+  buttonEventQueue.push(BUTTON_RIGHT_UP)
 }
 
 var onKeyPress = function (event) {
@@ -292,29 +294,51 @@ var setupMap = function (stage) {
 }
 
 var postStep = function () {
+  var buttonEvent
 
-  if (isInputUsed === false) {
-    if (isDown) {
-      if (isRunning) {
-        shouldJump = true
+  while (buttonEventQueue.length > 0) {
+    buttonEvent = buttonEventQueue.shift()
 
-      } else if (!isRunning) {
-        if (!currentHook) {
-          if (downEvent.clientX > widthInPixels / 2) {
-            forwardHook.setHook()
-            currentHook = forwardHook
-          } else {
-            upwardHook.setHook()
-            currentHook = upwardHook
-          }
+    switch (buttonEvent) {
+      case BUTTON_LEFT_DOWN:
+        if (currentHook) {
+          currentHook.unsetHook()
+          currentHook = null
         }
-      }
+        if (isRunning) {
+          shouldJump = true
+        } else {
+          upwardHook.setHook()
+          currentHook = upwardHook
+        }
+        break
 
-    } else if (!isDown) {
-      if (currentHook) {
-        currentHook.unsetHook()
-        currentHook = null
-      }
+      case BUTTON_RIGHT_DOWN:
+        if (currentHook) {
+          currentHook.unsetHook()
+          currentHook = null
+        }
+        if (isRunning) {
+          shouldJump = true
+        } else {
+          forwardHook.setHook()
+          currentHook = forwardHook
+        }
+        break
+
+      case BUTTON_LEFT_UP:
+        if (currentHook === upwardHook) {
+          currentHook.unsetHook()
+          currentHook = null
+        }
+        break
+
+      case BUTTON_RIGHT_UP:
+        if (currentHook === forwardHook) {
+          currentHook.unsetHook()
+          currentHook = null
+        }
+        break
     }
   }
 
@@ -428,7 +452,6 @@ var postStep = function () {
   ninjaBottomSensor.previousWorldPosition = p2.vec2.clone(ninjaBottomSensor.worldPosition)
   ninjaBody.toWorldFrame(ninjaBottomSensor.worldPosition, ninjaBottomSensor.position)
 
-  isInputUsed = true
 }
 
 var beginContact = function (contactEvent) {
@@ -502,19 +525,42 @@ var gameScene = {
     world.on('endContact', endContact)
     world.on('postStep', postStep.bind(this))
 
-    var onDownBinded = onDown.bind(this)
-
-    this.renderer.view.onmousedown = onDownBinded
-    this.renderer.view.onmouseup = onUp
-
-    this.renderer.view.addEventListener('touchstart', onDownBinded)
-    this.renderer.view.addEventListener('touchend', onUp)
-
     document.addEventListener('keypress', onKeyPress.bind(this))
 
 
     // this.debugDrawContainer = new PIXI.Container()
     // this.stage.addChild(this.debugDrawContainer)
+
+    // TODO: maybe use touches instead?
+
+    leftButton = new PIXI.Sprite(PIXI.Texture.EMPTY)
+    leftButton.renderable = false
+    leftButton.interactive = true
+    leftButton.width = this.renderer.view.width / 2
+    leftButton.height = this.renderer.view.height
+
+    leftButton.on('pointerdown', onLeftDown)
+    leftButton.on('pointerup', onLeftUp)
+    leftButton.on('pointerupoutside', onLeftUp)
+    leftButton.on('pointerout', onLeftUp)
+
+    rightButton = new PIXI.Sprite(PIXI.Texture.EMPTY)
+    rightButton.renderable = false
+    rightButton.interactive = true
+    rightButton.width = this.renderer.view.width / 2
+    rightButton.height = this.renderer.view.height
+    rightButton.position.x = this.renderer.view.width / 2
+
+    rightButton.on('pointerdown', onRightDown)
+    rightButton.on('pointerup', onRightUp)
+    rightButton.on('pointerupoutside', onRightUp)
+    rightButton.on('pointerout', onRightUp)
+
+    var guiLayer = new PIXI.Container()
+    this.baseStage.addChild(guiLayer)
+
+    guiLayer.addChild(leftButton)
+    guiLayer.addChild(rightButton)
 
   },
   destroy: function () {
