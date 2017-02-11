@@ -1,6 +1,12 @@
+var debug = require('debug')
 var p2 = require('p2')
 var DebugDraw = require('./DebugDraw')
 var Hook = require('./Hook')
+
+localStorage.debug = 'logic:buttons'
+
+var actionsLog = debug('logic:actions')
+var buttonsLog = debug('logic:buttons')
 
 var pixelsPerMeter = 50
 var heightInMeters = 10
@@ -78,18 +84,22 @@ var calcInterpolatedValue = function (value, previousValue, interpolationRatio) 
 }
 
 var onLeftDown = function () {
+  buttonsLog('onLeftDown')
   buttonEventQueue.push(BUTTON_UPWARD_DOWN)
 }
 
 var onLeftUp = function () {
+  buttonsLog('onLeftUp')
   buttonEventQueue.push(BUTTON_UPWARD_UP)
 }
 
 var onRightDown = function () {
+  buttonsLog('onRightDown')
   buttonEventQueue.push(BUTTON_FORWARD_DOWN)
 }
 
 var onRightUp = function () {
+  buttonsLog('onRightUp')
   buttonEventQueue.push(BUTTON_FORWARD_UP)
 }
 
@@ -332,6 +342,7 @@ var postStep = function () {
     switch (buttonEvent) {
       case BUTTON_UPWARD_DOWN:
         if (currentHook) {
+          buttonsLog('unset current on UPWARD')
           currentHook.unsetHook()
           currentHook = null
         }
@@ -345,6 +356,7 @@ var postStep = function () {
 
       case BUTTON_FORWARD_DOWN:
         if (currentHook) {
+          buttonsLog('unset current on FORWARD')
           currentHook.unsetHook()
           currentHook = null
         }
@@ -358,6 +370,7 @@ var postStep = function () {
 
       case BUTTON_UPWARD_UP:
         if (currentHook === upwardHook) {
+          buttonsLog('unset upwardHook')
           currentHook.unsetHook()
           currentHook = null
         }
@@ -365,6 +378,7 @@ var postStep = function () {
 
       case BUTTON_FORWARD_UP:
         if (currentHook === forwardHook) {
+          buttonsLog('unset forwardHook')
           currentHook.unsetHook()
           currentHook = null
         }
@@ -389,7 +403,7 @@ var postStep = function () {
         ninjaBody.velocity[0] > 0 &&
         ninjaBody.velocity[1] < 0) {
       ninjaBody.applyForce([pressingForce, 0])
-      console.log('PRESSING')
+      actionsLog('PRESSING')
     }
 
     // push away from wall on left side
@@ -399,7 +413,7 @@ var postStep = function () {
       }
       ninjaBody.applyForce([wallPushForce, 0])
       pushedLeft = true
-      console.log('PUSHED LEFT')
+      actionsLog('PUSHED LEFT')
     }
 
     // push away from wall on right side
@@ -409,7 +423,7 @@ var postStep = function () {
       }
       ninjaBody.applyForce([-wallPushForce, 0])
       pushedRight = true
-      console.log('PUSHED RIGHT')
+      actionsLog('PUSHED RIGHT')
     }
   }
 
@@ -438,7 +452,7 @@ var postStep = function () {
     }
     ninjaBody.applyForce([wallBounceForceX, y])
     bounceLeft = true
-    console.log('BOUNCE LEFT', y)
+    actionsLog('BOUNCE LEFT', y)
   }
 
   // reset left sensor logic
@@ -458,7 +472,7 @@ var postStep = function () {
     }
     ninjaBody.applyForce([-wallBounceForceX, y])
     bounceRight = true
-    console.log('BOUNCE RIGHT', y)
+    actionsLog('BOUNCE RIGHT', y)
   }
 
   // reset right sensor logic
@@ -474,14 +488,14 @@ var postStep = function () {
     }
     ninjaBody.applyForce([0, -jumpUpForce])
     shouldJump = false
-    console.log('JUMP')
+    actionsLog('JUMP')
   }
 
   if (!currentHook && isRunning) {
     // is on top of wall and should be running
 
     ninjaBody.velocity[0] = currentRunningSpeed // TODO: don't set velocity, check velocity and apply force instead
-    console.log('RUNNING')
+    actionsLog('RUNNING')
   }
 
   ninjaBottomSensor.previousWorldPosition = p2.vec2.clone(ninjaBottomSensor.worldPosition)
