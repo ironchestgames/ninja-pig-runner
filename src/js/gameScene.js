@@ -28,6 +28,8 @@ var upwardHook
 var shouldRemoveUpwardHook = false
 var shouldAddUpwardHook = false
 
+var currentHook = null
+
 var shouldJump = false
 var isRunning = false
 var pushedLeft = false
@@ -297,43 +299,60 @@ var postStep = function () {
         shouldJump = true
 
       } else if (!isRunning) {
-        if (!shouldAddForwardHook && !shouldAddUpwardHook) {
-          if (downEvent.clientX < widthInPixels / 2) {
-            shouldAddUpwardHook = true
+        if (!currentHook) {
+          if (downEvent.clientX > widthInPixels / 2) {
+            forwardHook.setHook()
+            currentHook = forwardHook
           } else {
-            shouldAddForwardHook = true
+            upwardHook.setHook()
+            currentHook = upwardHook
           }
         }
       }
 
     } else if (!isDown) {
-      shouldRemoveForwardHook = true
-      shouldRemoveUpwardHook = true
+      if (currentHook) {
+        currentHook.unsetHook()
+        currentHook = null
+      }
     }
   }
 
-  if (shouldAddForwardHook) {
-    forwardHook.setHook()
-    shouldAddForwardHook = false
-  }
+  // if hooked
+  if (currentHook) {
 
-  if (shouldAddUpwardHook) {
-    upwardHook.setHook()
-    shouldAddUpwardHook = false
-  }
+    // shorten the rope
+    currentHook.shorten()
 
-  // pressing (leaning back when swinging kind of)
-  if (forwardHook.isHooked &&
-      forwardHook.body.position[0] - ninjaBody.position[0] < 1 &&
-      forwardHook.body.position[0] - ninjaBody.position[0] > 0 &&
-      ninjaBody.velocity[0] > 0 &&
-      ninjaBody.velocity[1] < 0) {
-    ninjaBody.applyForce([pressingForce, 0])
-    console.log('PRESSING')
-  }
+    // pressing (leaning back when swinging kind of)
+    if (currentHook.body.position[0] - ninjaBody.position[0] < 1 &&
+        currentHook.body.position[0] - ninjaBody.position[0] > 0 &&
+        ninjaBody.velocity[0] > 0 &&
+        ninjaBody.velocity[1] < 0) {
+      ninjaBody.applyForce([pressingForce, 0])
+      console.log('PRESSING')
+    }
 
-  forwardHook.shorten()
-  upwardHook.shorten()
+    // push away from wall on left side
+    if (ninjaLeftSensorContactCount > 0 && !pushedLeft) {
+      if (ninjaBody.velocity[0] < 0) {
+        ninjaBody.velocity[0] = 0
+      }
+      ninjaBody.applyForce([wallPushForce, 0])
+      pushedLeft = true
+      console.log('PUSHED LEFT')
+    }
+
+    // push away from wall on right side
+    if (ninjaRightSensorContactCount > 0 && !pushedRight) {
+      if (ninjaBody.velocity[0] > 0) {
+        ninjaBody.velocity[0] = 0
+      }
+      ninjaBody.applyForce([-wallPushForce, 0])
+      pushedRight = true
+      console.log('PUSHED RIGHT')
+    }
+  }
 
   // determine if isRunning
   if (ninjaBottomSensorContactCount > 0) {
@@ -349,18 +368,8 @@ var postStep = function () {
     isRunning = false
   }
 
-  // push away from wall on left side
-  if (forwardHook.isHooked && ninjaLeftSensorContactCount > 0 && !pushedLeft) {
-    if (ninjaBody.velocity[0] < 0) {
-      ninjaBody.velocity[0] = 0
-    }
-    ninjaBody.applyForce([wallPushForce, 0])
-    pushedLeft = true
-    console.log('PUSHED LEFT')
-  }
-
   // jump away from wall on left side
-  if (!bounceLeft && !forwardHook.isHooked && ninjaLeftSensorContactCount > 0 && !isRunning) {
+  if (!bounceLeft && !currentHook && ninjaLeftSensorContactCount > 0 && !isRunning) {
     var y = 0
     if (ninjaBody.velocity[0] < 0) {
       ninjaBody.velocity[0] = 0
@@ -379,18 +388,8 @@ var postStep = function () {
     bounceLeft = false
   }
 
-  // push away from wall on right side
-  if (forwardHook.isHooked && ninjaRightSensorContactCount > 0 && !pushedRight) {
-    if (ninjaBody.velocity[0] > 0) {
-      ninjaBody.velocity[0] = 0
-    }
-    ninjaBody.applyForce([-wallPushForce, 0])
-    pushedRight = true
-    console.log('PUSHED RIGHT')
-  }
-
   // jump away from wall on right side
-  if (!bounceRight && !forwardHook.isHooked && ninjaRightSensorContactCount > 0 && !isRunning) {
+  if (!bounceRight && !currentHook && ninjaRightSensorContactCount > 0 && !isRunning) {
     var y = 0
     if (ninjaBody.velocity[0] > 0) {
       ninjaBody.velocity[0] = 0
@@ -419,21 +418,11 @@ var postStep = function () {
     console.log('JUMP')
   }
 
-  if (!forwardHook.isHooked && isRunning) {
+  if (!currentHook && isRunning) {
     // is on top of wall and should be running
 
     ninjaBody.velocity[0] = currentRunningSpeed // TODO: don't set velocity, check velocity and apply force instead
     console.log('RUNNING')
-  }
-
-  if (shouldRemoveForwardHook) {
-    forwardHook.unsetHook()
-    shouldRemoveForwardHook = false
-  }
-
-  if (shouldRemoveUpwardHook) {
-    upwardHook.unsetHook()
-    shouldRemoveUpwardHook = false
   }
 
   ninjaBottomSensor.previousWorldPosition = p2.vec2.clone(ninjaBottomSensor.worldPosition)
