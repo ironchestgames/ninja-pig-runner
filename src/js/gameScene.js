@@ -24,6 +24,10 @@ var forwardHook
 var shouldRemoveForwardHook = false
 var shouldAddForwardHook = false
 
+var upwardHook
+var shouldRemoveUpwardHook = false
+var shouldAddUpwardHook = false
+
 var shouldJump = false
 var isRunning = false
 var pushedLeft = false
@@ -164,12 +168,20 @@ var setupNinja = function(stage) {
 
 }
 
-var setupForwardHook = function (stage) {
+var setupHooks = function (stage) {
   
   forwardHook = new Hook({
     world: world,
     source: ninjaBody,
     relativeAimPoint: [5, 0],
+    collisionMask: WALL,
+    shortenSpeed: forwardHookShortenSpeed,
+  })
+
+  upwardHook = new Hook({
+    world: world,
+    source: ninjaBody,
+    relativeAimPoint: [0, 0],
     collisionMask: WALL,
     shortenSpeed: forwardHookShortenSpeed,
   })
@@ -283,22 +295,31 @@ var postStep = function () {
     if (isDown) {
       if (isRunning) {
         shouldJump = true
-      } else {
-        // if (downEvent.clientX < widthInPixels / 2) {
-          // shouldAddUpwardHook = true
-        // } else {
-          shouldAddForwardHook = true
-        // }
+
+      } else if (!isRunning) {
+        if (!shouldAddForwardHook && !shouldAddUpwardHook) {
+          if (downEvent.clientX < widthInPixels / 2) {
+            shouldAddUpwardHook = true
+          } else {
+            shouldAddForwardHook = true
+          }
+        }
       }
-    } else {
+
+    } else if (!isDown) {
       shouldRemoveForwardHook = true
-      // shouldRemoveUpwardHook = true
+      shouldRemoveUpwardHook = true
     }
   }
 
   if (shouldAddForwardHook) {
     forwardHook.setHook()
     shouldAddForwardHook = false
+  }
+
+  if (shouldAddUpwardHook) {
+    upwardHook.setHook()
+    shouldAddUpwardHook = false
   }
 
   // pressing (leaning back when swinging kind of)
@@ -312,6 +333,7 @@ var postStep = function () {
   }
 
   forwardHook.shorten()
+  upwardHook.shorten()
 
   // determine if isRunning
   if (ninjaBottomSensorContactCount > 0) {
@@ -405,10 +427,13 @@ var postStep = function () {
   }
 
   if (shouldRemoveForwardHook) {
-    // world.removeConstraint(forwardHook.constraint)
     forwardHook.unsetHook()
     shouldRemoveForwardHook = false
-    // forwardHook.isHooked = false
+  }
+
+  if (shouldRemoveUpwardHook) {
+    upwardHook.unsetHook()
+    shouldRemoveUpwardHook = false
   }
 
   ninjaBottomSensor.previousWorldPosition = p2.vec2.clone(ninjaBottomSensor.worldPosition)
@@ -481,7 +506,7 @@ var gameScene = {
     this.baseStage.addChild(this.stage)
 
     setupNinja(this.stage)
-    setupForwardHook(this.stage)
+    setupHooks(this.stage)
     setupMap(this.stage)
 
     world.on('beginContact', beginContact)
@@ -520,8 +545,9 @@ var gameScene = {
 
     var a
     var b
-    var forwardHookBodyX
-    var forwardHookBodyY
+    var hookBodyX
+    var hookBodyY
+    var currentHook = null
 
     // interpolate position between current and previous/next position
     // (ratio is how far in the frame we've gone represented as a percentage, 0 - 1)
@@ -541,19 +567,26 @@ var gameScene = {
         ratio) * pixelsPerMeter
 
     if (forwardHook.isHooked) {
+      currentHook = forwardHook
+    } else if (upwardHook.isHooked) {
+      currentHook = upwardHook
+    }
+
+    if (currentHook) {
+
       ropeSprite.visible = true
 
-      forwardHookBodyX = calcInterpolatedValue(
-          forwardHook.body.position[0],
-          forwardHook.body.previousPosition[0],
+      hookBodyX = calcInterpolatedValue(
+          currentHook.body.position[0],
+          currentHook.body.previousPosition[0],
           ratio) * pixelsPerMeter
-      forwardHookBodyY = calcInterpolatedValue(
-          forwardHook.body.position[1],
-          forwardHook.body.previousPosition[1],
+      hookBodyY = calcInterpolatedValue(
+          currentHook.body.position[1],
+          currentHook.body.previousPosition[1],
           ratio) * pixelsPerMeter
 
-      a = forwardHookBodyX - ninjaSprite.x
-      b = forwardHookBodyY - ninjaSprite.y
+      a = hookBodyX - ninjaSprite.x
+      b = hookBodyY - ninjaSprite.y
       ropeSprite.x = ninjaSprite.x
       ropeSprite.y = ninjaSprite.y
       ropeSprite.width = Math.sqrt(a * a + b * b)
