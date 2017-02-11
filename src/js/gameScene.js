@@ -17,10 +17,10 @@ var SENSOR = Math.pow(2, 2)
 window.world = world
 
 var buttonEventQueue = []
-var BUTTON_LEFT_DOWN = 'BUTTON_LEFT_DOWN'
-var BUTTON_LEFT_UP = 'BUTTON_LEFT_UP'
-var BUTTON_RIGHT_DOWN = 'BUTTON_RIGHT_DOWN'
-var BUTTON_RIGHT_UP = 'BUTTON_RIGHT_UP'
+var BUTTON_UPWARD_DOWN = 'BUTTON_UPWARD_DOWN'
+var BUTTON_UPWARD_UP = 'BUTTON_UPWARD_UP'
+var BUTTON_FORWARD_DOWN = 'BUTTON_FORWARD_DOWN'
+var BUTTON_FORWARD_UP = 'BUTTON_FORWARD_UP'
 
 var leftButton
 var rightButton
@@ -68,26 +68,30 @@ var ninjaBottomSensorContactCount = 0
 var ninjaLeftSensorContactCount = 0
 var ninjaRightSensorContactCount = 0
 
+var isKeyUpwardDown = false
+var isKeyForwardDown = false
+
 var calcInterpolatedValue = function (value, previousValue, interpolationRatio) {
   return value * interpolationRatio + previousValue * (1 - interpolationRatio)
 }
 
 var onLeftDown = function () {
-  buttonEventQueue.push(BUTTON_LEFT_DOWN)
+  buttonEventQueue.push(BUTTON_UPWARD_DOWN)
 }
 
 var onLeftUp = function () {
-  buttonEventQueue.push(BUTTON_LEFT_UP)
+  buttonEventQueue.push(BUTTON_UPWARD_UP)
 }
 
 var onRightDown = function () {
-  buttonEventQueue.push(BUTTON_RIGHT_DOWN)
+  buttonEventQueue.push(BUTTON_FORWARD_DOWN)
 }
 
 var onRightUp = function () {
-  buttonEventQueue.push(BUTTON_RIGHT_UP)
+  buttonEventQueue.push(BUTTON_FORWARD_UP)
 }
 
+// TODO: remove, this is only for debug
 var onKeyPress = function (event) {
   if (event.key === 'r') {
     ninjaBody.position[0] = ninjaStartPosition[0]
@@ -97,6 +101,30 @@ var onKeyPress = function (event) {
     ninjaBody.velocity[1] = 0
 
     this.stage.x = 0
+  }
+}
+
+var onKeyDown = function (event) {
+  if (event.key === 'ArrowUp' && !isKeyUpwardDown) {
+    buttonEventQueue.push(BUTTON_UPWARD_DOWN)
+    isKeyUpwardDown = true
+  }
+
+  if (event.key === 'ArrowRight' && !isKeyForwardDown) {
+    buttonEventQueue.push(BUTTON_FORWARD_DOWN)
+    isKeyForwardDown = true
+  }
+}
+
+var onKeyUp = function (event) {
+  if (event.key === 'ArrowUp' && isKeyUpwardDown) {
+    buttonEventQueue.push(BUTTON_UPWARD_UP)
+    isKeyUpwardDown = false
+  }
+
+  if (event.key === 'ArrowRight' && isKeyForwardDown) {
+    buttonEventQueue.push(BUTTON_FORWARD_UP)
+    isKeyForwardDown = false
   }
 }
 
@@ -300,7 +328,7 @@ var postStep = function () {
     buttonEvent = buttonEventQueue.shift()
 
     switch (buttonEvent) {
-      case BUTTON_LEFT_DOWN:
+      case BUTTON_UPWARD_DOWN:
         if (currentHook) {
           currentHook.unsetHook()
           currentHook = null
@@ -313,7 +341,7 @@ var postStep = function () {
         }
         break
 
-      case BUTTON_RIGHT_DOWN:
+      case BUTTON_FORWARD_DOWN:
         if (currentHook) {
           currentHook.unsetHook()
           currentHook = null
@@ -326,14 +354,14 @@ var postStep = function () {
         }
         break
 
-      case BUTTON_LEFT_UP:
+      case BUTTON_UPWARD_UP:
         if (currentHook === upwardHook) {
           currentHook.unsetHook()
           currentHook = null
         }
         break
 
-      case BUTTON_RIGHT_UP:
+      case BUTTON_FORWARD_UP:
         if (currentHook === forwardHook) {
           currentHook.unsetHook()
           currentHook = null
@@ -526,6 +554,8 @@ var gameScene = {
     world.on('postStep', postStep.bind(this))
 
     document.addEventListener('keypress', onKeyPress.bind(this))
+    document.addEventListener('keydown', onKeyDown)
+    document.addEventListener('keyup', onKeyUp)
 
 
     // this.debugDrawContainer = new PIXI.Container()
