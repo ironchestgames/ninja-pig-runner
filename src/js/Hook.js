@@ -6,16 +6,16 @@ var Hook = function (config) {
   this.relativeAimPoint = config.relativeAimPoint
   this.collisionMask = config.collisionMask
   this.shortenSpeed = config.shortenSpeed
+  this.minimumUpperLimit = 1.8
   this.isHooked = false
   this.body = new p2.Body({
     position: [10, 0],
-    mass: 0, // static
+    type: p2.Body.STATIC,
   })
   this.constraint = new p2.DistanceConstraint(this.body, this.source)
   this.constraint.upperLimitEnabled = true
   this.constraint.lowerLimitEnabled = true
-  this.constraint.upperLimit = 1
-  this.constraint.lowerLimit = 1.18
+  this.constraint.lowerLimit = 0
   // this.constraint.setStiffness(100)
   // this.constraint.setRelaxation(4)
 
@@ -26,6 +26,7 @@ Hook.prototype.setHook = function() {
   var dx = this.relativeAimPoint[0] + this.source.position[0]
   var dy = this.relativeAimPoint[1] + this.source.position[1]
   var hookPoint = [0, 0]
+  var distance
 
   var ray = new p2.Ray({ // TODO: reuse instead
     mode: p2.Ray.CLOSEST,
@@ -44,7 +45,15 @@ Hook.prototype.setHook = function() {
 
     this.body.position = hookPoint
     this.body.previousPosition = hookPoint
-    this.constraint.upperLimit = p2.vec2.distance(hookPoint, this.source.position)
+
+    distance = p2.vec2.distance(hookPoint, this.source.position)
+
+    if (distance < this.minimumUpperLimit) {
+      this.constraint.upperLimit = this.minimumUpperLimit
+    } else {
+      this.constraint.upperLimit = distance
+    }
+
     this.world.addConstraint(this.constraint)
     this.isHooked = true
   }
@@ -57,7 +66,7 @@ Hook.prototype.unsetHook = function () {
 }
 
 Hook.prototype.shorten = function () {
-  if (this.isHooked && this.constraint.upperLimit > this.constraint.lowerLimit) {
+  if (this.isHooked && this.constraint.upperLimit > this.minimumUpperLimit) {
     this.constraint.upperLimit -= this.shortenSpeed
     this.constraint.update()
   }
