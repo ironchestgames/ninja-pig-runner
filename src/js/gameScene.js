@@ -143,7 +143,7 @@ var onKeyUp = function (event) {
   }
 }
 
-var setupNinja = function() {
+var createNinja = function() {
 
   var ninjaShape
 
@@ -205,19 +205,7 @@ var setupNinja = function() {
 
 }
 
-var createNinjaSprite = function (stage) {
-  ninjaSprite = new PIXI.Sprite(PIXI.loader.resources['ninja'].texture)
-
-  // center the sprite's anchor point
-  ninjaSprite.anchor.x = 0.5
-  ninjaSprite.anchor.y = 0.7 // the head will be a bit further up
-  ninjaSprite.width = ninjaRadius * 1.5 * 2 * pixelsPerMeter // times 1.5 to cater for sensors
-  ninjaSprite.height = ninjaRadius * 1.5 * 2 * pixelsPerMeter
-
-  stage.addChild(ninjaSprite)
-}
-
-var setupHooks = function () {
+var createHooks = function () {
   
   forwardHook = new Hook({
     world: world,
@@ -237,15 +225,41 @@ var setupHooks = function () {
 
 }
 
-var createHookSprite = function (stage) {
-  ropeSprite = new PIXI.Sprite(PIXI.loader.resources['rope'].texture)
-  ropeSprite.anchor.y = 0.5
+var createCeiling = function () {
 
-  stage.addChild(ropeSprite)
+  var ceilingBody
+  var ceilingShape
+  var highestX
+  var i
+
+  highestX = 0
+
+  // NOTE: only getting the bodies position since we only need an approx. value
+  for (i = 0; i < world.bodies.length; i++) {
+    if (world.bodies[i].position[0] > highestX) {
+      highestX = world.bodies[i].position[0]
+    }
+  }
+
+  ceilingBody = new p2.Body({
+    position: [highestX / 2, -1],
+    type: p2.Body.STATIC,
+  })
+
+  ceilingShape = new p2.Box({
+    position: [0, 0],
+    width: highestX,
+    height: 2,
+    collisionGroup: CEILING,
+  })
+
+  ceilingBody.addShape(ceilingShape)
+
+  world.addBody(ceilingBody)
+
 }
 
-
-var loadMap = function (stage) {
+var loadMap = function (layer) {
 
   var bodiesData
   var body
@@ -333,47 +347,34 @@ var loadMap = function (stage) {
         sprite.rotation = body.angle
         sprite.width = boxWidth * pixelsPerMeter
         sprite.height = boxHeight * pixelsPerMeter
-        stage.addChild(sprite)
+        layer.addChild(sprite)
       }
 
     }
 
   }
 
+  createCeiling()
+
 }
 
-var createCeiling = function (stage) {
+var createNinjaSprite = function (layer) {
+  ninjaSprite = new PIXI.Sprite(PIXI.loader.resources['ninja'].texture)
 
-  var ceilingBody
-  var ceilingShape
-  var highestX
-  var i
+  // center the sprite's anchor point
+  ninjaSprite.anchor.x = 0.5
+  ninjaSprite.anchor.y = 0.7 // the head will be a bit further up
+  ninjaSprite.width = ninjaRadius * 1.5 * 2 * pixelsPerMeter // times 1.5 to cater for sensors
+  ninjaSprite.height = ninjaRadius * 1.5 * 2 * pixelsPerMeter
 
-  highestX = 0
+  layer.addChild(ninjaSprite)
+}
 
-  // NOTE: only getting the bodies position since we only need an approx. value
-  for (i = 0; i < world.bodies.length; i++) {
-    if (world.bodies[i].position[0] > highestX) {
-      highestX = world.bodies[i].position[0]
-    }
-  }
+var createHookSprite = function (layer) {
+  ropeSprite = new PIXI.Sprite(PIXI.loader.resources['rope'].texture)
+  ropeSprite.anchor.y = 0.5
 
-  ceilingBody = new p2.Body({
-    position: [highestX / 2, -1],
-    type: p2.Body.STATIC,
-  })
-
-  ceilingShape = new p2.Box({
-    position: [0, 0],
-    width: highestX,
-    height: 2,
-    collisionGroup: CEILING,
-  })
-
-  ceilingBody.addShape(ceilingShape)
-
-  world.addBody(ceilingBody)
-
+  layer.addChild(ropeSprite)
 }
 
 var postStep = function () {
@@ -593,6 +594,16 @@ var gameScene = {
     widthInPixels = this.renderer.view.width
     pixelsPerMeter = this.renderer.view.height / heightInMeters
 
+    // set up layers
+    this.backgroundLayer = new PIXI.Container()
+    this.stage = new PIXI.Container()
+    var guiLayer = new PIXI.Container()
+
+    this.baseStage.addChild(this.backgroundLayer)
+    this.baseStage.addChild(this.stage)
+    this.baseStage.addChild(guiLayer)
+
+    // set up background layer contents
     // NOTE: bc of the nature of the image it has to be this exact square (suns/moons are round)
     skySprite = new PIXI.Sprite(PIXI.loader.resources['backgroundsky1'].texture)
     skySprite.anchor.x = 0.5
@@ -612,33 +623,14 @@ var gameScene = {
     backgroundSprite.height = this.renderer.view.height
     backgroundSprite.width = this.renderer.view.width
 
-    this.baseStage.addChild(skySprite)
-    this.baseStage.addChild(backgroundSprite)
+    this.backgroundLayer.addChild(skySprite)
+    this.backgroundLayer.addChild(backgroundSprite)
 
-    this.stage = new PIXI.Container()
-
-    this.baseStage.addChild(this.stage)
-
-    setupNinja()
-    setupHooks()
-    loadMap(this.stage)
-    createCeiling()
-
+    // set up ninja and hook
     createNinjaSprite(this.stage)
     createHookSprite(this.stage)
 
-    world.on('beginContact', beginContact)
-    world.on('endContact', endContact)
-    world.on('postStep', postStep.bind(this))
-
-    document.addEventListener('keypress', onKeyPress.bind(this))
-    document.addEventListener('keydown', onKeyDown)
-    document.addEventListener('keyup', onKeyUp)
-
-
-    // this.debugDrawContainer = new PIXI.Container()
-    // this.stage.addChild(this.debugDrawContainer)
-
+    // set up input buttons
     leftButton = new PIXI.Sprite(PIXI.Texture.EMPTY)
     leftButton.renderable = false
     leftButton.interactive = true
@@ -658,11 +650,25 @@ var gameScene = {
     rightButton.on('touchstart', onRightDown)
     rightButton.on('touchend', onRightUp)
 
-    var guiLayer = new PIXI.Container()
-    this.baseStage.addChild(guiLayer)
-
     guiLayer.addChild(leftButton)
     guiLayer.addChild(rightButton)
+
+    // set up physics
+    createNinja()
+    createHooks() // depends on createNinja
+    loadMap(this.stage) // depends on createNinja
+
+    world.on('beginContact', beginContact)
+    world.on('endContact', endContact)
+    world.on('postStep', postStep.bind(this))
+
+    // set up inputs
+    document.addEventListener('keypress', onKeyPress.bind(this))
+    document.addEventListener('keydown', onKeyDown)
+    document.addEventListener('keyup', onKeyUp)
+
+    // this.debugDrawContainer = new PIXI.Container()
+    // this.stage.addChild(this.debugDrawContainer)
 
   },
   destroy: function () {
