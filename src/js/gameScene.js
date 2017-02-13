@@ -143,8 +143,6 @@ var restartNinja = function () {
 
   ninjaBody.velocity[0] = 0
   ninjaBody.velocity[1] = 0
-
-  this.stage.x = 0
 }
 
 var createNinja = function() {
