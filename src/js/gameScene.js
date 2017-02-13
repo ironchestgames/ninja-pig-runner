@@ -60,9 +60,9 @@ var forwardHookShortenSpeed = 0.014
 var ninjaMass = 0.45
 var ninjaRadius = 0.5
 var forwardHookRelativeAimX = 8
-var forwardHookRelativeAimY = -11
+var forwardHookRelativeAimY = -12
 var upwardHookRelativeAimX = 0
-var upwardHookRelativeAimY = -11
+var upwardHookRelativeAimY = -12
 
 var ninjaBody
 var ninjaStartPosition
