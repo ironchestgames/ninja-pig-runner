@@ -3,7 +3,7 @@ var p2 = require('p2')
 var Hook = function (config) {
   this.world = config.world
   this.source = config.source
-  this.relativeAimX = config.relativeAimX
+  this.relativeAimPoint = config.relativeAimPoint
   this.collisionMask = config.collisionMask
   this.shortenSpeed = config.shortenSpeed
   this.isHooked = false
@@ -23,8 +23,8 @@ var Hook = function (config) {
 }
 
 Hook.prototype.setHook = function() {
-  var dx = this.relativeAimX + this.source.position[0]
-  var dy = -0.1
+  var dx = this.relativeAimPoint[0] + this.source.position[0]
+  var dy = this.relativeAimPoint[1] + this.source.position[1]
   var hookPoint = [0, 0]
 
   var ray = new p2.Ray({ // TODO: reuse instead
@@ -42,17 +42,12 @@ Hook.prototype.setHook = function() {
     result.getHitPoint(hitPoint, ray)
     hookPoint = hitPoint
 
-  } else {
-    // hook on to the ceiling
-    hookPoint[0] = dx
-    hookPoint[1] = dy
+    this.body.position = hookPoint
+    this.body.previousPosition = hookPoint
+    this.constraint.upperLimit = p2.vec2.distance(hookPoint, this.source.position)
+    this.world.addConstraint(this.constraint)
+    this.isHooked = true
   }
-
-  this.body.position = hookPoint
-  this.body.previousPosition = hookPoint
-  this.constraint.upperLimit = p2.vec2.distance(hookPoint, this.source.position)
-  this.world.addConstraint(this.constraint)
-  this.isHooked = true 
 
 }
 

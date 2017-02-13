@@ -14,9 +14,11 @@ var world = new p2.World({
   gravity: [0, 10]
 })
 
+// collision groups
 var PLAYER = Math.pow(2, 0)
 var WALL = Math.pow(2, 1)
 var SENSOR = Math.pow(2, 2)
+var CEILING = Math.pow(2, 3)
 
 window.world = world
 
@@ -56,8 +58,10 @@ var minimumRunningSpeed = 9
 var currentRunningSpeed = 0
 var forwardHookShortenSpeed = 0.014
 var ninjaMass = 0.45
-var forwardHookRelativeAimX = 6
+var forwardHookRelativeAimX = 8
+var forwardHookRelativeAimY = -11
 var upwardHookRelativeAimX = 0
+var upwardHookRelativeAimY = -11
 
 var ninjaBody
 var ninjaStartPosition
@@ -215,16 +219,16 @@ var setupHooks = function (stage) {
   forwardHook = new Hook({
     world: world,
     source: ninjaBody,
-    relativeAimX: forwardHookRelativeAimX,
-    collisionMask: WALL,
+    relativeAimPoint: [forwardHookRelativeAimX, forwardHookRelativeAimY],
+    collisionMask: WALL | CEILING,
     shortenSpeed: forwardHookShortenSpeed,
   })
 
   upwardHook = new Hook({
     world: world,
     source: ninjaBody,
-    relativeAimX: upwardHookRelativeAimX,
-    collisionMask: WALL,
+    relativeAimPoint: [upwardHookRelativeAimX, upwardHookRelativeAimY],
+    collisionMask: WALL | CEILING,
     shortenSpeed: forwardHookShortenSpeed,
   })
 
@@ -234,7 +238,7 @@ var setupHooks = function (stage) {
   stage.addChild(ropeSprite)
 }
 
-var setupMap = function (stage) {
+var loadMap = function (stage) {
 
   var bodiesData
   var body
@@ -328,6 +332,40 @@ var setupMap = function (stage) {
     }
 
   }
+
+}
+
+var createCeiling = function (stage) {
+
+  var ceilingBody
+  var ceilingShape
+  var highestX
+  var i
+
+  highestX = 0
+
+  // NOTE: only getting the bodies position since we only need an approx. value
+  for (i = 0; i < world.bodies.length; i++) {
+    if (world.bodies[i].position[0] > highestX) {
+      highestX = world.bodies[i].position[0]
+    }
+  }
+
+  ceilingBody = new p2.Body({
+    position: [highestX / 2, -1],
+    type: p2.Body.STATIC,
+  })
+
+  ceilingShape = new p2.Box({
+    position: [0, 0],
+    width: highestX,
+    height: 2,
+    collisionGroup: CEILING,
+  })
+
+  ceilingBody.addShape(ceilingShape)
+
+  world.addBody(ceilingBody)
 
 }
 
@@ -566,7 +604,8 @@ var gameScene = {
 
     setupNinja(this.stage)
     setupHooks(this.stage)
-    setupMap(this.stage)
+    loadMap(this.stage)
+    createCeiling()
 
     world.on('beginContact', beginContact)
     world.on('endContact', endContact)
