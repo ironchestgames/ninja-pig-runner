@@ -12,8 +12,8 @@ windowLoad(function () {
   // DebugConsole.init()
 
   // init pixi renderer
-  // var noWebgl = global.DEBUG_DRAW
-  var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight)
+  var noWebgl = !!localStorage.getItem('vars:noWebgl')
+  var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight, {}, noWebgl)
   document.body.appendChild(renderer.view)
   renderer.backgroundColor = 0xcbdbfc
 
