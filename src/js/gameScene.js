@@ -109,13 +109,7 @@ var onRightUp = function (event) {
 // TODO: remove, this is only for debug
 var onKeyPress = function (event) {
   if (event.key === 'r') {
-    ninjaBody.position[0] = ninjaStartPosition[0]
-    ninjaBody.position[1] = ninjaStartPosition[1]
-
-    ninjaBody.velocity[0] = 0
-    ninjaBody.velocity[1] = 0
-
-    this.stage.x = 0
+    restartNinja()
   }
 }
 
@@ -141,6 +135,16 @@ var onKeyUp = function (event) {
     buttonEventQueue.push(BUTTON_FORWARD_UP)
     isKeyForwardDown = false
   }
+}
+
+var restartNinja = function () {
+  ninjaBody.position[0] = ninjaStartPosition[0]
+  ninjaBody.position[1] = ninjaStartPosition[1]
+
+  ninjaBody.velocity[0] = 0
+  ninjaBody.velocity[1] = 0
+
+  this.stage.x = 0
 }
 
 var createNinja = function() {
@@ -569,6 +573,11 @@ var beginContact = function (contactEvent) {
 
   if (contactEvent.shapeA === ninjaRightSensor || contactEvent.shapeB === ninjaRightSensor) {
     ninjaRightSensorContactCount++
+
+    // end of level check
+    if (contactEvent.bodyA.name === 'goal' || contactEvent.bodyB.name === 'goal') {
+      restartNinja()
+    }
   }
 }
 
