@@ -58,6 +58,7 @@ var minimumRunningSpeed = 9
 var currentRunningSpeed = 0
 var forwardHookShortenSpeed = 0.014
 var ninjaMass = 0.45
+var ninjaRadius = 0.5
 var forwardHookRelativeAimX = 8
 var forwardHookRelativeAimY = -11
 var upwardHookRelativeAimX = 0
@@ -142,24 +143,24 @@ var onKeyUp = function (event) {
   }
 }
 
-var setupNinja = function(stage) {
+var setupNinja = function() {
 
-  var ninjaRadius = 0.5
+  var ninjaShape
 
   ninjaBody = new p2.Body({
     mass: ninjaMass,
-    position: [3, 0],
     velocity: [0.5, -3],
   })
   ninjaBody.fixedRotation = true
 
-  var circleShape = new p2.Circle({
+  ninjaShape = new p2.Circle({
     radius: ninjaRadius,
     collisionGroup: PLAYER,
     collisionMask: WALL,
   })
-  ninjaBody.addShape(circleShape)
-  circleShape.name = 'ninjaShape'
+
+  ninjaBody.addShape(ninjaShape)
+  ninjaShape.name = 'ninjaShape'
 
   ninjaBottomSensor = new p2.Circle({
     radius: 0.2,
@@ -202,6 +203,9 @@ var setupNinja = function(stage) {
   ninjaBody.name = 'ninjaBody'
   world.addBody(ninjaBody)
 
+}
+
+var createNinjaSprite = function (stage) {
   ninjaSprite = new PIXI.Sprite(PIXI.loader.resources['ninja'].texture)
 
   // center the sprite's anchor point
@@ -211,10 +215,9 @@ var setupNinja = function(stage) {
   ninjaSprite.height = ninjaRadius * 1.5 * 2 * pixelsPerMeter
 
   stage.addChild(ninjaSprite)
-
 }
 
-var setupHooks = function (stage) {
+var setupHooks = function () {
   
   forwardHook = new Hook({
     world: world,
@@ -232,11 +235,15 @@ var setupHooks = function (stage) {
     shortenSpeed: forwardHookShortenSpeed,
   })
 
+}
+
+var createHookSprite = function (stage) {
   ropeSprite = new PIXI.Sprite(PIXI.loader.resources['rope'].texture)
   ropeSprite.anchor.y = 0.5
 
   stage.addChild(ropeSprite)
 }
+
 
 var loadMap = function (stage) {
 
@@ -612,10 +619,13 @@ var gameScene = {
 
     this.baseStage.addChild(this.stage)
 
-    setupNinja(this.stage)
-    setupHooks(this.stage)
+    setupNinja()
+    setupHooks()
     loadMap(this.stage)
     createCeiling()
+
+    createNinjaSprite(this.stage)
+    createHookSprite(this.stage)
 
     world.on('beginContact', beginContact)
     world.on('endContact', endContact)
