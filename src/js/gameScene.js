@@ -443,7 +443,7 @@ var postStep = function () {
     }
 
     // push away from wall on left side
-    if (ninjaLeftSensorContactCount > 0 && !pushedLeft) {
+    if (ninjaLeftSensorContactCount > 0 && !pushedLeft && ninjaBody.velocity[0] > 0) {
       if (ninjaBody.velocity[0] < 0) {
         ninjaBody.velocity[0] = 0
       }
@@ -453,7 +453,7 @@ var postStep = function () {
     }
 
     // push away from wall on right side
-    if (ninjaRightSensorContactCount > 0 && !pushedRight) {
+    if (ninjaRightSensorContactCount > 0 && !pushedRight && ninjaBody.velocity[0] < 0) {
       if (ninjaBody.velocity[0] > 0) {
         ninjaBody.velocity[0] = 0
       }
@@ -478,7 +478,12 @@ var postStep = function () {
   }
 
   // jump away from wall on left side
-  if (!bounceLeft && !currentHook && ninjaLeftSensorContactCount > 0 && !isRunning) {
+  if (!bounceLeft &&
+      !currentHook &&
+      !isRunning &&
+      ninjaLeftSensorContactCount > 0 &&
+      ninjaBody.velocity[0] > 0) {
+
     var y = 0
     if (ninjaBody.velocity[0] < 0) {
       ninjaBody.velocity[0] = 0
@@ -498,7 +503,12 @@ var postStep = function () {
   }
 
   // jump away from wall on right side
-  if (!bounceRight && !currentHook && ninjaRightSensorContactCount > 0 && !isRunning) {
+  if (!bounceRight &&
+      !currentHook &&
+      !isRunning &&
+      ninjaRightSensorContactCount > 0 &&
+      ninjaBody.velocity[0] < 0) {
+
     var y = 0
     if (ninjaBody.velocity[0] > 0) {
       ninjaBody.velocity[0] = 0
