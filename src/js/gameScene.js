@@ -261,7 +261,11 @@ var createCeiling = function () {
 
 }
 
-var loadMap = function (layer) {
+var getFileNameFromUrl = function (str) {
+  return str.split('/').pop().split('.').shift()
+}
+
+var loadMap = function (mapLayer, propLayer) {
 
   var bodiesData
   var body
@@ -276,13 +280,46 @@ var loadMap = function (layer) {
   var fixtureData
   var fixturesData
   var i
+  var image
+  var imageData
+  var imageName
+  var imagesData
   var j
   var sprite
   var spriteX
   var spriteY
+  var texture
+  var widthHeightRatio
   var worldPosition
 
-  var worldPosition = [0, 0]
+  // props first (rendered below the level as of now)
+  imagesData = PIXI.loader.resources['level1'].data.image
+
+  for (i = 0; i < imagesData.length; i++) {
+
+    imageData = imagesData[i]
+    imageName = getFileNameFromUrl(imageData.file)
+    imagePosition = [imageData.center.x, -imageData.center.y]
+
+    texture = PIXI.loader.resources[imageName].texture
+
+    widthHeightRatio = texture.width / texture.height
+
+    sprite = new PIXI.Sprite(texture)
+
+    sprite.anchor.x = 0.5
+    sprite.anchor.y = 0.5
+    sprite.rotation = imageData.angle || 0
+    sprite.x = imagePosition[0] * pixelsPerMeter
+    sprite.y = imagePosition[1] * pixelsPerMeter
+    sprite.height = imageData.scale * pixelsPerMeter
+    sprite.width = imageData.scale * widthHeightRatio * pixelsPerMeter
+
+    propLayer.addChild(sprite)
+
+  }
+
+  // the level
 
   // rube/box2d to p2 mapping of body type
   bodyTypeMap = {
@@ -290,6 +327,8 @@ var loadMap = function (layer) {
     [1]: p2.Body.KINEMATIC,
     [2]: p2.Body.DYNAMIC,
   }
+
+  worldPosition = [0, 0]
 
   bodiesData = PIXI.loader.resources['level1'].data.body
 
@@ -302,7 +341,7 @@ var loadMap = function (layer) {
       ninjaStartPosition = [bodyData.position.x, -bodyData.position.y]
       ninjaBody.position = [bodyData.position.x, -bodyData.position.y]
 
-    } else {
+    } else if (bodyData.name === 'wall' || bodyData.name === 'goal') {
 
       body = new p2.Body({
         position: [bodyData.position.x, -bodyData.position.y],
@@ -349,7 +388,34 @@ var loadMap = function (layer) {
         sprite.rotation = body.angle
         sprite.width = boxWidth * pixelsPerMeter
         sprite.height = boxHeight * pixelsPerMeter
-        layer.addChild(sprite)
+        mapLayer.addChild(sprite)
+      }
+
+    } else if (bodyData.name === 'prop_texture') {
+
+      // NOTE: this code assumes that all prop textures are box-shaped
+      fixturesData = bodyData.fixture
+
+      for (j = 0; j < fixturesData.length; j++) {
+        fixtureData = fixturesData[j]
+
+        boxWidth = Math.abs(fixtureData.polygon.vertices.x[0] - fixtureData.polygon.vertices.x[2])
+        boxHeight = Math.abs(fixtureData.polygon.vertices.y[0] - fixtureData.polygon.vertices.y[2])
+
+        boxPositionX = bodyData.position.x
+        boxPositionY = -bodyData.position.y
+
+        // create the sprite for this shape
+        var sprite = new PIXI.Sprite(PIXI.loader.resources['prop_texture_8x8'].texture)
+
+        sprite.anchor.x = 0.5
+        sprite.anchor.y = 0.5
+        sprite.x = boxPositionX * pixelsPerMeter
+        sprite.y = boxPositionY * pixelsPerMeter
+        sprite.rotation = bodyData.angle
+        sprite.width = boxWidth * pixelsPerMeter
+        sprite.height = boxHeight * pixelsPerMeter
+        propLayer.addChild(sprite)
       }
 
     }
@@ -604,11 +670,14 @@ var gameScene = {
     // set up layers
     this.backgroundLayer = new PIXI.Container()
     this.stage = new PIXI.Container()
+    var propLayer = new PIXI.Container()
     var guiLayer = new PIXI.Container()
 
     this.baseStage.addChild(this.backgroundLayer)
     this.baseStage.addChild(this.stage)
     this.baseStage.addChild(guiLayer)
+
+    this.stage.addChild(propLayer)
 
     // set up background layer contents
     // NOTE: bc of the nature of the image it has to be this exact square (suns/moons are round)
@@ -632,10 +701,6 @@ var gameScene = {
 
     this.backgroundLayer.addChild(skySprite)
     this.backgroundLayer.addChild(backgroundSprite)
-
-    // set up ninja and hook
-    createNinjaSprite(this.stage)
-    createHookSprite(this.stage)
 
     // set up input buttons
     leftButton = new PIXI.Sprite(PIXI.Texture.EMPTY)
@@ -663,7 +728,11 @@ var gameScene = {
     // set up physics
     createNinja()
     createHooks() // depends on createNinja
-    loadMap(this.stage) // depends on createNinja
+    loadMap(this.stage, propLayer) // depends on createNinja
+
+    // set up ninja and hook
+    createNinjaSprite(this.stage)
+    createHookSprite(this.stage)
 
     world.on('beginContact', beginContact)
     world.on('endContact', endContact)
