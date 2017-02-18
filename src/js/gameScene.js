@@ -784,31 +784,25 @@ var gameScene = {
     // (ratio is how far in the frame we've gone represented as a percentage, 0 - 1)
     // currentPosition * ratio + previousPosition * (1 - ratio)
 
-    ninjaSprite.inAirUpwardsSprite.x = gameUtils.calcInterpolatedValue(
+    var x = gameUtils.calcInterpolatedValue(
         ninjaBody.position[0],
         ninjaBody.previousPosition[0],
         ratio) * pixelsPerMeter
-    ninjaSprite.inAirUpwardsSprite.y = gameUtils.calcInterpolatedValue(
+
+    var y = gameUtils.calcInterpolatedValue(
         ninjaBody.position[1],
         ninjaBody.previousPosition[1],
         ratio) * pixelsPerMeter
-    ninjaSprite.inAirUpwardsSprite.rotation = gameUtils.calcInterpolatedValue(
+
+    var rotation = gameUtils.calcInterpolatedValue(
         ninjaBody.angle,
         ninjaBody.previousAngle,
         ratio) * pixelsPerMeter
 
-    ninjaSprite.runningSprite.x = gameUtils.calcInterpolatedValue(
-        ninjaBody.position[0],
-        ninjaBody.previousPosition[0],
-        ratio) * pixelsPerMeter
-    ninjaSprite.runningSprite.y = gameUtils.calcInterpolatedValue(
-        ninjaBody.position[1],
-        ninjaBody.previousPosition[1],
-        ratio) * pixelsPerMeter
-    ninjaSprite.runningSprite.rotation = gameUtils.calcInterpolatedValue(
-        ninjaBody.angle,
-        ninjaBody.previousAngle,
-        ratio) * pixelsPerMeter
+    ninjaSprite.draw(
+        x,
+        y,
+        rotation)
 
     if (forwardHook.isHooked) {
       currentHook = forwardHook
@@ -829,10 +823,10 @@ var gameScene = {
           currentHook.body.previousPosition[1],
           ratio) * pixelsPerMeter
 
-      a = hookBodyX - ninjaSprite.inAirUpwardsSprite.x
-      b = hookBodyY - ninjaSprite.inAirUpwardsSprite.y
-      ropeSprite.x = ninjaSprite.inAirUpwardsSprite.x
-      ropeSprite.y = ninjaSprite.inAirUpwardsSprite.y
+      a = hookBodyX - ninjaSprite.x
+      b = hookBodyY - ninjaSprite.y
+      ropeSprite.x = ninjaSprite.x
+      ropeSprite.y = ninjaSprite.y
       ropeSprite.width = Math.sqrt(a * a + b * b)
       ropeSprite.rotation = Math.atan2(b, a)
 
@@ -841,8 +835,8 @@ var gameScene = {
       ropeSprite.visible = false
     }
 
-    if (ninjaSprite.inAirUpwardsSprite.x > this.renderer.view.width / 4) {
-      this.stage.x = -ninjaSprite.inAirUpwardsSprite.x + this.renderer.view.width / 4
+    if (ninjaSprite.x > this.renderer.view.width / 4) {
+      this.stage.x = -ninjaSprite.x + this.renderer.view.width / 4
       backgroundSprite.tilePosition.x = this.stage.x * 0.1
     }
 

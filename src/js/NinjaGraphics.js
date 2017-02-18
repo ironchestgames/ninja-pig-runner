@@ -64,4 +64,19 @@ NinjaGraphics.prototype.handleEvent = function (event) {
   this.currentState = event
 }
 
+NinjaGraphics.prototype.draw = function (x, y, rotation) {
+
+  this.x = x
+  this.y = y
+  this.rotation = rotation
+
+  this.inAirUpwardsSprite.x = x
+  this.inAirUpwardsSprite.y = y
+  this.inAirUpwardsSprite.rotation = rotation
+
+  this.runningSprite.x = x
+  this.runningSprite.y = y
+  this.runningSprite.rotation = rotation
+}
+
 module.exports = NinjaGraphics
