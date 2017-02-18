@@ -1,10 +1,14 @@
 
 var NinjaGraphics = function (config) {
 
-  var spriteSizeFactor = 1.15
-  var runningSpriteAnimationBaseSpeed = 0.20
+  var spriteSizeFactor = 1.15 // to make up for the whitespace in the frames
+  var runningSpriteAnimationBaseSpeed = 0.20 // TODO: what is this in ms?
 
   this.config = config
+
+  var ninjaRadius = config.ninjaRadius
+  var pixelsPerMeter = config.pixelsPerMeter
+  var container = config.container
 
   this.currentState = NinjaGraphics.EVENT_INAIR_FALLING
 
@@ -12,10 +16,10 @@ var NinjaGraphics = function (config) {
   this.inAirUpwardsSprite = new PIXI.Sprite(PIXI.loader.resources['ninja'].texture)
   this.inAirUpwardsSprite.anchor.x = 0.5
   this.inAirUpwardsSprite.anchor.y = 0.5
-  this.inAirUpwardsSprite.width = config.ninjaRadius * 2 * config.pixelsPerMeter
-  this.inAirUpwardsSprite.height = config.ninjaRadius * 2 * config.pixelsPerMeter
+  this.inAirUpwardsSprite.width = ninjaRadius * 2 * pixelsPerMeter
+  this.inAirUpwardsSprite.height = ninjaRadius * 2 * pixelsPerMeter
 
-  config.container.addChild(this.inAirUpwardsSprite)
+  container.addChild(this.inAirUpwardsSprite)
 
   // running sprite
   var runningTexture = PIXI.loader.resources['runninganimation'].texture
@@ -26,14 +30,13 @@ var NinjaGraphics = function (config) {
   this.runningSprite = config.spriteUtilities.sprite(runningSpriteStrip)
   this.runningSprite.anchor.x = 0.5
   this.runningSprite.anchor.y = 0.5
-  this.runningSprite.width = config.ninjaRadius * 2 * config.pixelsPerMeter * spriteSizeFactor
-  this.runningSprite.height = config.ninjaRadius * 2 * config.pixelsPerMeter * spriteSizeFactor
+  this.runningSprite.width = ninjaRadius * 2 * pixelsPerMeter * spriteSizeFactor
+  this.runningSprite.height = ninjaRadius * 2 * pixelsPerMeter * spriteSizeFactor
   this.runningSprite.visible = false
   this.runningSprite.animationSpeed = runningSpriteAnimationBaseSpeed
-
   this.runningSprite.play()
 
-  config.container.addChild(this.runningSprite)
+  container.addChild(this.runningSprite)
 
 }
 
@@ -42,21 +45,25 @@ NinjaGraphics.EVENT_INAIR_UPWARDS = 'EVENT_INAIR_UPWARDS'
 NinjaGraphics.EVENT_INAIR_FALLING = 'EVENT_INAIR_FALLING'
 
 NinjaGraphics.prototype.handleEvent = function (event) {
+
   if (event === this.currentState) {
     return
   }
 
   switch (event) {
     case NinjaGraphics.EVENT_RUNNING:
-      this.inAirUpwardsSprite.visible = false
       this.runningSprite.visible = true
+
+      this.inAirUpwardsSprite.visible = false
       break
     case NinjaGraphics.EVENT_INAIR_UPWARDS:
       this.inAirUpwardsSprite.visible = true
+
       this.runningSprite.visible = false
       break
     case NinjaGraphics.EVENT_INAIR_FALLING:
       this.inAirUpwardsSprite.visible = true
+
       this.runningSprite.visible = false
       break
   }
@@ -66,10 +73,12 @@ NinjaGraphics.prototype.handleEvent = function (event) {
 
 NinjaGraphics.prototype.draw = function (x, y, rotation) {
 
+  // set the values to be used easier from outside
   this.x = x
   this.y = y
   this.rotation = rotation
 
+  // set values to all sprites
   this.inAirUpwardsSprite.x = x
   this.inAirUpwardsSprite.y = y
   this.inAirUpwardsSprite.rotation = rotation

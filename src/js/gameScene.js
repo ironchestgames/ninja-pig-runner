@@ -72,8 +72,7 @@ var upwardHookRelativeAimY = -12
 
 var ninjaBody
 var ninjaStartPosition
-var ninjaSprite
-var ninjaRunningSprite
+var ninjaGraphics
 var ropeSprite
 var backgroundSprite
 var skySprite
@@ -429,8 +428,6 @@ var loadMap = function (mapLayer, propLayer) {
 
 }
 
-
-
 var createHookSprite = function (layer) {
   ropeSprite = new PIXI.Sprite(PIXI.loader.resources['rope'].texture)
   ropeSprite.anchor.y = 0.5
@@ -606,13 +603,13 @@ var postStep = function () {
     shouldJump = false
     isRunning = false
     actionsLog('JUMP')
-    ninjaSprite.handleEvent(NinjaGraphics.EVENT_INAIR_UPWARDS)
+    ninjaGraphics.handleEvent(NinjaGraphics.EVENT_INAIR_UPWARDS)
   }
 
   // determine if already jumped while in contact with ground
   if (ninjaBottomSensorContactCount === 0) {
     hasJumped = false
-    ninjaSprite.handleEvent(NinjaGraphics.EVENT_INAIR_UPWARDS)
+    ninjaGraphics.handleEvent(NinjaGraphics.EVENT_INAIR_UPWARDS)
   }
 
   if (!currentHook && isRunning && !hasJumped) {
@@ -620,7 +617,7 @@ var postStep = function () {
 
     ninjaBody.velocity[0] = currentRunningSpeed // TODO: don't set velocity, check velocity and apply force instead
     actionsLog('RUNNING')
-    ninjaSprite.handleEvent(NinjaGraphics.EVENT_RUNNING)
+    ninjaGraphics.handleEvent(NinjaGraphics.EVENT_RUNNING)
 
   }
 
@@ -741,7 +738,7 @@ var gameScene = {
     loadMap(this.stage, propLayer) // depends on createNinja
 
     // set up ninja and hook
-    ninjaSprite = new NinjaGraphics({
+    ninjaGraphics = new NinjaGraphics({
       container: this.stage,
       ninjaRadius: ninjaRadius,
       pixelsPerMeter: pixelsPerMeter,
@@ -776,30 +773,35 @@ var gameScene = {
 
     var a
     var b
+    var currentHook
     var hookBodyX
     var hookBodyY
-    var currentHook = null
+    var rotation
+    var x
+    var y
 
     // interpolate position between current and previous/next position
     // (ratio is how far in the frame we've gone represented as a percentage, 0 - 1)
     // currentPosition * ratio + previousPosition * (1 - ratio)
 
-    var x = gameUtils.calcInterpolatedValue(
+    currentHook = null
+
+    x = gameUtils.calcInterpolatedValue(
         ninjaBody.position[0],
         ninjaBody.previousPosition[0],
         ratio) * pixelsPerMeter
 
-    var y = gameUtils.calcInterpolatedValue(
+    y = gameUtils.calcInterpolatedValue(
         ninjaBody.position[1],
         ninjaBody.previousPosition[1],
         ratio) * pixelsPerMeter
 
-    var rotation = gameUtils.calcInterpolatedValue(
+    rotation = gameUtils.calcInterpolatedValue(
         ninjaBody.angle,
         ninjaBody.previousAngle,
         ratio) * pixelsPerMeter
 
-    ninjaSprite.draw(
+    ninjaGraphics.draw(
         x,
         y,
         rotation)
@@ -823,10 +825,10 @@ var gameScene = {
           currentHook.body.previousPosition[1],
           ratio) * pixelsPerMeter
 
-      a = hookBodyX - ninjaSprite.x
-      b = hookBodyY - ninjaSprite.y
-      ropeSprite.x = ninjaSprite.x
-      ropeSprite.y = ninjaSprite.y
+      a = hookBodyX - ninjaGraphics.x
+      b = hookBodyY - ninjaGraphics.y
+      ropeSprite.x = ninjaGraphics.x
+      ropeSprite.y = ninjaGraphics.y
       ropeSprite.width = Math.sqrt(a * a + b * b)
       ropeSprite.rotation = Math.atan2(b, a)
 
@@ -835,8 +837,8 @@ var gameScene = {
       ropeSprite.visible = false
     }
 
-    if (ninjaSprite.x > this.renderer.view.width / 4) {
-      this.stage.x = -ninjaSprite.x + this.renderer.view.width / 4
+    if (ninjaGraphics.x > this.renderer.view.width / 4) {
+      this.stage.x = -ninjaGraphics.x + this.renderer.view.width / 4
       backgroundSprite.tilePosition.x = this.stage.x * 0.1
     }
 
