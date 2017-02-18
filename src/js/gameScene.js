@@ -672,10 +672,13 @@ var gameScene = {
     this.stage = new PIXI.Container()
     var propLayer = new PIXI.Container()
     var guiLayer = new PIXI.Container()
+    // this.debugDrawContainer = new PIXI.Container()
+    // this.debugDrawContainer.alpha = 0.3
 
     this.baseStage.addChild(this.backgroundLayer)
     this.baseStage.addChild(this.stage)
     this.baseStage.addChild(guiLayer)
+    // this.baseStage.addChild(this.debugDrawContainer)
 
     this.stage.addChild(propLayer)
 
@@ -742,9 +745,6 @@ var gameScene = {
     document.addEventListener('keypress', onKeyPress.bind(this))
     document.addEventListener('keydown', onKeyDown)
     document.addEventListener('keyup', onKeyUp)
-
-    // this.debugDrawContainer = new PIXI.Container()
-    // this.stage.addChild(this.debugDrawContainer)
 
   },
   destroy: function () {
@@ -822,6 +822,7 @@ var gameScene = {
     }
 
     // DebugDraw.draw(this.debugDrawContainer, world, pixelsPerMeter, ratio)
+    // this.debugDrawContainer.x = this.stage.x
 
   },
 }
