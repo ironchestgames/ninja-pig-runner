@@ -2,7 +2,6 @@ var loadGameScene = {
   name: 'loadGame',
   create: function () {
     PIXI.loader
-    .add('ninja', 'assets/images/ninja.png')
     .add('rope', 'assets/images/rope.png')
     .add('static_texture_8x8', 'assets/images/static_texture_8x8.png')
     .add('background1', 'assets/images/background1.png')
@@ -14,6 +13,7 @@ var loadGameScene = {
     .add('stairs002', 'assets/images/stairs002.png')
     .add('prop_texture_8x8', 'assets/images/prop_texture_8x8.png')
     .add('runninganimation', 'assets/images/gris_running.png')
+    .add('inair_upwards', 'assets/images/gris_in_air_upwards.png')
     .add('level1', 'assets/json/level1.json') // TODO: bake this into bundle.js instead
     .load(function () {
       this.changeScene('game')

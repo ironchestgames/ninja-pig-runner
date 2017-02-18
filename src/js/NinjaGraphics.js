@@ -13,11 +13,11 @@ var NinjaGraphics = function (config) {
   this.currentState = NinjaGraphics.EVENT_INAIR_FALLING
 
   // in-air upwards sprite
-  this.inAirUpwardsSprite = new PIXI.Sprite(PIXI.loader.resources['ninja'].texture)
+  this.inAirUpwardsSprite = new PIXI.Sprite(PIXI.loader.resources['inair_upwards'].texture)
   this.inAirUpwardsSprite.anchor.x = 0.5
   this.inAirUpwardsSprite.anchor.y = 0.5
-  this.inAirUpwardsSprite.width = ninjaRadius * 2 * pixelsPerMeter
-  this.inAirUpwardsSprite.height = ninjaRadius * 2 * pixelsPerMeter
+  this.inAirUpwardsSprite.width = ninjaRadius * 2 * pixelsPerMeter * spriteSizeFactor
+  this.inAirUpwardsSprite.height = ninjaRadius * 2 * pixelsPerMeter * spriteSizeFactor
 
   container.addChild(this.inAirUpwardsSprite)
 
