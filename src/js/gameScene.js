@@ -2,6 +2,7 @@ var debug = require('debug')
 var p2 = require('p2')
 var DebugDraw = require('./DebugDraw')
 var SpriteUtilities = require('../lib/spriteUtilities')
+var gameUtils = require('./gameUtils')
 var Hook = require('./Hook')
 
 var actionsLog = debug('logic:actions')
@@ -92,10 +93,6 @@ var ninjaRightSensorContactCount = 0
 
 var isKeyUpwardDown = false
 var isKeyForwardDown = false
-
-var calcInterpolatedValue = function (value, previousValue, interpolationRatio) {
-  return value * interpolationRatio + previousValue * (1 - interpolationRatio)
-}
 
 var onLeftDown = function (event) {
   buttonsLog('onLeftDown', event)
@@ -840,28 +837,28 @@ var gameScene = {
     // (ratio is how far in the frame we've gone represented as a percentage, 0 - 1)
     // currentPosition * ratio + previousPosition * (1 - ratio)
 
-    ninjaSprite.x = calcInterpolatedValue(
+    ninjaSprite.x = gameUtils.calcInterpolatedValue(
         ninjaBody.position[0],
         ninjaBody.previousPosition[0],
         ratio) * pixelsPerMeter
-    ninjaSprite.y = calcInterpolatedValue(
+    ninjaSprite.y = gameUtils.calcInterpolatedValue(
         ninjaBody.position[1],
         ninjaBody.previousPosition[1],
         ratio) * pixelsPerMeter
-    ninjaSprite.rotation = calcInterpolatedValue(
+    ninjaSprite.rotation = gameUtils.calcInterpolatedValue(
         ninjaBody.angle,
         ninjaBody.previousAngle,
         ratio) * pixelsPerMeter
 
-    ninjaRunningSprite.x = calcInterpolatedValue(
+    ninjaRunningSprite.x = gameUtils.calcInterpolatedValue(
         ninjaBody.position[0],
         ninjaBody.previousPosition[0],
         ratio) * pixelsPerMeter
-    ninjaRunningSprite.y = calcInterpolatedValue(
+    ninjaRunningSprite.y = gameUtils.calcInterpolatedValue(
         ninjaBody.position[1],
         ninjaBody.previousPosition[1],
         ratio) * pixelsPerMeter
-    ninjaRunningSprite.rotation = calcInterpolatedValue(
+    ninjaRunningSprite.rotation = gameUtils.calcInterpolatedValue(
         ninjaBody.angle,
         ninjaBody.previousAngle,
         ratio) * pixelsPerMeter
@@ -876,11 +873,11 @@ var gameScene = {
 
       ropeSprite.visible = true
 
-      hookBodyX = calcInterpolatedValue(
+      hookBodyX = gameUtils.calcInterpolatedValue(
           currentHook.body.position[0],
           currentHook.body.previousPosition[0],
           ratio) * pixelsPerMeter
-      hookBodyY = calcInterpolatedValue(
+      hookBodyY = gameUtils.calcInterpolatedValue(
           currentHook.body.position[1],
           currentHook.body.previousPosition[1],
           ratio) * pixelsPerMeter
