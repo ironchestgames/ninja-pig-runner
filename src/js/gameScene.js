@@ -31,6 +31,11 @@ var BUTTON_UPWARD_UP = 'BUTTON_UPWARD_UP'
 var BUTTON_FORWARD_DOWN = 'BUTTON_FORWARD_DOWN'
 var BUTTON_FORWARD_UP = 'BUTTON_FORWARD_UP'
 
+var NINJA_RUNNING = 'NINJA_RUNNING'
+var NINJA_INAIR_UPWARDS = 'NINJA_INAIR_UPWARDS'
+var NINJA_INAIR_FALLING = 'NINJA_INAIR_FALLING'
+var currentNinjaState = NINJA_INAIR_FALLING
+
 var leftButton
 var rightButton
 
@@ -45,6 +50,7 @@ var shouldAddUpwardHook = false
 var currentHook = null
 
 var shouldJump = false
+var hasJumped = false
 var isRunning = false
 var pushedLeft = false
 var bounceLeft = false
@@ -469,6 +475,30 @@ var createHookSprite = function (layer) {
   layer.addChild(ropeSprite)
 }
 
+var handleNinjaEvent = function (event) {
+
+  if (event === currentNinjaState) {
+    return
+  }
+
+  switch (event) {
+    case NINJA_RUNNING:
+      ninjaSprite.visible = false
+      ninjaRunningSprite.visible = true
+      break
+    case NINJA_INAIR_UPWARDS:
+      ninjaSprite.visible = true
+      ninjaRunningSprite.visible = false
+      break
+    case NINJA_INAIR_FALLING:
+      ninjaSprite.visible = true
+      ninjaRunningSprite.visible = false
+      break
+  }
+
+  currentNinjaState = event
+}
+
 var postStep = function () {
   var buttonEvent
 
@@ -564,7 +594,7 @@ var postStep = function () {
   }
 
   // determine if isRunning
-  if (ninjaBottomSensorContactCount > 0) {
+  if (ninjaBottomSensorContactCount > 0 && !hasJumped) {
     if (!isRunning) {
       if (ninjaBody.velocity[0] < minimumRunningSpeed) {
         currentRunningSpeed = minimumRunningSpeed
@@ -633,27 +663,29 @@ var postStep = function () {
       ninjaBody.velocity[1] = 0
     }
     ninjaBody.applyForce([0, -jumpUpForce])
+    hasJumped = true
     shouldJump = false
+    isRunning = false
     actionsLog('JUMP')
+    handleNinjaEvent(NINJA_INAIR_UPWARDS)
   }
 
-  if (!currentHook && isRunning) {
+  // determine if already jumped while in contact with ground
+  if (ninjaBottomSensorContactCount === 0) {
+    hasJumped = false
+    handleNinjaEvent(NINJA_INAIR_UPWARDS)
+  }
+
+  if (!currentHook && isRunning && !hasJumped) {
     // is on top of wall and should be running
 
     ninjaBody.velocity[0] = currentRunningSpeed // TODO: don't set velocity, check velocity and apply force instead
     actionsLog('RUNNING')
+    handleNinjaEvent(NINJA_RUNNING)
 
-    if (!ninjaRunningSprite.visible) {
-      ninjaRunningSprite.visible = true
-      ninjaSprite.visible = false
-    }
-  } else {
-    if (ninjaRunningSprite.visible) {
-      ninjaRunningSprite.visible = false
-      ninjaSprite.visible = true
-    }
   }
 
+  // TODO: what is this? is it for debugging?
   ninjaBottomSensor.previousWorldPosition = p2.vec2.clone(ninjaBottomSensor.worldPosition)
   ninjaBody.toWorldFrame(ninjaBottomSensor.worldPosition, ninjaBottomSensor.position)
 
