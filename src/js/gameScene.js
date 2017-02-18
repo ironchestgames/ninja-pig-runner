@@ -1,10 +1,13 @@
 var debug = require('debug')
 var p2 = require('p2')
 var DebugDraw = require('./DebugDraw')
+var SpriteUtilities = require('../lib/spriteUtilities')
 var Hook = require('./Hook')
 
 var actionsLog = debug('logic:actions')
 var buttonsLog = debug('logic:buttons')
+
+var spriteUtilities
 
 var pixelsPerMeter = 50
 var heightInMeters = 10
@@ -63,10 +66,12 @@ var forwardHookRelativeAimX = 8
 var forwardHookRelativeAimY = -12
 var upwardHookRelativeAimX = 0
 var upwardHookRelativeAimY = -12
+var ninjaSpriteFactor = 1.15
 
 var ninjaBody
 var ninjaStartPosition
 var ninjaSprite
+var ninjaRunningSprite
 var ropeSprite
 var backgroundSprite
 var skySprite
@@ -427,15 +432,34 @@ var loadMap = function (mapLayer, propLayer) {
 }
 
 var createNinjaSprite = function (layer) {
-  ninjaSprite = new PIXI.Sprite(PIXI.loader.resources['ninja'].texture)
 
-  // center the sprite's anchor point
+  // in-air sprite
+  ninjaSprite = new PIXI.Sprite(PIXI.loader.resources['ninja'].texture)
   ninjaSprite.anchor.x = 0.5
-  ninjaSprite.anchor.y = 0.7 // the head will be a bit further up
-  ninjaSprite.width = ninjaRadius * 1.5 * 2 * pixelsPerMeter // times 1.5 to cater for sensors
-  ninjaSprite.height = ninjaRadius * 1.5 * 2 * pixelsPerMeter
+  ninjaSprite.anchor.y = 0.5
+  ninjaSprite.width = ninjaRadius * 2 * pixelsPerMeter
+  ninjaSprite.height = ninjaRadius * 2 * pixelsPerMeter
 
   layer.addChild(ninjaSprite)
+
+  // running sprite
+  var runningTexture = PIXI.loader.resources['runninganimation'].texture
+  var frameWidth = runningTexture.width / 2
+  var frameHeight = runningTexture.height / 2
+
+  var ninjaRunningSpriteStrip = spriteUtilities.filmstrip('runninganimation', frameWidth, frameHeight)
+  ninjaRunningSprite = spriteUtilities.sprite(ninjaRunningSpriteStrip)
+  ninjaRunningSprite.anchor.x = 0.5
+  ninjaRunningSprite.anchor.y = 0.5
+  ninjaRunningSprite.width = ninjaRadius * 2 * pixelsPerMeter * ninjaSpriteFactor
+  ninjaRunningSprite.height = ninjaRadius * 2 * pixelsPerMeter * ninjaSpriteFactor
+  ninjaRunningSprite.visible = false
+  ninjaRunningSprite.animationSpeed = 0.20
+
+  ninjaRunningSprite.play()
+
+  layer.addChild(ninjaRunningSprite)
+
 }
 
 var createHookSprite = function (layer) {
@@ -618,6 +642,16 @@ var postStep = function () {
 
     ninjaBody.velocity[0] = currentRunningSpeed // TODO: don't set velocity, check velocity and apply force instead
     actionsLog('RUNNING')
+
+    if (!ninjaRunningSprite.visible) {
+      ninjaRunningSprite.visible = true
+      ninjaSprite.visible = false
+    }
+  } else {
+    if (ninjaRunningSprite.visible) {
+      ninjaRunningSprite.visible = false
+      ninjaSprite.visible = true
+    }
   }
 
   ninjaBottomSensor.previousWorldPosition = p2.vec2.clone(ninjaBottomSensor.worldPosition)
@@ -666,6 +700,8 @@ var gameScene = {
 
     widthInPixels = this.renderer.view.width
     pixelsPerMeter = this.renderer.view.height / heightInMeters
+
+    spriteUtilities = new SpriteUtilities(PIXI, this.renderer)
 
     // set up layers
     this.backgroundLayer = new PIXI.Container()
@@ -781,6 +817,19 @@ var gameScene = {
         ninjaBody.previousPosition[1],
         ratio) * pixelsPerMeter
     ninjaSprite.rotation = calcInterpolatedValue(
+        ninjaBody.angle,
+        ninjaBody.previousAngle,
+        ratio) * pixelsPerMeter
+
+    ninjaRunningSprite.x = calcInterpolatedValue(
+        ninjaBody.position[0],
+        ninjaBody.previousPosition[0],
+        ratio) * pixelsPerMeter
+    ninjaRunningSprite.y = calcInterpolatedValue(
+        ninjaBody.position[1],
+        ninjaBody.previousPosition[1],
+        ratio) * pixelsPerMeter
+    ninjaRunningSprite.rotation = calcInterpolatedValue(
         ninjaBody.angle,
         ninjaBody.previousAngle,
         ratio) * pixelsPerMeter

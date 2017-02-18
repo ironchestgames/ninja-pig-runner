@@ -13,6 +13,7 @@ var loadGameScene = {
     .add('stairs001', 'assets/images/stairs001.png')
     .add('stairs002', 'assets/images/stairs002.png')
     .add('prop_texture_8x8', 'assets/images/prop_texture_8x8.png')
+    .add('runninganimation', 'assets/images/gris_running.png')
     .add('level1', 'assets/json/level1.json') // TODO: bake this into bundle.js instead
     .load(function () {
       this.changeScene('game')
