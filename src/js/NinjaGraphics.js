@@ -21,6 +21,15 @@ var NinjaGraphics = function (config) {
 
   container.addChild(this.inAirUpwardsSprite)
 
+  // in-air falling sprite
+  this.inAirFallingSprite = new PIXI.Sprite(PIXI.loader.resources['inair_falling'].texture)
+  this.inAirFallingSprite.anchor.x = 0.5
+  this.inAirFallingSprite.anchor.y = 0.5
+  this.inAirFallingSprite.width = ninjaRadius * 2 * pixelsPerMeter * spriteSizeFactor
+  this.inAirFallingSprite.height = ninjaRadius * 2 * pixelsPerMeter * spriteSizeFactor
+
+  container.addChild(this.inAirFallingSprite)
+
   // running sprite
   var runningTexture = PIXI.loader.resources['runninganimation'].texture
   var frameWidth = runningTexture.width / 2
@@ -55,16 +64,19 @@ NinjaGraphics.prototype.handleEvent = function (event) {
       this.runningSprite.visible = true
 
       this.inAirUpwardsSprite.visible = false
+      this.inAirFallingSprite.visible = false
       break
     case NinjaGraphics.EVENT_INAIR_UPWARDS:
       this.inAirUpwardsSprite.visible = true
 
+      this.inAirFallingSprite.visible = false
       this.runningSprite.visible = false
       break
     case NinjaGraphics.EVENT_INAIR_FALLING:
-      this.inAirUpwardsSprite.visible = true
+      this.inAirFallingSprite.visible = true
 
       this.runningSprite.visible = false
+      this.inAirUpwardsSprite.visible = false
       break
   }
 
@@ -82,6 +94,10 @@ NinjaGraphics.prototype.draw = function (x, y, rotation) {
   this.inAirUpwardsSprite.x = x
   this.inAirUpwardsSprite.y = y
   this.inAirUpwardsSprite.rotation = rotation
+
+  this.inAirFallingSprite.x = x
+  this.inAirFallingSprite.y = y
+  this.inAirFallingSprite.rotation = rotation
 
   this.runningSprite.x = x
   this.runningSprite.y = y

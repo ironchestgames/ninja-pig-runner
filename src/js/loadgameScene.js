@@ -14,6 +14,7 @@ var loadGameScene = {
     .add('prop_texture_8x8', 'assets/images/prop_texture_8x8.png')
     .add('runninganimation', 'assets/images/gris_running.png')
     .add('inair_upwards', 'assets/images/gris_in_air_upwards.png')
+    .add('inair_falling', 'assets/images/gris_in_air_falling.png')
     .add('level1', 'assets/json/level1.json') // TODO: bake this into bundle.js instead
     .load(function () {
       this.changeScene('game')

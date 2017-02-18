@@ -621,6 +621,16 @@ var postStep = function () {
 
   }
 
+  if (!isRunning) {
+    if (currentHook) {
+      ninjaGraphics.handleEvent(NinjaGraphics.EVENT_INAIR_FALLING)
+    } else if (ninjaBody.velocity[1] < 0) {
+      ninjaGraphics.handleEvent(NinjaGraphics.EVENT_INAIR_UPWARDS)
+    } else if (ninjaBody.velocity[1] > 0) {
+      ninjaGraphics.handleEvent(NinjaGraphics.EVENT_INAIR_FALLING)
+    }
+  }
+
   // TODO: what is this? is it for debugging?
   ninjaBottomSensor.previousWorldPosition = p2.vec2.clone(ninjaBottomSensor.worldPosition)
   ninjaBody.toWorldFrame(ninjaBottomSensor.worldPosition, ninjaBottomSensor.position)
