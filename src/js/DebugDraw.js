@@ -1,7 +1,4 @@
-var PIXI = require('pixi.js')
 var p2 = require('p2')
-
-console.log(PIXI)
 
 var fillColorStatic = 0x333333
 var fillColorDynamic = 0x339933
