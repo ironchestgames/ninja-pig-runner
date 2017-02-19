@@ -684,6 +684,7 @@ var gameScene = {
     // set up layers
     this.backgroundLayer = new PIXI.Container()
     this.stage = new PIXI.Container()
+    var mapLayer = new PIXI.Container()
     var propLayer = new PIXI.Container()
     var guiLayer = new PIXI.Container()
     // this.debugDrawContainer = new PIXI.Container()
@@ -695,6 +696,7 @@ var gameScene = {
     // this.baseStage.addChild(this.debugDrawContainer)
 
     this.stage.addChild(propLayer)
+    this.stage.addChild(mapLayer)
 
     // set up background layer contents
     // NOTE: bc of the nature of the image it has to be this exact square (suns/moons are round)
@@ -745,7 +747,7 @@ var gameScene = {
     // set up physics
     createNinja()
     createHooks() // depends on createNinja
-    loadMap(this.stage, propLayer) // depends on createNinja
+    loadMap(mapLayer, propLayer) // depends on createNinja
 
     // set up ninja and hook
     ninjaGraphics = new NinjaGraphics({
