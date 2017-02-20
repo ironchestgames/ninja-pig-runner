@@ -4,6 +4,7 @@ var DebugDraw = require('./DebugDraw')
 var SpriteUtilities = require('../lib/spriteUtilities')
 var gameUtils = require('./gameUtils')
 var NinjaGraphics = require('./NinjaGraphics')
+var NinjaSensor = require('./NinjaSensor')
 var Hook = require('./Hook')
 
 var actionsLog = debug('logic:actions')
@@ -151,12 +152,14 @@ var createNinja = function() {
 
   var ninjaShape
 
+  // body
   ninjaBody = new p2.Body({
     mass: ninjaMass,
     velocity: [0.5, -3],
   })
   ninjaBody.fixedRotation = true
 
+  // shape
   ninjaShape = new p2.Circle({
     radius: ninjaRadius,
     collisionGroup: PLAYER,
@@ -166,42 +169,40 @@ var createNinja = function() {
   ninjaBody.addShape(ninjaShape)
   ninjaShape.name = 'ninjaShape'
 
-  ninjaBottomSensor = new p2.Circle({
+  // sensor bottom
+  ninjaBottomSensor = new NinjaSensor({
+    name: 'ninjaBottomSensor',
     radius: 0.2,
     collisionGroup: SENSOR,
     collisionMask: WALL,
-    sensor: true,
+    relativePosition: [0, ninjaRadius],
   })
-  ninjaBody.addShape(ninjaBottomSensor)
-  ninjaBottomSensor.position = [0, ninjaRadius]
-  ninjaBottomSensor.worldPosition = [0, 0]
-  ninjaBottomSensor.previousWorldPosition = [0, 0]
-  ninjaBottomSensor.name = 'ninjaBottomSensor'
 
-  ninjaLeftSensor = new p2.Circle({
+  ninjaBody.addShape(ninjaBottomSensor.shape)
+
+  // sensor left
+  ninjaLeftSensor = new NinjaSensor({
+    name: 'ninjaLeftSensor',
     radius: 0.2,
     collisionGroup: SENSOR,
     collisionMask: WALL,
-    sensor: true,
+    relativePosition: [-ninjaRadius, 0],
   })
-  ninjaBody.addShape(ninjaLeftSensor)
-  ninjaLeftSensor.position = [-ninjaRadius, 0]
-  ninjaLeftSensor.worldPosition = [0, 0]
-  ninjaLeftSensor.previousWorldPosition = [0, 0]
-  ninjaLeftSensor.name = 'ninjaLeftSensor'
 
-  ninjaRightSensor = new p2.Circle({
+  ninjaBody.addShape(ninjaLeftSensor.shape)
+
+  // sensor right
+  ninjaRightSensor = new NinjaSensor({
+    name: 'ninjaRightSensor',
     radius: 0.2,
     collisionGroup: SENSOR,
     collisionMask: WALL,
-    sensor: true,
+    relativePosition: [ninjaRadius, 0],
   })
-  ninjaBody.addShape(ninjaRightSensor)
-  ninjaRightSensor.position = [ninjaRadius, 0]
-  ninjaRightSensor.worldPosition = [0, 0]
-  ninjaRightSensor.previousWorldPosition = [0, 0]
-  ninjaRightSensor.name = 'ninjaRightSensor'
 
+  ninjaBody.addShape(ninjaRightSensor.shape)
+
+  // add to world
   ninjaBody.damping = 0
   ninjaBody.angularDamping = 0
   ninjaBody.name = 'ninjaBody'
@@ -632,22 +633,22 @@ var postStep = function () {
   }
 
   // TODO: what is this? is it for debugging?
-  ninjaBottomSensor.previousWorldPosition = p2.vec2.clone(ninjaBottomSensor.worldPosition)
-  ninjaBody.toWorldFrame(ninjaBottomSensor.worldPosition, ninjaBottomSensor.position)
+  ninjaBottomSensor.shape.previousWorldPosition = p2.vec2.clone(ninjaBottomSensor.shape.worldPosition)
+  ninjaBody.toWorldFrame(ninjaBottomSensor.shape.worldPosition, ninjaBottomSensor.shape.position)
 
 }
 
 var beginContact = function (contactEvent) {
   // console.log('beginContact', contactEvent.shapeA.name, contactEvent.shapeB.name, contactEvent)
-  if (contactEvent.shapeA === ninjaBottomSensor || contactEvent.shapeB === ninjaBottomSensor) {
+  if (contactEvent.shapeA === ninjaBottomSensor.shape || contactEvent.shapeB === ninjaBottomSensor.shape) {
     ninjaBottomSensorContactCount++
   }
 
-  if (contactEvent.shapeA === ninjaLeftSensor || contactEvent.shapeB === ninjaLeftSensor) {
+  if (contactEvent.shapeA === ninjaLeftSensor.shape || contactEvent.shapeB === ninjaLeftSensor.shape) {
     ninjaLeftSensorContactCount++
   }
 
-  if (contactEvent.shapeA === ninjaRightSensor || contactEvent.shapeB === ninjaRightSensor) {
+  if (contactEvent.shapeA === ninjaRightSensor.shape || contactEvent.shapeB === ninjaRightSensor.shape) {
     ninjaRightSensorContactCount++
 
     // end of level check
@@ -659,15 +660,15 @@ var beginContact = function (contactEvent) {
 
 var endContact = function (contactEvent) {
   // console.log('endContact',  contactEvent.shapeA.name, contactEvent.shapeB.name, contactEvent)
-  if (contactEvent.shapeA === ninjaBottomSensor || contactEvent.shapeB === ninjaBottomSensor) {
+  if (contactEvent.shapeA === ninjaBottomSensor.shape || contactEvent.shapeB === ninjaBottomSensor.shape) {
     ninjaBottomSensorContactCount--
   }
 
-  if (contactEvent.shapeA === ninjaLeftSensor || contactEvent.shapeB === ninjaLeftSensor) {
+  if (contactEvent.shapeA === ninjaLeftSensor.shape || contactEvent.shapeB === ninjaLeftSensor.shape) {
     ninjaLeftSensorContactCount--
   }
 
-  if (contactEvent.shapeA === ninjaRightSensor || contactEvent.shapeB === ninjaRightSensor) {
+  if (contactEvent.shapeA === ninjaRightSensor.shape || contactEvent.shapeB === ninjaRightSensor.shape) {
     ninjaRightSensorContactCount--
   }
 }
