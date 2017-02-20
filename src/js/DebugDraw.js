@@ -166,18 +166,23 @@ var shapeDraw = function (pixiContainer, world, pixelsPerMeter, interpolationRat
           pixiContainer.addChild(graphics)
         }
 
+        body.toWorldFrame(tempPositionVec, shape.position)
+
+        shape.previousWorldPosition = p2.vec2.clone(tempPositionVec)
+
       // move it if it already exists
       } else {
 
         graphics = shapeGraphics[shape.id]
 
         body.toWorldFrame(tempPositionVec, shape.position)
-        body.toWorldFrame(tempPreviousPositionVec, shape.position) // TODO: get previous position
 
         tempVec = calcInterpolatedPosition(
             tempPositionVec,
-            tempPreviousPositionVec,
+            shape.previousWorldPosition,
             interpolationRatio)
+
+        shape.previousWorldPosition = p2.vec2.clone(tempPositionVec)
 
         graphics.x = tempVec[0] * pixelsPerMeter
         graphics.y = tempVec[1] * pixelsPerMeter
@@ -266,6 +271,7 @@ var distanceConstraintDraw = function (pixiContainer, world, pixelsPerMeter, int
 
 var draw = function (pixiContainer, world, pixelsPerMeter, interpolationRatio) {
   // TODO: if interpolationRatio is undefined/null set to 1
+  pixiContainer.alpha = 0.5
   shapeDraw(pixiContainer, world, pixelsPerMeter, interpolationRatio)
   bodyDraw(pixiContainer, world, pixelsPerMeter, interpolationRatio)
   distanceConstraintDraw(pixiContainer, world, pixelsPerMeter, interpolationRatio)
