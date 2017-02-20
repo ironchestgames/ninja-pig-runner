@@ -4,13 +4,14 @@ var NinjaGraphics = function (config) {
   var spriteSizeFactor = 1.15 // to make up for the whitespace in the frames
   var runningSpriteAnimationBaseSpeed = 0.20 // TODO: what is this in ms?
 
-  this.config = config
-
   var ninjaRadius = config.ninjaRadius
   var pixelsPerMeter = config.pixelsPerMeter
-  var container = config.container
 
+  this.config = config
   this.currentState = NinjaGraphics.EVENT_INAIR_FALLING
+
+  this.container = new PIXI.Container()
+  config.container.addChild(this.container)
 
   // in-air upwards sprite
   this.inAirUpwardsSprite = new PIXI.Sprite(PIXI.loader.resources['inair_upwards'].texture)
@@ -19,7 +20,7 @@ var NinjaGraphics = function (config) {
   this.inAirUpwardsSprite.width = ninjaRadius * 2 * pixelsPerMeter * spriteSizeFactor
   this.inAirUpwardsSprite.height = ninjaRadius * 2 * pixelsPerMeter * spriteSizeFactor
 
-  container.addChild(this.inAirUpwardsSprite)
+  this.container.addChild(this.inAirUpwardsSprite)
 
   // in-air falling sprite
   this.inAirFallingSprite = new PIXI.Sprite(PIXI.loader.resources['inair_falling'].texture)
@@ -28,7 +29,7 @@ var NinjaGraphics = function (config) {
   this.inAirFallingSprite.width = ninjaRadius * 2 * pixelsPerMeter * spriteSizeFactor
   this.inAirFallingSprite.height = ninjaRadius * 2 * pixelsPerMeter * spriteSizeFactor
 
-  container.addChild(this.inAirFallingSprite)
+  this.container.addChild(this.inAirFallingSprite)
 
   // running sprite
   var runningTexture = PIXI.loader.resources['runninganimation'].texture
@@ -45,7 +46,7 @@ var NinjaGraphics = function (config) {
   this.runningSprite.animationSpeed = runningSpriteAnimationBaseSpeed
   this.runningSprite.play()
 
-  container.addChild(this.runningSprite)
+  this.container.addChild(this.runningSprite)
 
 }
 
