@@ -145,7 +145,7 @@ var createNinja = function() {
   var topShape
   var middleShape
 
-  ninjaRadius = 0.5
+  ninjaRadius = 0.375
 
   // body
   ninjaBody = new p2.Body({
@@ -165,7 +165,7 @@ var createNinja = function() {
   middleShape.name = 'middleShape'
 
   bottomShape = new p2.Circle({
-    radius: ninjaRadius,
+    radius: ninjaRadius * 1.1,
     collisionGroup: PLAYER,
     collisionMask: WALL,
   })
@@ -756,7 +756,7 @@ var gameScene = {
     // set up ninja and hook
     ninjaGraphics = new NinjaGraphics({
       container: this.stage,
-      ninjaHeight: 2,
+      ninjaHeight: 1.5,
       pixelsPerMeter: pixelsPerMeter,
       spriteUtilities: spriteUtilities,
     })
