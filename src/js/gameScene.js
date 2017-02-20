@@ -60,7 +60,6 @@ var minimumRunningSpeed = 9
 var currentRunningSpeed = 0
 var forwardHookShortenSpeed = 0.014
 var ninjaMass = 0.45
-var ninjaRadius = 0.5
 var forwardHookRelativeAimX = 8
 var forwardHookRelativeAimY = -12
 var upwardHookRelativeAimX = 0
@@ -141,7 +140,12 @@ var restartNinja = function () {
 
 var createNinja = function() {
 
-  var ninjaShape
+  var ninjaRadius
+  var bottomShape
+  var topShape
+  var middleShape
+
+  ninjaRadius = 0.5
 
   // body
   ninjaBody = new p2.Body({
@@ -150,15 +154,33 @@ var createNinja = function() {
   })
   ninjaBody.fixedRotation = true
 
-  // shape
-  ninjaShape = new p2.Circle({
+  // shapes
+  middleShape = new p2.Box({
+    width: ninjaRadius * 2,
+    height: ninjaRadius * 2,
+    collisionGroup: PLAYER,
+    collisionMask: WALL,
+  })
+  ninjaBody.addShape(middleShape)
+  middleShape.name = 'middleShape'
+
+  bottomShape = new p2.Circle({
     radius: ninjaRadius,
     collisionGroup: PLAYER,
     collisionMask: WALL,
   })
+  ninjaBody.addShape(bottomShape)
+  bottomShape.position[1] = ninjaRadius
+  bottomShape.name = 'bottomShape'
 
-  ninjaBody.addShape(ninjaShape)
-  ninjaShape.name = 'ninjaShape'
+  topShape = new p2.Circle({
+    radius: ninjaRadius,
+    collisionGroup: PLAYER,
+    collisionMask: WALL,
+  })
+  ninjaBody.addShape(topShape)
+  topShape.position[1] = -ninjaRadius
+  topShape.name = 'topShape'
 
   // sensor bottom
   ninjaBottomSensor = new NinjaSensor({
@@ -166,7 +188,7 @@ var createNinja = function() {
     radius: 0.2,
     collisionGroup: SENSOR,
     collisionMask: WALL,
-    relativePosition: [0, ninjaRadius],
+    relativePosition: [0, ninjaRadius * 2],
   })
 
   ninjaBody.addShape(ninjaBottomSensor.shape)
@@ -734,7 +756,7 @@ var gameScene = {
     // set up ninja and hook
     ninjaGraphics = new NinjaGraphics({
       container: this.stage,
-      ninjaRadius: ninjaRadius,
+      ninjaHeight: 2,
       pixelsPerMeter: pixelsPerMeter,
       spriteUtilities: spriteUtilities,
     })

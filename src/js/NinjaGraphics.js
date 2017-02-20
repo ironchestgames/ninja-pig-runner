@@ -4,7 +4,7 @@ var NinjaGraphics = function (config) {
   var spriteSizeFactor = 1.15 // to make up for the whitespace in the frames
   var runningSpriteAnimationBaseSpeed = 0.20 // TODO: what is this in ms?
 
-  var ninjaRadius = config.ninjaRadius
+  var ninjaHeight = config.ninjaHeight
   var pixelsPerMeter = config.pixelsPerMeter
 
   this.config = config
@@ -17,8 +17,8 @@ var NinjaGraphics = function (config) {
   this.inAirUpwardsSprite = new PIXI.Sprite(PIXI.loader.resources['inair_upwards'].texture)
   this.inAirUpwardsSprite.anchor.x = 0.5
   this.inAirUpwardsSprite.anchor.y = 0.5
-  this.inAirUpwardsSprite.width = ninjaRadius * 2 * pixelsPerMeter * spriteSizeFactor
-  this.inAirUpwardsSprite.height = ninjaRadius * 2 * pixelsPerMeter * spriteSizeFactor
+  this.inAirUpwardsSprite.width = ninjaHeight * pixelsPerMeter * spriteSizeFactor
+  this.inAirUpwardsSprite.height = ninjaHeight * pixelsPerMeter * spriteSizeFactor
 
   this.container.addChild(this.inAirUpwardsSprite)
 
@@ -26,8 +26,8 @@ var NinjaGraphics = function (config) {
   this.inAirFallingSprite = new PIXI.Sprite(PIXI.loader.resources['inair_falling'].texture)
   this.inAirFallingSprite.anchor.x = 0.5
   this.inAirFallingSprite.anchor.y = 0.5
-  this.inAirFallingSprite.width = ninjaRadius * 2 * pixelsPerMeter * spriteSizeFactor
-  this.inAirFallingSprite.height = ninjaRadius * 2 * pixelsPerMeter * spriteSizeFactor
+  this.inAirFallingSprite.width = ninjaHeight * pixelsPerMeter * spriteSizeFactor
+  this.inAirFallingSprite.height = ninjaHeight * pixelsPerMeter * spriteSizeFactor
 
   this.container.addChild(this.inAirFallingSprite)
 
@@ -40,8 +40,8 @@ var NinjaGraphics = function (config) {
   this.runningSprite = config.spriteUtilities.sprite(runningSpriteStrip)
   this.runningSprite.anchor.x = 0.5
   this.runningSprite.anchor.y = 0.5
-  this.runningSprite.width = ninjaRadius * 2 * pixelsPerMeter * spriteSizeFactor
-  this.runningSprite.height = ninjaRadius * 2 * pixelsPerMeter * spriteSizeFactor
+  this.runningSprite.width = ninjaHeight * pixelsPerMeter * spriteSizeFactor
+  this.runningSprite.height = ninjaHeight * pixelsPerMeter * spriteSizeFactor
   this.runningSprite.visible = false
   this.runningSprite.animationSpeed = runningSpriteAnimationBaseSpeed
   this.runningSprite.play()
