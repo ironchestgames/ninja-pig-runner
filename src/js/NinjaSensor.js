@@ -28,8 +28,8 @@ var NinjaSensor = function (config) {
   this.isContactUsed = false
 }
 
-NinjaSensor.prototype.useContact = function () {
-  this.isContactUsed = true
+NinjaSensor.prototype.setContactUsed = function (value) {
+  this.isContactUsed = value
 }
 
 NinjaSensor.prototype.isContactUsable = function () {

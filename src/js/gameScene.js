@@ -512,7 +512,7 @@ var postStep = function () {
         ninjaBody.velocity[0] = 0
       }
       ninjaBody.applyForce([wallPushForce, 0])
-      ninjaLeftSensor.useContact()
+      ninjaLeftSensor.setContactUsed(true)
       actionsLog('PUSHED LEFT')
     }
 
@@ -522,7 +522,7 @@ var postStep = function () {
         ninjaBody.velocity[0] = 0
       }
       ninjaBody.applyForce([-wallPushForce, 0])
-      ninjaRightSensor.useContact()
+      ninjaRightSensor.setContactUsed(true)
       actionsLog('PUSHED RIGHT')
     }
   }
@@ -555,7 +555,7 @@ var postStep = function () {
       y = wallBounceForceY
     }
     ninjaBody.applyForce([wallBounceForceX, y])
-    ninjaLeftSensor.useContact()
+    ninjaLeftSensor.setContactUsed(true)
     actionsLog('BOUNCE LEFT', y)
   }
 
@@ -573,7 +573,7 @@ var postStep = function () {
       y = wallBounceForceY
     }
     ninjaBody.applyForce([-wallBounceForceX, y])
-    ninjaRightSensor.useContact()
+    ninjaRightSensor.setContactUsed(true)
     actionsLog('BOUNCE RIGHT', y)
   }
 
