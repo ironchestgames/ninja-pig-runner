@@ -50,10 +50,6 @@ var currentHook = null
 var shouldJump = false
 var hasJumped = false
 var isRunning = false
-var pushedLeft = false
-var bounceLeft = false
-var pushedRight = false
-var bounceRight = false
 
 var wallPushForce = 85
 var wallBounceForceX = 100
@@ -485,6 +481,11 @@ var postStep = function () {
     }
   }
 
+  // update the sensors' values
+  ninjaLeftSensor.updateContact()
+  ninjaRightSensor.updateContact()
+
+  // remove hook when flying above screen
   if (currentHook && ninjaBody.position[1] < 0) {
     currentHook.unsetHook()
     currentHook = null
@@ -506,22 +507,22 @@ var postStep = function () {
     }
 
     // push away from wall on left side
-    if (ninjaLeftSensor.contactCount > 0 && !pushedLeft && ninjaBody.velocity[0] > 0) {
+    if (ninjaLeftSensor.isContactUsable() && ninjaBody.velocity[0] > 0) {
       if (ninjaBody.velocity[0] < 0) {
         ninjaBody.velocity[0] = 0
       }
       ninjaBody.applyForce([wallPushForce, 0])
-      pushedLeft = true
+      ninjaLeftSensor.useContact()
       actionsLog('PUSHED LEFT')
     }
 
     // push away from wall on right side
-    if (ninjaRightSensor.contactCount > 0 && !pushedRight && ninjaBody.velocity[0] < 0) {
+    if (ninjaRightSensor.isContactUsable() && ninjaBody.velocity[0] < 0) {
       if (ninjaBody.velocity[0] > 0) {
         ninjaBody.velocity[0] = 0
       }
       ninjaBody.applyForce([-wallPushForce, 0])
-      pushedRight = true
+      ninjaRightSensor.useContact()
       actionsLog('PUSHED RIGHT')
     }
   }
@@ -541,11 +542,10 @@ var postStep = function () {
   }
 
   // jump away from wall on left side
-  if (!bounceLeft &&
-      !currentHook &&
+  if (!currentHook &&
       !isRunning &&
-      ninjaLeftSensor.contactCount > 0 &&
-      ninjaBody.velocity[0] > 0) {
+      ninjaBody.velocity[0] > 0 &&
+      ninjaLeftSensor.isContactUsable()) {
 
     var y = 0
     if (ninjaBody.velocity[0] < 0) {
@@ -555,22 +555,15 @@ var postStep = function () {
       y = wallBounceForceY
     }
     ninjaBody.applyForce([wallBounceForceX, y])
-    bounceLeft = true
+    ninjaLeftSensor.useContact()
     actionsLog('BOUNCE LEFT', y)
   }
 
-  // reset left sensor logic
-  if (ninjaLeftSensor.contactCount === 0) {
-    pushedLeft = false
-    bounceLeft = false
-  }
-
   // jump away from wall on right side
-  if (!bounceRight &&
-      !currentHook &&
+  if (!currentHook &&
       !isRunning &&
-      ninjaRightSensor.contactCount > 0 &&
-      ninjaBody.velocity[0] < 0) {
+      ninjaBody.velocity[0] < 0 &&
+      ninjaRightSensor.isContactUsable()) {
 
     var y = 0
     if (ninjaBody.velocity[0] > 0) {
@@ -580,14 +573,8 @@ var postStep = function () {
       y = wallBounceForceY
     }
     ninjaBody.applyForce([-wallBounceForceX, y])
-    bounceRight = true
+    ninjaRightSensor.useContact()
     actionsLog('BOUNCE RIGHT', y)
-  }
-
-  // reset right sensor logic
-  if (ninjaRightSensor.contactCount === 0) {
-    pushedRight = false
-    bounceRight = false
   }
 
   // jump up

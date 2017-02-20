@@ -25,6 +25,23 @@ var NinjaSensor = function (config) {
   }.bind(this), 2)
 
   this.contactCount = 0
+  this.isContactUsed = false
+}
+
+NinjaSensor.prototype.useContact = function () {
+  this.isContactUsed = true
+}
+
+NinjaSensor.prototype.isContactUsable = function () {
+  return !this.isContactUsed && this.contactCount > 0
+}
+
+NinjaSensor.prototype.updateContact = function () {
+
+  if (this.isContactUsed === true && this.contactCount === 0) {
+    this.isContactUsed = false
+  }
+
 }
 
 module.exports = NinjaSensor
