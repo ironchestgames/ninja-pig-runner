@@ -749,6 +749,9 @@ var gameScene = {
     document.addEventListener('keydown', onKeyDown)
     document.addEventListener('keyup', onKeyUp)
 
+    // NOTE: for debugging purposes only, remove in prod
+    window.world = world
+
   },
   destroy: function () {
     this.stage = null
