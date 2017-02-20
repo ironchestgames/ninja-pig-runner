@@ -48,7 +48,6 @@ var shouldAddUpwardHook = false
 var currentHook = null
 
 var shouldJump = false
-var hasJumped = false
 var isRunning = false
 
 var wallPushForce = 85
@@ -484,6 +483,7 @@ var postStep = function () {
   // update the sensors' values
   ninjaLeftSensor.updateContact()
   ninjaRightSensor.updateContact()
+  ninjaBottomSensor.updateContact()
 
   // remove hook when flying above screen
   if (currentHook && ninjaBody.position[1] < 0) {
@@ -528,7 +528,7 @@ var postStep = function () {
   }
 
   // determine if isRunning
-  if (ninjaBottomSensor.contactCount > 0 && !hasJumped) {
+  if (ninjaBottomSensor.isContactUsable()) {
     if (!isRunning) {
       if (ninjaBody.velocity[0] < minimumRunningSpeed) {
         currentRunningSpeed = minimumRunningSpeed
@@ -583,7 +583,7 @@ var postStep = function () {
       ninjaBody.velocity[1] = 0
     }
     ninjaBody.applyForce([0, -jumpUpForce])
-    hasJumped = true
+    ninjaBottomSensor.setContactUsed(true)
     shouldJump = false
     isRunning = false
     actionsLog('JUMP')
@@ -592,11 +592,10 @@ var postStep = function () {
 
   // determine if already jumped while in contact with ground
   if (ninjaBottomSensor.contactCount === 0) {
-    hasJumped = false
     ninjaGraphics.handleEvent(NinjaGraphics.EVENT_INAIR_UPWARDS)
   }
 
-  if (!currentHook && isRunning && !hasJumped) {
+  if (!currentHook && isRunning) {
     // is on top of wall and should be running
 
     ninjaBody.velocity[0] = currentRunningSpeed // TODO: don't set velocity, check velocity and apply force instead
