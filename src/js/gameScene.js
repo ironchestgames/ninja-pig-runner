@@ -82,10 +82,6 @@ var ninjaBottomSensor
 var ninjaLeftSensor
 var ninjaRightSensor
 
-var ninjaBottomSensorContactCount = 0
-var ninjaLeftSensorContactCount = 0
-var ninjaRightSensorContactCount = 0
-
 var isKeyUpwardDown = false
 var isKeyForwardDown = false
 
@@ -510,7 +506,7 @@ var postStep = function () {
     }
 
     // push away from wall on left side
-    if (ninjaLeftSensorContactCount > 0 && !pushedLeft && ninjaBody.velocity[0] > 0) {
+    if (ninjaLeftSensor.contactCount > 0 && !pushedLeft && ninjaBody.velocity[0] > 0) {
       if (ninjaBody.velocity[0] < 0) {
         ninjaBody.velocity[0] = 0
       }
@@ -520,7 +516,7 @@ var postStep = function () {
     }
 
     // push away from wall on right side
-    if (ninjaRightSensorContactCount > 0 && !pushedRight && ninjaBody.velocity[0] < 0) {
+    if (ninjaRightSensor.contactCount > 0 && !pushedRight && ninjaBody.velocity[0] < 0) {
       if (ninjaBody.velocity[0] > 0) {
         ninjaBody.velocity[0] = 0
       }
@@ -531,7 +527,7 @@ var postStep = function () {
   }
 
   // determine if isRunning
-  if (ninjaBottomSensorContactCount > 0 && !hasJumped) {
+  if (ninjaBottomSensor.contactCount > 0 && !hasJumped) {
     if (!isRunning) {
       if (ninjaBody.velocity[0] < minimumRunningSpeed) {
         currentRunningSpeed = minimumRunningSpeed
@@ -548,7 +544,7 @@ var postStep = function () {
   if (!bounceLeft &&
       !currentHook &&
       !isRunning &&
-      ninjaLeftSensorContactCount > 0 &&
+      ninjaLeftSensor.contactCount > 0 &&
       ninjaBody.velocity[0] > 0) {
 
     var y = 0
@@ -564,7 +560,7 @@ var postStep = function () {
   }
 
   // reset left sensor logic
-  if (ninjaLeftSensorContactCount === 0) {
+  if (ninjaLeftSensor.contactCount === 0) {
     pushedLeft = false
     bounceLeft = false
   }
@@ -573,7 +569,7 @@ var postStep = function () {
   if (!bounceRight &&
       !currentHook &&
       !isRunning &&
-      ninjaRightSensorContactCount > 0 &&
+      ninjaRightSensor.contactCount > 0 &&
       ninjaBody.velocity[0] < 0) {
 
     var y = 0
@@ -589,7 +585,7 @@ var postStep = function () {
   }
 
   // reset right sensor logic
-  if (ninjaRightSensorContactCount === 0) {
+  if (ninjaRightSensor.contactCount === 0) {
     pushedRight = false
     bounceRight = false
   }
@@ -608,7 +604,7 @@ var postStep = function () {
   }
 
   // determine if already jumped while in contact with ground
-  if (ninjaBottomSensorContactCount === 0) {
+  if (ninjaBottomSensor.contactCount === 0) {
     hasJumped = false
     ninjaGraphics.handleEvent(NinjaGraphics.EVENT_INAIR_UPWARDS)
   }
@@ -641,15 +637,15 @@ var postStep = function () {
 var beginContact = function (contactEvent) {
   // console.log('beginContact', contactEvent.shapeA.name, contactEvent.shapeB.name, contactEvent)
   if (contactEvent.shapeA === ninjaBottomSensor.shape || contactEvent.shapeB === ninjaBottomSensor.shape) {
-    ninjaBottomSensorContactCount++
+    ninjaBottomSensor.contactCount++
   }
 
   if (contactEvent.shapeA === ninjaLeftSensor.shape || contactEvent.shapeB === ninjaLeftSensor.shape) {
-    ninjaLeftSensorContactCount++
+    ninjaLeftSensor.contactCount++
   }
 
   if (contactEvent.shapeA === ninjaRightSensor.shape || contactEvent.shapeB === ninjaRightSensor.shape) {
-    ninjaRightSensorContactCount++
+    ninjaRightSensor.contactCount++
 
     // end of level check
     if (contactEvent.bodyA.name === 'goal' || contactEvent.bodyB.name === 'goal') {
@@ -661,15 +657,15 @@ var beginContact = function (contactEvent) {
 var endContact = function (contactEvent) {
   // console.log('endContact',  contactEvent.shapeA.name, contactEvent.shapeB.name, contactEvent)
   if (contactEvent.shapeA === ninjaBottomSensor.shape || contactEvent.shapeB === ninjaBottomSensor.shape) {
-    ninjaBottomSensorContactCount--
+    ninjaBottomSensor.contactCount--
   }
 
   if (contactEvent.shapeA === ninjaLeftSensor.shape || contactEvent.shapeB === ninjaLeftSensor.shape) {
-    ninjaLeftSensorContactCount--
+    ninjaLeftSensor.contactCount--
   }
 
   if (contactEvent.shapeA === ninjaRightSensor.shape || contactEvent.shapeB === ninjaRightSensor.shape) {
-    ninjaRightSensorContactCount--
+    ninjaRightSensor.contactCount--
   }
 }
 

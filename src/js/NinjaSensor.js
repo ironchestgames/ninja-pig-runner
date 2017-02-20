@@ -23,6 +23,8 @@ var NinjaSensor = function (config) {
       clearInterval(intervalId)
     }
   }.bind(this), 2)
+
+  this.contactCount = 0
 }
 
 module.exports = NinjaSensor
