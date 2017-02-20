@@ -670,13 +670,12 @@ var gameScene = {
     var mapLayer = new PIXI.Container()
     var propLayer = new PIXI.Container()
     var guiLayer = new PIXI.Container()
-    // this.debugDrawContainer = new PIXI.Container()
-    // this.debugDrawContainer.alpha = 0.3
+    this.debugDrawContainer = new PIXI.Container()
 
     this.baseStage.addChild(this.backgroundLayer)
     this.baseStage.addChild(this.stage)
     this.baseStage.addChild(guiLayer)
-    // this.baseStage.addChild(this.debugDrawContainer)
+    this.baseStage.addChild(this.debugDrawContainer)
 
     this.stage.addChild(propLayer)
     this.stage.addChild(mapLayer)
@@ -837,8 +836,10 @@ var gameScene = {
       backgroundSprite.tilePosition.x = this.stage.x * 0.1
     }
 
-    // DebugDraw.draw(this.debugDrawContainer, world, pixelsPerMeter, ratio)
-    // this.debugDrawContainer.x = this.stage.x
+    if (global.DEBUG_DRAW) {
+      DebugDraw.draw(this.debugDrawContainer, world, pixelsPerMeter, ratio)
+      this.debugDrawContainer.x = this.stage.x
+    }
 
   },
 }
