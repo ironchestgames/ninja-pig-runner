@@ -56,7 +56,6 @@ var pressingForce = 12
 var minimumRunningSpeed = 10
 var currentRunningSpeed = 0
 var forwardHookShortenSpeed = 0.015
-var ninjaMass = 0.45
 var forwardHookRelativeAimX = 10
 var forwardHookRelativeAimY = -12
 var upwardHookRelativeAimX = 0
@@ -131,6 +130,9 @@ var restartNinja = function () {
   ninjaBody.position[0] = mapLoader.ninjaStartPosition[0]
   ninjaBody.position[1] = mapLoader.ninjaStartPosition[1]
 
+  ninjaHandBody.position[0] = mapLoader.ninjaStartPosition[0]
+  ninjaHandBody.position[1] = mapLoader.ninjaStartPosition[1]
+
   ninjaBody.velocity[0] = 0
   ninjaBody.velocity[1] = 0
 }
@@ -146,7 +148,7 @@ var createNinja = function() {
 
   // body
   ninjaBody = new p2.Body({
-    mass: ninjaMass,
+    mass: 0.35,
     velocity: [0.5, -3],
   })
   ninjaBody.fixedRotation = true
@@ -230,7 +232,9 @@ var createNinja = function() {
   world.addBody(ninjaHandBody)
 
   // hand body constraint
-  ninjaHandBodyConstraint = new p2.LockConstraint(ninjaBody, ninjaHandBody)
+  ninjaHandBodyConstraint = new p2.LockConstraint(ninjaBody, ninjaHandBody, {
+    collideConnected: false,
+  })
 
   world.addConstraint(ninjaHandBodyConstraint)
 
