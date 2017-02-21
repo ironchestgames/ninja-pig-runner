@@ -102,6 +102,7 @@ var shapeDraw = function (pixiContainer, world, pixelsPerMeter, interpolationRat
   var graphics
   var i
   var j
+  var k
   var shapes
   var shape
   var worldPosition
@@ -164,6 +165,33 @@ var shapeDraw = function (pixiContainer, world, pixelsPerMeter, interpolationRat
           shapeGraphics[shape.id] = graphics
 
           pixiContainer.addChild(graphics)
+        }
+
+        // convex
+        if (shape.type === p2.Shape.CONVEX) {
+
+          graphics = new PIXI.Graphics()
+
+          setShapeGraphicsColors(shape, graphics)
+
+          for (k = 0; k < shape.vertices.length; k++) {
+            if (k === 0) {
+              graphics.moveTo(
+                  shape.vertices[k][0] * pixelsPerMeter,
+                  shape.vertices[k][1] * pixelsPerMeter)
+            } else {
+              graphics.lineTo(
+                  shape.vertices[k][0] * pixelsPerMeter,
+                  shape.vertices[k][1] * pixelsPerMeter)
+            }
+          }
+
+          graphics.endFill()
+
+          shapeGraphics[shape.id] = graphics
+
+          pixiContainer.addChild(graphics)
+
         }
 
         body.toWorldFrame(tempPositionVec, shape.position)
