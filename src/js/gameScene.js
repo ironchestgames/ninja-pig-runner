@@ -63,6 +63,7 @@ var upwardHookRelativeAimX = 0
 var upwardHookRelativeAimY = -12
 
 var ninjaBody
+var ninjaHandBody
 var ninjaGraphics
 var ropeSprite
 var backgroundSprite
@@ -150,6 +151,13 @@ var createNinja = function() {
   })
   ninjaBody.fixedRotation = true
 
+  // hand body
+  ninjaHandBody = new p2.Body({
+    mass: 0.1,
+  })
+  ninjaHandBody.position[0] = ninjaRadius + 0.07
+  ninjaHandBody.position[1] = -0.15
+
   // shapes
   middleShape = new p2.Box({
     width: ninjaRadius * 2,
@@ -219,6 +227,12 @@ var createNinja = function() {
   ninjaBody.angularDamping = 0
   ninjaBody.name = 'ninjaBody'
   world.addBody(ninjaBody)
+  world.addBody(ninjaHandBody)
+
+  // hand body constraint
+  ninjaHandBodyConstraint = new p2.LockConstraint(ninjaBody, ninjaHandBody)
+
+  world.addConstraint(ninjaHandBodyConstraint)
 
 }
 
@@ -226,7 +240,7 @@ var createHooks = function () {
   
   forwardHook = new Hook({
     world: world,
-    source: ninjaBody,
+    source: ninjaHandBody,
     relativeAimPoint: [forwardHookRelativeAimX, forwardHookRelativeAimY],
     collisionMask: gameVars.WALL | gameVars.CEILING,
     shortenSpeed: forwardHookShortenSpeed,
@@ -234,7 +248,7 @@ var createHooks = function () {
 
   upwardHook = new Hook({
     world: world,
-    source: ninjaBody,
+    source: ninjaHandBody,
     relativeAimPoint: [upwardHookRelativeAimX, upwardHookRelativeAimY],
     collisionMask: gameVars.WALL | gameVars.CEILING,
     shortenSpeed: forwardHookShortenSpeed,
@@ -680,10 +694,20 @@ var gameScene = {
           currentHook.body.previousPosition[1],
           ratio) * pixelsPerMeter
 
-      a = hookBodyX - ninjaGraphics.x
-      b = hookBodyY - ninjaGraphics.y
-      ropeSprite.x = ninjaGraphics.x
-      ropeSprite.y = ninjaGraphics.y
+      handX = gameUtils.calcInterpolatedValue(
+        ninjaHandBody.position[0],
+        ninjaHandBody.previousPosition[0],
+        ratio) * pixelsPerMeter
+
+      handY = gameUtils.calcInterpolatedValue(
+        ninjaHandBody.position[1],
+        ninjaHandBody.previousPosition[1],
+        ratio) * pixelsPerMeter
+
+      a = hookBodyX - handX
+      b = hookBodyY - handY
+      ropeSprite.x = handX
+      ropeSprite.y = handY
       ropeSprite.width = Math.sqrt(a * a + b * b)
       ropeSprite.rotation = Math.atan2(b, a)
 
