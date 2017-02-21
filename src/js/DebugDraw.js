@@ -1,7 +1,7 @@
 var p2 = require('p2')
 
 var fillColorStatic = 0x333333
-var fillColorDynamic = 0x339933
+var fillColorDynamic = 0xff99cc
 var lineStyleStatic = 0xdddddd
 var lineStyleDynamic = 0xdddddd
 var lineStyleSensor = 0x993333
