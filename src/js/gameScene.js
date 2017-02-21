@@ -687,7 +687,8 @@ var gameScene = {
     ninjaGraphics.draw(
         x,
         y,
-        rotation)
+        rotation,
+        ninjaBody)
 
     if (forwardHook.isHooked) {
       currentHook = forwardHook
