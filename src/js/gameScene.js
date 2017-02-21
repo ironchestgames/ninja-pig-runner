@@ -603,14 +603,14 @@ var gameScene = {
     mapLoader.loadMap(world, mapLayer, propLayer, ninjaBody, pixelsPerMeter, 0x261d05) // depends on createNinja
     createCeiling()
 
-    // set up ninja and hook
+    // set up ninja and hook graphics
+    createHookSprite(this.stage)
     ninjaGraphics = new NinjaGraphics({
       container: this.stage,
       ninjaHeight: 1.5,
       pixelsPerMeter: pixelsPerMeter,
       spriteUtilities: spriteUtilities,
     })
-    createHookSprite(this.stage)
 
     world.on('beginContact', beginContact)
     world.on('endContact', endContact)
