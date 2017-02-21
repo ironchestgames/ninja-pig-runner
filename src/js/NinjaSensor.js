@@ -6,8 +6,9 @@ var NinjaSensor = function (config) {
   this.name = config.name
   this.relativePosition = p2.vec2.clone(config.relativePosition)
 
-  this.shape = new p2.Circle({
-    radius: config.radius,
+  this.shape = new p2.Box({
+    width: config.width,
+    height: config.height,
     collisionGroup: config.collisionGroup,
     collisionMask: config.collisionMask,
     sensor: true,

@@ -185,7 +185,8 @@ var createNinja = function() {
   // sensor bottom
   ninjaBottomSensor = new NinjaSensor({
     name: 'ninjaBottomSensor',
-    radius: 0.2,
+    width: 0.4,
+    height: 0.2,
     collisionGroup: SENSOR,
     collisionMask: WALL,
     relativePosition: [0, ninjaRadius * 2],
@@ -196,7 +197,8 @@ var createNinja = function() {
   // sensor left
   ninjaLeftSensor = new NinjaSensor({
     name: 'ninjaLeftSensor',
-    radius: 0.2,
+    width: 0.15,
+    height: 0.5,
     collisionGroup: SENSOR,
     collisionMask: WALL,
     relativePosition: [-ninjaRadius, 0],
@@ -207,7 +209,8 @@ var createNinja = function() {
   // sensor right
   ninjaRightSensor = new NinjaSensor({
     name: 'ninjaRightSensor',
-    radius: 0.2,
+    width: 0.15,
+    height: 0.5,
     collisionGroup: SENSOR,
     collisionMask: WALL,
     relativePosition: [ninjaRadius, 0],
