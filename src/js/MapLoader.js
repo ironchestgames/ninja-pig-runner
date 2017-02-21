@@ -6,7 +6,7 @@ var MapLoader = function () {
 
 }
 
-MapLoader.prototype.loadMap = function (world, mapLayer, propLayer, ninjaBody, pixelsPerMeter) {
+MapLoader.prototype.loadMap = function (world, mapLayer, propLayer, ninjaBody, pixelsPerMeter, staticsColor) {
 
   var bodiesData
   var body
@@ -26,6 +26,7 @@ MapLoader.prototype.loadMap = function (world, mapLayer, propLayer, ninjaBody, p
   var imageName
   var imagesData
   var j
+  var k
   var sprite
   var spriteX
   var spriteY
@@ -34,7 +35,7 @@ MapLoader.prototype.loadMap = function (world, mapLayer, propLayer, ninjaBody, p
   var worldPosition
 
   // props first (rendered below the level as of now)
-  imagesData = PIXI.loader.resources['level1'].data.image
+  imagesData = PIXI.loader.resources['level1'].data.image || []
 
   for (i = 0; i < imagesData.length; i++) {
 
@@ -101,35 +102,52 @@ MapLoader.prototype.loadMap = function (world, mapLayer, propLayer, ninjaBody, p
       for (j = 0; j < fixturesData.length; j++) {
         fixtureData = fixturesData[j]
 
-        boxWidth = Math.abs(fixtureData.polygon.vertices.x[0] - fixtureData.polygon.vertices.x[2])
-        boxHeight = Math.abs(fixtureData.polygon.vertices.y[0] - fixtureData.polygon.vertices.y[2])
+        var vertices = []
 
-        boxPositionX = fixtureData.polygon.vertices.x[0] + fixtureData.polygon.vertices.x[2]
-        boxPositionY = fixtureData.polygon.vertices.y[0] + fixtureData.polygon.vertices.y[2]
+        var graphics = new PIXI.Graphics()
+        graphics.beginFill(staticsColor)
 
-        box = new p2.Box({
-          width: boxWidth,
-          height: boxHeight,
-          position: [boxPositionX, boxPositionY],
-          // NOTE: angle for fixtures in rube does not exist
+        for (k = fixtureData.polygon.vertices.x.length - 1; k >= 0; k--) {
+
+          vertices.push([
+            fixtureData.polygon.vertices.x[k],
+            -fixtureData.polygon.vertices.y[k],
+            ])
+
+        }
+
+        for (k = 0; k < vertices.length; k++) {
+          if (k === 0) {
+            graphics.moveTo(
+                vertices[k][0] * pixelsPerMeter,
+                vertices[k][1] * pixelsPerMeter)
+          } else {
+            graphics.lineTo(
+                vertices[k][0] * pixelsPerMeter,
+                vertices[k][1] * pixelsPerMeter)
+          }
+        }
+
+        graphics.endFill()
+
+        var convex = new p2.Convex({
+          vertices: vertices,
           collisionGroup: gameVars.WALL,
           collisionMask: gameVars.PLAYER | gameVars.SENSOR,
         })
 
-        body.addShape(box)
+        body.addShape(convex)
 
-        // create the sprite for this shape
-        var sprite = new PIXI.Sprite(PIXI.loader.resources['static_texture_8x8'].texture)
+        var container = new PIXI.Container()
+        container.addChild(graphics)
+        container.cacheAsBitmap = true
 
-        body.toWorldFrame(worldPosition, [boxPositionX, boxPositionY])
-        sprite.anchor.x = 0.5
-        sprite.anchor.y = 0.5
-        sprite.x = worldPosition[0] * pixelsPerMeter
-        sprite.y = worldPosition[1] * pixelsPerMeter
-        sprite.rotation = body.angle
-        sprite.width = boxWidth * pixelsPerMeter
-        sprite.height = boxHeight * pixelsPerMeter
-        mapLayer.addChild(sprite)
+        container.x = body.position[0] * pixelsPerMeter
+        container.y = body.position[1] * pixelsPerMeter
+        container.rotation = body.angle
+
+        mapLayer.addChild(container)
+
       }
 
     } else if (bodyData.name === 'prop_texture') {

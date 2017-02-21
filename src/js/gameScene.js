@@ -586,7 +586,7 @@ var gameScene = {
     // set up physics
     createNinja()
     createHooks() // depends on createNinja
-    mapLoader.loadMap(world, mapLayer, propLayer, ninjaBody, pixelsPerMeter) // depends on createNinja
+    mapLoader.loadMap(world, mapLayer, propLayer, ninjaBody, pixelsPerMeter, 0x261d05) // depends on createNinja
     createCeiling()
 
     // set up ninja and hook

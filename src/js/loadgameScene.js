@@ -3,7 +3,6 @@ var loadGameScene = {
   create: function () {
     PIXI.loader
     .add('rope', 'assets/images/rope.png')
-    .add('static_texture_8x8', 'assets/images/static_texture_8x8.png')
     .add('background1', 'assets/images/background1.png')
     .add('backgroundsky1', 'assets/images/backgroundsky1.png')
     .add('antenn001', 'assets/images/antenn001.png')
