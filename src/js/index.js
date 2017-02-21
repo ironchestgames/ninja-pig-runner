@@ -53,6 +53,7 @@ windowLoad(function () {
         renderer.render(baseStage)
       },
   })
+  global.loop = loop
 
   // start it!
   gameScene.renderer = renderer
