@@ -600,7 +600,14 @@ var gameScene = {
     // set up physics
     createNinja()
     createHooks() // depends on createNinja
-    mapLoader.loadMap(world, mapLayer, propLayer, ninjaBody, pixelsPerMeter, 0x261d05) // depends on createNinja
+    mapLoader.loadMap({ // depends on createNinja
+      world: world,
+      mapLayer: mapLayer,
+      propLayer: propLayer,
+      ninjaBody: ninjaBody,
+      pixelsPerMeter: pixelsPerMeter,
+      staticsColor: 0x261d05,
+    })
     createCeiling()
 
     // set up ninja and hook graphics

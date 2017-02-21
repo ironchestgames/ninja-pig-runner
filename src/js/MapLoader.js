@@ -6,7 +6,7 @@ var MapLoader = function () {
 
 }
 
-MapLoader.prototype.loadMap = function (world, mapLayer, propLayer, ninjaBody, pixelsPerMeter, staticsColor) {
+MapLoader.prototype.loadMap = function (config) {
 
   var bodiesData
   var body
@@ -27,12 +27,25 @@ MapLoader.prototype.loadMap = function (world, mapLayer, propLayer, ninjaBody, p
   var imagesData
   var j
   var k
+  var mapLayer
+  var ninjaBody
+  var pixelsPerMeter
+  var propLayer
   var sprite
   var spriteX
   var spriteY
+  var staticsColor
   var texture
   var widthHeightRatio
+  var world
   var worldPosition
+
+  world = config.world
+  mapLayer = config.mapLayer
+  propLayer = config.propLayer
+  ninjaBody = config.ninjaBody
+  pixelsPerMeter = config.pixelsPerMeter
+  staticsColor = config.staticsColor
 
   // props first (rendered below the level as of now)
   imagesData = PIXI.loader.resources['level1'].data.image || []
