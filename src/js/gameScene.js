@@ -67,6 +67,7 @@ var ninjaGraphics
 var ropeSprite
 var backgroundSprite
 var skySprite
+var dynamicSprites = {}
 
 var ninjaBottomSensor
 var ninjaLeftSensor
@@ -157,6 +158,7 @@ var createNinja = function() {
   ninjaHandBody = new p2.Body({
     mass: 0.1,
   })
+  ninjaHandBody.name = 'ninjaHandBody'
   ninjaHandBody.position[0] = ninjaRadius + 0.07
   ninjaHandBody.position[1] = -0.15
 
@@ -611,6 +613,7 @@ var gameScene = {
       ninjaBody: ninjaBody,
       pixelsPerMeter: pixelsPerMeter,
       staticsColor: 0x261d05,
+      dynamicSprites: dynamicSprites,
     })
     createCeiling()
 
@@ -679,7 +682,7 @@ var gameScene = {
     rotation = gameUtils.calcInterpolatedValue(
         ninjaBody.angle,
         ninjaBody.previousAngle,
-        ratio) * pixelsPerMeter
+        ratio)
 
     ninjaGraphics.draw(
         x,
@@ -725,6 +728,35 @@ var gameScene = {
     } else {
 
       ropeSprite.visible = false
+    }
+
+    for (var i = 0; i < world.bodies.length; i++) {
+      var body = world.bodies[i]
+
+      if (body.type === p2.Body.DYNAMIC &&
+          body.name !== 'ninjaBody' &&
+          body.name !== 'ninjaHandBody' &&
+          body.name !== 'hook') {
+
+        x = gameUtils.calcInterpolatedValue(
+            body.position[0],
+            body.previousPosition[0],
+            ratio) * pixelsPerMeter
+
+        y = gameUtils.calcInterpolatedValue(
+            body.position[1],
+            body.previousPosition[1],
+            ratio) * pixelsPerMeter
+
+        rotation = gameUtils.calcInterpolatedValue(
+            body.angle,
+            body.previousAngle,
+            ratio)
+
+        dynamicSprites[body.id].x = x
+        dynamicSprites[body.id].y = y
+        dynamicSprites[body.id].rotation = rotation
+      }
     }
 
     if (ninjaGraphics.x > this.renderer.view.width / 4) {

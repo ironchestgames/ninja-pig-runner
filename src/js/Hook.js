@@ -12,6 +12,7 @@ var Hook = function (config) {
     position: [10, 0],
     type: p2.Body.STATIC,
   })
+  this.body.name = 'hook'
   this.constraint = new p2.DistanceConstraint(this.body, this.source)
   this.constraint.upperLimitEnabled = true
   this.constraint.lowerLimitEnabled = true

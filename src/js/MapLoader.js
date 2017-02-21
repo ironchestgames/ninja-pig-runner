@@ -146,7 +146,7 @@ MapLoader.prototype.loadMap = function (config) {
         var convex = new p2.Convex({
           vertices: vertices,
           collisionGroup: gameVars.WALL,
-          collisionMask: gameVars.PLAYER | gameVars.SENSOR,
+          collisionMask: gameVars.PLAYER | gameVars.SENSOR | gameVars.WALL,
         })
 
         body.addShape(convex)
@@ -160,6 +160,11 @@ MapLoader.prototype.loadMap = function (config) {
         container.rotation = body.angle
 
         mapLayer.addChild(container)
+
+        if (body.type === p2.Body.DYNAMIC) {
+          // add it to the collection 
+          config.dynamicSprites[body.id] = container // NOTE: I know this is backwards
+        }
 
       }
 
