@@ -122,7 +122,7 @@ var shapeDraw = function (pixiContainer, world, pixelsPerMeter, interpolationRat
         body.toWorldFrame(tempVec, shape.position)
 
         // box
-        if (shape instanceof p2.Box) { // TODO: check .type instead
+        if (shape.type === p2.Shape.BOX) {
 
           graphics = new PIXI.Graphics()
 
@@ -144,7 +144,7 @@ var shapeDraw = function (pixiContainer, world, pixelsPerMeter, interpolationRat
         }
 
         // circle
-        if (shape instanceof p2.Circle) { // TODO: check .type instead
+        if (shape.type === p2.Shape.CIRCLE) {
 
           graphics = new PIXI.Graphics()
 
