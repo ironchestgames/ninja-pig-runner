@@ -487,6 +487,19 @@ var postStep = function () {
     ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_UPWARDS)
   }
 
+  if (!isRunning &&
+      ninjaGraphics.currentState === NinjaGraphics.STATE_RUNNING) {
+    ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_FALLING)
+  }
+
+  if (ninjaGraphics.currentState === NinjaGraphics.STATE_INAIR_FALLING &&
+      ninjaBody.velocity[1] < 0) {
+    ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_UPWARDS)
+  } else if (ninjaGraphics.currentState === NinjaGraphics.STATE_INAIR_UPWARDS &&
+      ninjaBody.velocity[1] > 0) {
+    ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_FALLING)
+  }
+
 }
 
 var beginContact = function (contactEvent) {
