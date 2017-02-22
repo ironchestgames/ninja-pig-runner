@@ -500,10 +500,6 @@ var postStep = function () {
     }
   }
 
-  // TODO: what is this? is it for debugging?
-  ninjaBottomSensor.shape.previousWorldPosition = p2.vec2.clone(ninjaBottomSensor.shape.worldPosition)
-  ninjaBody.toWorldFrame(ninjaBottomSensor.shape.worldPosition, ninjaBottomSensor.shape.position)
-
 }
 
 var beginContact = function (contactEvent) {
