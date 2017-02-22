@@ -1,3 +1,5 @@
+var debug = require('debug')
+var eventLog = debug('NinjaGraphics:events')
 
 var NinjaGraphics = function (config) {
 
@@ -89,6 +91,8 @@ NinjaGraphics.prototype.handleEvent = function (event) {
   if (event === this.currentState) {
     return
   }
+
+  eventLog('change to', event)
 
   switch (event) {
     case NinjaGraphics.EVENT_RUNNING:
