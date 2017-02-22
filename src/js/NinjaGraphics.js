@@ -11,13 +11,16 @@ var NinjaGraphics = function (config) {
   var scaleRatio = (ninjaHeight * pixelsPerMeter * spriteSizeFactor) / PIXI.loader.resources['inair_upwards'].texture.height
 
   this.config = config
-  this.currentState = NinjaGraphics.STATE_INAIR_FALLING
+  this.currentState = null
 
   this.container = new PIXI.Container()
   config.container.addChild(this.container)
 
-  this.container.scale.x = scaleRatio
-  this.container.scale.y = scaleRatio
+  this.scaleContainer = new PIXI.Container()
+  this.container.addChild(this.scaleContainer)
+
+  this.scaleContainer.scale.x = scaleRatio
+  this.scaleContainer.scale.y = scaleRatio
 
   // in-air upwards sprite
   this.inAirUpwardsSprite = new PIXI.Sprite(PIXI.loader.resources['inair_upwards'].texture)
@@ -38,7 +41,6 @@ var NinjaGraphics = function (config) {
   this.runningSprite = config.spriteUtilities.sprite(runningSpriteStrip)
   this.runningSprite.anchor.x = 0.5
   this.runningSprite.anchor.y = 0.5
-  this.runningSprite.visible = false
   this.runningSprite.animationSpeed = runningSpriteAnimationBaseSpeed
   this.runningSprite.play()
 
@@ -72,11 +74,11 @@ var NinjaGraphics = function (config) {
   this.headband2.pivot.y = texture.height / 2
 
   // add sprites in correct z-order
-  this.container.addChild(this.headband2)
-  this.container.addChild(this.inAirUpwardsSprite)
-  this.container.addChild(this.inAirFallingSprite)
-  this.container.addChild(this.runningSprite)
-  this.container.addChild(this.headband1)
+  this.scaleContainer.addChild(this.headband2)
+  this.scaleContainer.addChild(this.inAirUpwardsSprite)
+  this.scaleContainer.addChild(this.inAirFallingSprite)
+  this.scaleContainer.addChild(this.runningSprite)
+  this.scaleContainer.addChild(this.headband1)
 
   this.headbandCount = 0
 
@@ -85,6 +87,9 @@ var NinjaGraphics = function (config) {
 NinjaGraphics.STATE_RUNNING = 'STATE_RUNNING'
 NinjaGraphics.STATE_INAIR_UPWARDS = 'STATE_INAIR_UPWARDS'
 NinjaGraphics.STATE_INAIR_FALLING = 'STATE_INAIR_FALLING'
+NinjaGraphics.STATE_INAIR_HOOKED = 'STATE_INAIR_HOOKED'
+NinjaGraphics.STATE_BOUNCED_LEFT = 'STATE_BOUNCED_LEFT'
+NinjaGraphics.STATE_BOUNCED_RIGHT = 'STATE_BOUNCED_RIGHT'
 
 NinjaGraphics.prototype.changeState = function (newState) {
 
@@ -100,18 +105,51 @@ NinjaGraphics.prototype.changeState = function (newState) {
 
       this.inAirUpwardsSprite.visible = false
       this.inAirFallingSprite.visible = false
+
+      this.container.scale.x = 1
+      this.headband1.scale.x = 1
+      this.headband2.scale.x = 1
       break
     case NinjaGraphics.STATE_INAIR_UPWARDS:
       this.inAirUpwardsSprite.visible = true
 
       this.inAirFallingSprite.visible = false
       this.runningSprite.visible = false
+
+      this.container.scale.x = 1
+      this.headband1.scale.x = 1
+      this.headband2.scale.x = 1
       break
+    case NinjaGraphics.STATE_INAIR_HOOKED:
     case NinjaGraphics.STATE_INAIR_FALLING:
       this.inAirFallingSprite.visible = true
 
       this.runningSprite.visible = false
       this.inAirUpwardsSprite.visible = false
+
+      this.container.scale.x = 1
+      this.headband1.scale.x = 1
+      this.headband2.scale.x = 1
+      break
+    case NinjaGraphics.STATE_BOUNCED_LEFT:
+      this.inAirFallingSprite.visible = true
+
+      this.runningSprite.visible = false
+      this.inAirUpwardsSprite.visible = false
+
+      this.container.scale.x = 1
+      this.headband1.scale.x = 1
+      this.headband2.scale.x = 1
+      break
+    case NinjaGraphics.STATE_BOUNCED_RIGHT:
+      this.inAirFallingSprite.visible = true
+
+      this.runningSprite.visible = false
+      this.inAirUpwardsSprite.visible = false
+
+      this.container.scale.x = -1
+      this.headband1.scale.x = -1
+      this.headband2.scale.x = -1
       break
   }
 

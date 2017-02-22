@@ -381,6 +381,8 @@ var postStep = function () {
     // shorten the rope
     currentHook.shorten()
 
+    ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_HOOKED)
+
     // pressing (leaning back when swinging kind of)
     if (currentHook.body.position[0] - ninjaBody.position[0] < 1 &&
         currentHook.body.position[0] - ninjaBody.position[0] > 0 &&
@@ -412,7 +414,8 @@ var postStep = function () {
   }
 
   // determine if isRunning
-  if (ninjaBottomSensor.isContactUsable() &&
+  if (!shouldJump &&
+      ninjaBottomSensor.isContactUsable() &&
       ninjaLeftSensor.stepsSinceUsed > 2 &&
       ninjaRightSensor.stepsSinceUsed > 2) {
     if (!isRunning) {
@@ -423,8 +426,15 @@ var postStep = function () {
       }
     }
     isRunning = true
+    ninjaBody.velocity[0] = currentRunningSpeed // TODO: don't set velocity, check velocity and apply force instead
+    actionsLog('RUNNING')
+    ninjaGraphics.changeState(NinjaGraphics.STATE_RUNNING)
   } else {
     isRunning = false
+    if (ninjaGraphics.currentState !== NinjaGraphics.STATE_BOUNCED_RIGHT &&
+      ninjaBody.velocity[1] > 0) {
+      ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_FALLING)
+    }
   }
 
   // jump away from wall on left side
@@ -442,6 +452,7 @@ var postStep = function () {
     }
     ninjaBody.applyForce([wallBounceForceX, y])
     ninjaLeftSensor.setContactUsed(true)
+    ninjaGraphics.changeState(NinjaGraphics.STATE_BOUNCED_LEFT)
     actionsLog('BOUNCE LEFT', y)
   }
 
@@ -460,6 +471,7 @@ var postStep = function () {
     }
     ninjaBody.applyForce([-wallBounceForceX, y])
     ninjaRightSensor.setContactUsed(true)
+    ninjaGraphics.changeState(NinjaGraphics.STATE_BOUNCED_RIGHT)
     actionsLog('BOUNCE RIGHT', y)
   }
 
@@ -471,33 +483,8 @@ var postStep = function () {
     ninjaBody.applyForce([0, -jumpUpForce])
     ninjaBottomSensor.setContactUsed(true)
     shouldJump = false
-    isRunning = false
     actionsLog('JUMP')
     ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_UPWARDS)
-  }
-
-  // determine if already jumped while in contact with ground
-  if (ninjaBottomSensor.contactCount === 0) {
-    ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_UPWARDS)
-  }
-
-  if (!currentHook && isRunning) {
-    // is on top of wall and should be running
-
-    ninjaBody.velocity[0] = currentRunningSpeed // TODO: don't set velocity, check velocity and apply force instead
-    actionsLog('RUNNING')
-    ninjaGraphics.changeState(NinjaGraphics.STATE_RUNNING)
-
-  }
-
-  if (!isRunning) {
-    if (currentHook) {
-      ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_FALLING)
-    } else if (ninjaBody.velocity[1] < 0) {
-      ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_UPWARDS)
-    } else if (ninjaBody.velocity[1] > 0) {
-      ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_FALLING)
-    }
   }
 
 }
@@ -631,6 +618,7 @@ var gameScene = {
       pixelsPerMeter: pixelsPerMeter,
       spriteUtilities: spriteUtilities,
     })
+    ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_FALLING)
 
     world.on('beginContact', beginContact)
     world.on('endContact', endContact)
