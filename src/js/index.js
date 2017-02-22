@@ -34,9 +34,9 @@ windowLoad(function () {
 
   var baseStage = new PIXI.Container()
 
-  var text = new PIXI.Text('This is a pixi text')
-
-  baseStage.addChild(text)
+  var fpsText = new PIXI.Text('This is a pixi text', {
+    fill: 0x00ff00,
+  })
 
   // init browserGameLoop
   var loop = browserGameLoop({
@@ -49,7 +49,7 @@ windowLoad(function () {
       },
       render: function(ratio) {
         sceneManager.draw(renderer, ratio)
-        text.text = 'fps: ' + Math.round(loop.getFps())
+        fpsText.text = 'fps: ' + Math.round(loop.getFps())
         renderer.render(baseStage)
       },
   })
@@ -63,6 +63,7 @@ windowLoad(function () {
   setTimeout(function () {
     console.log('starting')
     loop.start()
+    baseStage.addChild(fpsText)
   }, 1000)
   
 })
