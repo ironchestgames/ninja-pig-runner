@@ -6,12 +6,14 @@ var gameScene = require('./gameScene.js')
 var loadGameScene = require('./loadGameScene.js')
 var ob = require('obscen')
 var windowLoad = require('window-load')
+var screenOrientation = require('screen-orientation')
 
 windowLoad(function () {
 
   // DebugConsole.init()
 
   global.DEBUG_DRAW = !!localStorage.getItem('DEBUG_DRAW')
+  global.DEBUG_MONITOR = !!localStorage.getItem('DEBUG_MONITOR')
 
   var noWebgl = !!localStorage.getItem('vars:noWebgl')
 
@@ -33,10 +35,34 @@ windowLoad(function () {
     ])
 
   var baseStage = new PIXI.Container()
+  var turnDeviceContainer = new PIXI.Container()
+  var debugTexts = new PIXI.Container()
+
+  // debug monitor text
+  if (!global.DEBUG_MONITOR) {
+    debugTexts.visible = false
+  }
 
   var fpsText = new PIXI.Text('This is a pixi text', {
     fill: 0x00ff00,
   })
+  debugTexts.addChild(fpsText)
+
+  // turn device graphics
+  var turnDeviceBackground = new PIXI.Graphics()
+  turnDeviceBackground.beginFill(0x292929)
+  turnDeviceBackground.drawRect(0, 0, 8, 8)
+  turnDeviceBackground.scale.x = 200
+  turnDeviceBackground.scale.y = 300
+  turnDeviceBackground.endFill()
+  turnDeviceContainer.addChild(turnDeviceBackground)
+
+  var turnDeviceText = new PIXI.Text('Turn device to landscape', {
+    fill: 0xfcfcfc,
+  })
+  turnDeviceText.x = 200
+  turnDeviceText.y = 200
+  turnDeviceContainer.addChild(turnDeviceText)
 
   // init browserGameLoop
   var loop = browserGameLoop({
@@ -45,11 +71,16 @@ windowLoad(function () {
       slow: 1,
       input: function() {},
       update: function(step) {
-        sceneManager.update(step)
+        if (screenOrientation().direction === 'portrait') {
+          turnDeviceContainer.visible = true
+        } else {
+          turnDeviceContainer.visible = false
+          sceneManager.update(step)
+        }
       },
       render: function(ratio) {
         sceneManager.draw(renderer, ratio)
-        fpsText.text = 'fps: ' + Math.round(loop.getFps())
+        fpsText.text = 'fps: ' + Math.round(loop.getFps()) + '\nscreen orientation: ' + screenOrientation().direction
         renderer.render(baseStage)
       },
   })
@@ -63,7 +94,8 @@ windowLoad(function () {
   setTimeout(function () {
     console.log('starting')
     loop.start()
-    baseStage.addChild(fpsText)
+    baseStage.addChild(turnDeviceContainer)
+    baseStage.addChild(debugTexts)
   }, 1000)
   
 })

@@ -30,6 +30,7 @@
     "obscen": "^0.x",
     "p2": "^0.7.1",
     "pixi.js": "^4.2.2",
+    "screen-orientation": "^1.0.3",
     "window-load": "^1.0.0"
   }
 }
