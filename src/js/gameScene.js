@@ -9,8 +9,8 @@ var Hook = require('./Hook')
 var MapLoader = require('./MapLoader')
 var gameVars = require('./gameVars')
 
-var actionsLog = debug('logic:actions')
-var buttonsLog = debug('logic:buttons')
+var actionsLog = debug('gameScene:actions')
+var buttonsLog = debug('gameScene:buttons')
 
 var isPaused = false
 
