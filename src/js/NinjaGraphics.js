@@ -6,6 +6,7 @@ var NinjaGraphics = function (config) {
 
   var ninjaHeight = config.ninjaHeight
   var pixelsPerMeter = config.pixelsPerMeter
+  var scaleRatio = (ninjaHeight * pixelsPerMeter * spriteSizeFactor) / PIXI.loader.resources['inair_upwards'].texture.height
 
   this.config = config
   this.currentState = NinjaGraphics.EVENT_INAIR_FALLING
@@ -13,19 +14,18 @@ var NinjaGraphics = function (config) {
   this.container = new PIXI.Container()
   config.container.addChild(this.container)
 
+  this.container.scale.x = scaleRatio
+  this.container.scale.y = scaleRatio
+
   // in-air upwards sprite
   this.inAirUpwardsSprite = new PIXI.Sprite(PIXI.loader.resources['inair_upwards'].texture)
   this.inAirUpwardsSprite.anchor.x = 0.5
   this.inAirUpwardsSprite.anchor.y = 0.5
-  this.inAirUpwardsSprite.width = ninjaHeight * pixelsPerMeter * spriteSizeFactor
-  this.inAirUpwardsSprite.height = ninjaHeight * pixelsPerMeter * spriteSizeFactor
 
   // in-air falling sprite
   this.inAirFallingSprite = new PIXI.Sprite(PIXI.loader.resources['inair_falling'].texture)
   this.inAirFallingSprite.anchor.x = 0.5
   this.inAirFallingSprite.anchor.y = 0.5
-  this.inAirFallingSprite.width = ninjaHeight * pixelsPerMeter * spriteSizeFactor
-  this.inAirFallingSprite.height = ninjaHeight * pixelsPerMeter * spriteSizeFactor
 
   // running sprite
   var runningTexture = PIXI.loader.resources['runninganimation'].texture
@@ -36,8 +36,6 @@ var NinjaGraphics = function (config) {
   this.runningSprite = config.spriteUtilities.sprite(runningSpriteStrip)
   this.runningSprite.anchor.x = 0.5
   this.runningSprite.anchor.y = 0.5
-  this.runningSprite.width = ninjaHeight * pixelsPerMeter * spriteSizeFactor
-  this.runningSprite.height = ninjaHeight * pixelsPerMeter * spriteSizeFactor
   this.runningSprite.visible = false
   this.runningSprite.animationSpeed = runningSpriteAnimationBaseSpeed
   this.runningSprite.play()
@@ -70,7 +68,6 @@ var NinjaGraphics = function (config) {
   this.headband2.y = -this.runningSprite.height * 0.28
   this.headband2.pivot.x = texture.width
   this.headband2.pivot.y = texture.height / 2
-
 
   // add sprites in correct z-order
   this.container.addChild(this.headband2)
