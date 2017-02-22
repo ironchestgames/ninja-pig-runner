@@ -12,6 +12,8 @@ var gameVars = require('./gameVars')
 var actionsLog = debug('logic:actions')
 var buttonsLog = debug('logic:buttons')
 
+var isPaused = false
+
 var spriteUtilities
 var mapLoader
 
@@ -100,6 +102,10 @@ var onRightUp = function (event) {
 var onKeyPress = function (event) {
   if (event.key === 'r') {
     restartNinja()
+  }
+
+  if (event.key === 'p') {
+    isPaused = !isPaused
   }
 }
 
@@ -648,6 +654,10 @@ var gameScene = {
     // leave previous/next positions accessible
     // (velocities are in units/ms)
 
+    if (isPaused) {
+      return
+    }
+
     var stepInSeconds = stepInMilliseconds / 1000
     world.step(stepInSeconds)
 
@@ -666,6 +676,10 @@ var gameScene = {
     // interpolate position between current and previous/next position
     // (ratio is how far in the frame we've gone represented as a percentage, 0 - 1)
     // currentPosition * ratio + previousPosition * (1 - ratio)
+
+    if (isPaused) {
+      return
+    }
 
     currentHook = null
 
