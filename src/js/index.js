@@ -34,9 +34,14 @@ windowLoad(function () {
     gameScene,
     ])
 
+  var appContainer = new PIXI.Container()
   var baseStage = new PIXI.Container()
   var turnDeviceContainer = new PIXI.Container()
   var debugTexts = new PIXI.Container()
+
+  appContainer.addChild(baseStage)
+  appContainer.addChild(turnDeviceContainer)
+  appContainer.addChild(debugTexts)
 
   // debug monitor text
   if (!global.DEBUG_MONITOR) {
@@ -79,23 +84,33 @@ windowLoad(function () {
         }
       },
       render: function(ratio) {
-        sceneManager.draw(renderer, ratio)
+        if (screenOrientation().direction === 'portrait') {
+          turnDeviceContainer.visible = true
+        } else {
+          turnDeviceContainer.visible = false
+          sceneManager.draw(renderer, ratio)
+        }
         fpsText.text = 'fps: ' + Math.round(loop.getFps()) + '\nscreen orientation: ' + screenOrientation().direction
-        renderer.render(baseStage)
+        renderer.render(appContainer)
       },
   })
   global.loop = loop
 
-  // start it!
-  gameScene.renderer = renderer
-  gameScene.baseStage = baseStage
-  sceneManager.changeScene('loadGame')
+  var intervalId = setInterval(function () {
+    if (screenOrientation().direction === 'portrait') {
+      turnDeviceContainer.visible = true
+      renderer.render(appContainer)
+    } else {
 
-  setTimeout(function () {
-    console.log('starting')
-    loop.start()
-    baseStage.addChild(turnDeviceContainer)
-    baseStage.addChild(debugTexts)
-  }, 1000)
+      // start it!
+      clearInterval(intervalId)
+
+      gameScene.renderer = renderer
+      gameScene.baseStage = baseStage
+      sceneManager.changeScene('loadGame')
+
+      loop.start()
+    }
+  }, 100)
   
 })
