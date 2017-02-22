@@ -11,7 +11,7 @@ var NinjaGraphics = function (config) {
   var scaleRatio = (ninjaHeight * pixelsPerMeter * spriteSizeFactor) / PIXI.loader.resources['inair_upwards'].texture.height
 
   this.config = config
-  this.currentState = NinjaGraphics.EVENT_INAIR_FALLING
+  this.currentState = NinjaGraphics.STATE_INAIR_FALLING
 
   this.container = new PIXI.Container()
   config.container.addChild(this.container)
@@ -82,32 +82,32 @@ var NinjaGraphics = function (config) {
 
 }
 
-NinjaGraphics.EVENT_RUNNING = 'EVENT_RUNNING'
-NinjaGraphics.EVENT_INAIR_UPWARDS = 'EVENT_INAIR_UPWARDS'
-NinjaGraphics.EVENT_INAIR_FALLING = 'EVENT_INAIR_FALLING'
+NinjaGraphics.STATE_RUNNING = 'STATE_RUNNING'
+NinjaGraphics.STATE_INAIR_UPWARDS = 'STATE_INAIR_UPWARDS'
+NinjaGraphics.STATE_INAIR_FALLING = 'STATE_INAIR_FALLING'
 
-NinjaGraphics.prototype.handleEvent = function (event) {
+NinjaGraphics.prototype.changeState = function (newState) {
 
-  if (event === this.currentState) {
+  if (newState === this.currentState) {
     return
   }
 
-  eventLog('change to', event)
+  eventLog('change to', newState)
 
-  switch (event) {
-    case NinjaGraphics.EVENT_RUNNING:
+  switch (newState) {
+    case NinjaGraphics.STATE_RUNNING:
       this.runningSprite.visible = true
 
       this.inAirUpwardsSprite.visible = false
       this.inAirFallingSprite.visible = false
       break
-    case NinjaGraphics.EVENT_INAIR_UPWARDS:
+    case NinjaGraphics.STATE_INAIR_UPWARDS:
       this.inAirUpwardsSprite.visible = true
 
       this.inAirFallingSprite.visible = false
       this.runningSprite.visible = false
       break
-    case NinjaGraphics.EVENT_INAIR_FALLING:
+    case NinjaGraphics.STATE_INAIR_FALLING:
       this.inAirFallingSprite.visible = true
 
       this.runningSprite.visible = false
@@ -115,7 +115,7 @@ NinjaGraphics.prototype.handleEvent = function (event) {
       break
   }
 
-  this.currentState = event
+  this.currentState = newState
 }
 
 NinjaGraphics.prototype.draw = function (x, y, rotation, ninjaBody) {

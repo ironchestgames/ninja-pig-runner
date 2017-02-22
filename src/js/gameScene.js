@@ -473,12 +473,12 @@ var postStep = function () {
     shouldJump = false
     isRunning = false
     actionsLog('JUMP')
-    ninjaGraphics.handleEvent(NinjaGraphics.EVENT_INAIR_UPWARDS)
+    ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_UPWARDS)
   }
 
   // determine if already jumped while in contact with ground
   if (ninjaBottomSensor.contactCount === 0) {
-    ninjaGraphics.handleEvent(NinjaGraphics.EVENT_INAIR_UPWARDS)
+    ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_UPWARDS)
   }
 
   if (!currentHook && isRunning) {
@@ -486,17 +486,17 @@ var postStep = function () {
 
     ninjaBody.velocity[0] = currentRunningSpeed // TODO: don't set velocity, check velocity and apply force instead
     actionsLog('RUNNING')
-    ninjaGraphics.handleEvent(NinjaGraphics.EVENT_RUNNING)
+    ninjaGraphics.changeState(NinjaGraphics.STATE_RUNNING)
 
   }
 
   if (!isRunning) {
     if (currentHook) {
-      ninjaGraphics.handleEvent(NinjaGraphics.EVENT_INAIR_FALLING)
+      ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_FALLING)
     } else if (ninjaBody.velocity[1] < 0) {
-      ninjaGraphics.handleEvent(NinjaGraphics.EVENT_INAIR_UPWARDS)
+      ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_UPWARDS)
     } else if (ninjaBody.velocity[1] > 0) {
-      ninjaGraphics.handleEvent(NinjaGraphics.EVENT_INAIR_FALLING)
+      ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_FALLING)
     }
   }
 
