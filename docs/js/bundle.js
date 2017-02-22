@@ -18628,7 +18628,7 @@ exports.__esModule = true;
  * @name VERSION
  * @type {string}
  */
-var VERSION = exports.VERSION = '4.3.4';
+var VERSION = exports.VERSION = '4.3.5';
 
 /**
  * Two Pi.
@@ -28862,20 +28862,22 @@ var FilterManager = function (_WebGLManager) {
 
         renderer.bindShader(shader);
 
+        // free unit 0 for us, doesn't matter what was there
+        // don't try to restore it, because syncUniforms can upload it to another slot
+        // and it'll be a problem
+        var tex = this.renderer.emptyTextures[0];
+
+        this.renderer.boundTextures[0] = tex;
         // this syncs the pixi filters  uniforms with glsl uniforms
         this.syncUniforms(shader, filter);
 
         renderer.state.setBlendMode(filter.blendMode);
-
-        // temporary bypass cache..
-        var tex = this.renderer.boundTextures[0];
 
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, input.texture.texture);
 
         this.quad.vao.draw(this.renderer.gl.TRIANGLES, 6, 0);
 
-        // restore cache.
         gl.bindTexture(gl.TEXTURE_2D, tex._glTextures[this.renderer.CONTEXT_UID].texture);
     };
 
@@ -35978,7 +35980,7 @@ function determineCrossOrigin(url) {
     return '';
 }
 
-},{"url":253}],177:[function(require,module,exports){
+},{"url":254}],177:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -50977,6 +50979,35 @@ function blobMiddlewareFactory() {
 }
 
 },{"../../Resource":248,"../../b64":250}],253:[function(require,module,exports){
+'use strict'
+
+var window = require('global/window')
+var viewSize = require('view-size')
+
+var screen = window.screen
+if (screen) {
+  var orientation = screen.orientation || screen.mozOrientation || screen.msOrientation
+}
+
+module.exports = (orientation && orientation.type) ? screenOrientation : detect
+
+function screenOrientation () {
+  var parts = orientation.type.split('-')
+  return {
+    direction: parts[0],
+    version: parts[1]
+  }
+}
+
+function detect () {
+  var viewport = viewSize()
+  return {
+    direction: viewport.x >= viewport.y ? 'landscape' : 'portrait',
+    version: 'primary'
+  }
+}
+
+},{"global/window":10,"view-size":256}],254:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -51710,7 +51741,7 @@ Url.prototype.parseHost = function() {
   if (host) this.hostname = host;
 };
 
-},{"./util":254,"punycode":243,"querystring":246}],254:[function(require,module,exports){
+},{"./util":255,"punycode":243,"querystring":246}],255:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -51728,7 +51759,19 @@ module.exports = {
   }
 };
 
-},{}],255:[function(require,module,exports){
+},{}],256:[function(require,module,exports){
+'use strict'
+
+var window = require('global/window')
+
+module.exports = function viewportSize () {
+  return {
+    x: window.innerWidth,
+    y: window.innerHeight
+  }
+}
+
+},{"global/window":10}],257:[function(require,module,exports){
 'use strict'
 
 var window = require('global/window')
@@ -51749,14 +51792,11 @@ function onWindowLoad (callback) {
 
 function noop () {}
 
-},{"global/document":9,"global/window":10,"next-tick":14}],256:[function(require,module,exports){
-var PIXI = require('pixi.js')
+},{"global/document":9,"global/window":10,"next-tick":14}],258:[function(require,module,exports){
 var p2 = require('p2')
 
-console.log(PIXI)
-
 var fillColorStatic = 0x333333
-var fillColorDynamic = 0x339933
+var fillColorDynamic = 0xff99cc
 var lineStyleStatic = 0xdddddd
 var lineStyleDynamic = 0xdddddd
 var lineStyleSensor = 0x993333
@@ -51857,6 +51897,7 @@ var shapeDraw = function (pixiContainer, world, pixelsPerMeter, interpolationRat
   var graphics
   var i
   var j
+  var k
   var shapes
   var shape
   var worldPosition
@@ -51877,7 +51918,7 @@ var shapeDraw = function (pixiContainer, world, pixelsPerMeter, interpolationRat
         body.toWorldFrame(tempVec, shape.position)
 
         // box
-        if (shape instanceof p2.Box) { // TODO: check .type instead
+        if (shape.type === p2.Shape.BOX) {
 
           graphics = new PIXI.Graphics()
 
@@ -51899,7 +51940,7 @@ var shapeDraw = function (pixiContainer, world, pixelsPerMeter, interpolationRat
         }
 
         // circle
-        if (shape instanceof p2.Circle) { // TODO: check .type instead
+        if (shape.type === p2.Shape.CIRCLE) {
 
           graphics = new PIXI.Graphics()
 
@@ -51921,18 +51962,50 @@ var shapeDraw = function (pixiContainer, world, pixelsPerMeter, interpolationRat
           pixiContainer.addChild(graphics)
         }
 
+        // convex
+        if (shape.type === p2.Shape.CONVEX) {
+
+          graphics = new PIXI.Graphics()
+
+          setShapeGraphicsColors(shape, graphics)
+
+          for (k = 0; k < shape.vertices.length; k++) {
+            if (k === 0) {
+              graphics.moveTo(
+                  shape.vertices[k][0] * pixelsPerMeter,
+                  shape.vertices[k][1] * pixelsPerMeter)
+            } else {
+              graphics.lineTo(
+                  shape.vertices[k][0] * pixelsPerMeter,
+                  shape.vertices[k][1] * pixelsPerMeter)
+            }
+          }
+
+          graphics.endFill()
+
+          shapeGraphics[shape.id] = graphics
+
+          pixiContainer.addChild(graphics)
+
+        }
+
+        body.toWorldFrame(tempPositionVec, shape.position)
+
+        shape.previousWorldPosition = p2.vec2.clone(tempPositionVec)
+
       // move it if it already exists
       } else {
 
         graphics = shapeGraphics[shape.id]
 
         body.toWorldFrame(tempPositionVec, shape.position)
-        body.toWorldFrame(tempPreviousPositionVec, shape.position) // TODO: get previous position
 
         tempVec = calcInterpolatedPosition(
             tempPositionVec,
-            tempPreviousPositionVec,
+            shape.previousWorldPosition,
             interpolationRatio)
+
+        shape.previousWorldPosition = p2.vec2.clone(tempPositionVec)
 
         graphics.x = tempVec[0] * pixelsPerMeter
         graphics.y = tempVec[1] * pixelsPerMeter
@@ -52021,6 +52094,7 @@ var distanceConstraintDraw = function (pixiContainer, world, pixelsPerMeter, int
 
 var draw = function (pixiContainer, world, pixelsPerMeter, interpolationRatio) {
   // TODO: if interpolationRatio is undefined/null set to 1
+  pixiContainer.alpha = 0.5
   shapeDraw(pixiContainer, world, pixelsPerMeter, interpolationRatio)
   bodyDraw(pixiContainer, world, pixelsPerMeter, interpolationRatio)
   distanceConstraintDraw(pixiContainer, world, pixelsPerMeter, interpolationRatio)
@@ -52030,7 +52104,7 @@ module.exports = {
   draw: draw,
 }
 
-},{"p2":51,"pixi.js":205}],257:[function(require,module,exports){
+},{"p2":51}],259:[function(require,module,exports){
 var p2 = require('p2')
 
 var Hook = function (config) {
@@ -52045,6 +52119,7 @@ var Hook = function (config) {
     position: [10, 0],
     type: p2.Body.STATIC,
   })
+  this.body.name = 'hook'
   this.constraint = new p2.DistanceConstraint(this.body, this.source)
   this.constraint.upperLimitEnabled = true
   this.constraint.lowerLimitEnabled = true
@@ -52107,386 +52182,16 @@ Hook.prototype.shorten = function () {
 
 module.exports = Hook
 
-},{"p2":51}],258:[function(require,module,exports){
-
-var NinjaGraphics = function (config) {
-
-  var spriteSizeFactor = 1.15 // to make up for the whitespace in the frames
-  var runningSpriteAnimationBaseSpeed = 0.20 // TODO: what is this in ms?
-
-  this.config = config
-
-  var ninjaRadius = config.ninjaRadius
-  var pixelsPerMeter = config.pixelsPerMeter
-  var container = config.container
-
-  this.currentState = NinjaGraphics.EVENT_INAIR_FALLING
-
-  // in-air upwards sprite
-  this.inAirUpwardsSprite = new PIXI.Sprite(PIXI.loader.resources['inair_upwards'].texture)
-  this.inAirUpwardsSprite.anchor.x = 0.5
-  this.inAirUpwardsSprite.anchor.y = 0.5
-  this.inAirUpwardsSprite.width = ninjaRadius * 2 * pixelsPerMeter * spriteSizeFactor
-  this.inAirUpwardsSprite.height = ninjaRadius * 2 * pixelsPerMeter * spriteSizeFactor
-
-  container.addChild(this.inAirUpwardsSprite)
-
-  // in-air falling sprite
-  this.inAirFallingSprite = new PIXI.Sprite(PIXI.loader.resources['inair_falling'].texture)
-  this.inAirFallingSprite.anchor.x = 0.5
-  this.inAirFallingSprite.anchor.y = 0.5
-  this.inAirFallingSprite.width = ninjaRadius * 2 * pixelsPerMeter * spriteSizeFactor
-  this.inAirFallingSprite.height = ninjaRadius * 2 * pixelsPerMeter * spriteSizeFactor
-
-  container.addChild(this.inAirFallingSprite)
-
-  // running sprite
-  var runningTexture = PIXI.loader.resources['runninganimation'].texture
-  var frameWidth = runningTexture.width / 2
-  var frameHeight = runningTexture.height / 2
-
-  var runningSpriteStrip = config.spriteUtilities.filmstrip('runninganimation', frameWidth, frameHeight)
-  this.runningSprite = config.spriteUtilities.sprite(runningSpriteStrip)
-  this.runningSprite.anchor.x = 0.5
-  this.runningSprite.anchor.y = 0.5
-  this.runningSprite.width = ninjaRadius * 2 * pixelsPerMeter * spriteSizeFactor
-  this.runningSprite.height = ninjaRadius * 2 * pixelsPerMeter * spriteSizeFactor
-  this.runningSprite.visible = false
-  this.runningSprite.animationSpeed = runningSpriteAnimationBaseSpeed
-  this.runningSprite.play()
-
-  container.addChild(this.runningSprite)
-
-}
-
-NinjaGraphics.EVENT_RUNNING = 'EVENT_RUNNING'
-NinjaGraphics.EVENT_INAIR_UPWARDS = 'EVENT_INAIR_UPWARDS'
-NinjaGraphics.EVENT_INAIR_FALLING = 'EVENT_INAIR_FALLING'
-
-NinjaGraphics.prototype.handleEvent = function (event) {
-
-  if (event === this.currentState) {
-    return
-  }
-
-  switch (event) {
-    case NinjaGraphics.EVENT_RUNNING:
-      this.runningSprite.visible = true
-
-      this.inAirUpwardsSprite.visible = false
-      this.inAirFallingSprite.visible = false
-      break
-    case NinjaGraphics.EVENT_INAIR_UPWARDS:
-      this.inAirUpwardsSprite.visible = true
-
-      this.inAirFallingSprite.visible = false
-      this.runningSprite.visible = false
-      break
-    case NinjaGraphics.EVENT_INAIR_FALLING:
-      this.inAirFallingSprite.visible = true
-
-      this.runningSprite.visible = false
-      this.inAirUpwardsSprite.visible = false
-      break
-  }
-
-  this.currentState = event
-}
-
-NinjaGraphics.prototype.draw = function (x, y, rotation) {
-
-  // set the values to be used easier from outside
-  this.x = x
-  this.y = y
-  this.rotation = rotation
-
-  // set values to all sprites
-  this.inAirUpwardsSprite.x = x
-  this.inAirUpwardsSprite.y = y
-  this.inAirUpwardsSprite.rotation = rotation
-
-  this.inAirFallingSprite.x = x
-  this.inAirFallingSprite.y = y
-  this.inAirFallingSprite.rotation = rotation
-
-  this.runningSprite.x = x
-  this.runningSprite.y = y
-  this.runningSprite.rotation = rotation
-}
-
-module.exports = NinjaGraphics
-
-},{}],259:[function(require,module,exports){
-var debug = require('debug')
-var p2 = require('p2')
-var DebugDraw = require('./DebugDraw')
-var SpriteUtilities = require('../lib/spriteUtilities')
+},{"p2":51}],260:[function(require,module,exports){
 var gameUtils = require('./gameUtils')
-var NinjaGraphics = require('./NinjaGraphics')
-var Hook = require('./Hook')
+var gameVars = require('./gameVars')
+var p2 = require('p2')
 
-var actionsLog = debug('logic:actions')
-var buttonsLog = debug('logic:buttons')
-
-var spriteUtilities
-
-var pixelsPerMeter = 50
-var heightInMeters = 10
-var widthInPixels
-
-var world = new p2.World({
-  gravity: [0, 10]
-})
-
-// collision groups
-var PLAYER = Math.pow(2, 0)
-var WALL = Math.pow(2, 1)
-var SENSOR = Math.pow(2, 2)
-var CEILING = Math.pow(2, 3)
-
-window.world = world
-
-var buttonEventQueue = []
-var BUTTON_UPWARD_DOWN = 'BUTTON_UPWARD_DOWN'
-var BUTTON_UPWARD_UP = 'BUTTON_UPWARD_UP'
-var BUTTON_FORWARD_DOWN = 'BUTTON_FORWARD_DOWN'
-var BUTTON_FORWARD_UP = 'BUTTON_FORWARD_UP'
-
-var leftButton
-var rightButton
-
-var forwardHook
-var shouldRemoveForwardHook = false
-var shouldAddForwardHook = false
-
-var upwardHook
-var shouldRemoveUpwardHook = false
-var shouldAddUpwardHook = false
-
-var currentHook = null
-
-var shouldJump = false
-var hasJumped = false
-var isRunning = false
-var pushedLeft = false
-var bounceLeft = false
-var pushedRight = false
-var bounceRight = false
-
-var wallPushForce = 85
-var wallBounceForceX = 100
-var wallBounceForceY = -70
-var wallBounceThreshold = 1
-var jumpUpForce = 80
-var pressingForce = 12
-var minimumRunningSpeed = 9
-var currentRunningSpeed = 0
-var forwardHookShortenSpeed = 0.014
-var ninjaMass = 0.45
-var ninjaRadius = 0.5
-var forwardHookRelativeAimX = 8
-var forwardHookRelativeAimY = -12
-var upwardHookRelativeAimX = 0
-var upwardHookRelativeAimY = -12
-
-var ninjaBody
-var ninjaStartPosition
-var ninjaGraphics
-var ropeSprite
-var backgroundSprite
-var skySprite
-
-var ninjaBottomSensor
-var ninjaLeftSensor
-var ninjaRightSensor
-
-var ninjaBottomSensorContactCount = 0
-var ninjaLeftSensorContactCount = 0
-var ninjaRightSensorContactCount = 0
-
-var isKeyUpwardDown = false
-var isKeyForwardDown = false
-
-var onLeftDown = function (event) {
-  buttonsLog('onLeftDown', event)
-  buttonEventQueue.push(BUTTON_UPWARD_DOWN)
-}
-
-var onLeftUp = function (event) {
-  buttonsLog('onLeftUp', event)
-  buttonEventQueue.push(BUTTON_UPWARD_UP)
-}
-
-var onRightDown = function (event) {
-  buttonsLog('onRightDown', event)
-  buttonEventQueue.push(BUTTON_FORWARD_DOWN)
-}
-
-var onRightUp = function (event) {
-  buttonsLog('onRightUp', event)
-  buttonEventQueue.push(BUTTON_FORWARD_UP)
-}
-
-// TODO: remove, this is only for debug
-var onKeyPress = function (event) {
-  if (event.key === 'r') {
-    restartNinja()
-  }
-}
-
-var onKeyDown = function (event) {
-  if (event.key === 'ArrowUp' && !isKeyUpwardDown) {
-    buttonEventQueue.push(BUTTON_UPWARD_DOWN)
-    isKeyUpwardDown = true
-  }
-
-  if (event.key === 'ArrowRight' && !isKeyForwardDown) {
-    buttonEventQueue.push(BUTTON_FORWARD_DOWN)
-    isKeyForwardDown = true
-  }
-}
-
-var onKeyUp = function (event) {
-  if (event.key === 'ArrowUp' && isKeyUpwardDown) {
-    buttonEventQueue.push(BUTTON_UPWARD_UP)
-    isKeyUpwardDown = false
-  }
-
-  if (event.key === 'ArrowRight' && isKeyForwardDown) {
-    buttonEventQueue.push(BUTTON_FORWARD_UP)
-    isKeyForwardDown = false
-  }
-}
-
-var restartNinja = function () {
-  ninjaBody.position[0] = ninjaStartPosition[0]
-  ninjaBody.position[1] = ninjaStartPosition[1]
-
-  ninjaBody.velocity[0] = 0
-  ninjaBody.velocity[1] = 0
-}
-
-var createNinja = function() {
-
-  var ninjaShape
-
-  ninjaBody = new p2.Body({
-    mass: ninjaMass,
-    velocity: [0.5, -3],
-  })
-  ninjaBody.fixedRotation = true
-
-  ninjaShape = new p2.Circle({
-    radius: ninjaRadius,
-    collisionGroup: PLAYER,
-    collisionMask: WALL,
-  })
-
-  ninjaBody.addShape(ninjaShape)
-  ninjaShape.name = 'ninjaShape'
-
-  ninjaBottomSensor = new p2.Circle({
-    radius: 0.2,
-    collisionGroup: SENSOR,
-    collisionMask: WALL,
-    sensor: true,
-  })
-  ninjaBody.addShape(ninjaBottomSensor)
-  ninjaBottomSensor.position = [0, ninjaRadius]
-  ninjaBottomSensor.worldPosition = [0, 0]
-  ninjaBottomSensor.previousWorldPosition = [0, 0]
-  ninjaBottomSensor.name = 'ninjaBottomSensor'
-
-  ninjaLeftSensor = new p2.Circle({
-    radius: 0.2,
-    collisionGroup: SENSOR,
-    collisionMask: WALL,
-    sensor: true,
-  })
-  ninjaBody.addShape(ninjaLeftSensor)
-  ninjaLeftSensor.position = [-ninjaRadius, 0]
-  ninjaLeftSensor.worldPosition = [0, 0]
-  ninjaLeftSensor.previousWorldPosition = [0, 0]
-  ninjaLeftSensor.name = 'ninjaLeftSensor'
-
-  ninjaRightSensor = new p2.Circle({
-    radius: 0.2,
-    collisionGroup: SENSOR,
-    collisionMask: WALL,
-    sensor: true,
-  })
-  ninjaBody.addShape(ninjaRightSensor)
-  ninjaRightSensor.position = [ninjaRadius, 0]
-  ninjaRightSensor.worldPosition = [0, 0]
-  ninjaRightSensor.previousWorldPosition = [0, 0]
-  ninjaRightSensor.name = 'ninjaRightSensor'
-
-  ninjaBody.damping = 0
-  ninjaBody.angularDamping = 0
-  ninjaBody.name = 'ninjaBody'
-  world.addBody(ninjaBody)
+var MapLoader = function () {
 
 }
 
-var createHooks = function () {
-  
-  forwardHook = new Hook({
-    world: world,
-    source: ninjaBody,
-    relativeAimPoint: [forwardHookRelativeAimX, forwardHookRelativeAimY],
-    collisionMask: WALL | CEILING,
-    shortenSpeed: forwardHookShortenSpeed,
-  })
-
-  upwardHook = new Hook({
-    world: world,
-    source: ninjaBody,
-    relativeAimPoint: [upwardHookRelativeAimX, upwardHookRelativeAimY],
-    collisionMask: WALL | CEILING,
-    shortenSpeed: forwardHookShortenSpeed,
-  })
-
-}
-
-var createCeiling = function () {
-
-  var ceilingBody
-  var ceilingShape
-  var highestX
-  var i
-
-  highestX = 0
-
-  // NOTE: only getting the bodies position since we only need an approx. value
-  for (i = 0; i < world.bodies.length; i++) {
-    if (world.bodies[i].position[0] > highestX) {
-      highestX = world.bodies[i].position[0]
-    }
-  }
-
-  ceilingBody = new p2.Body({
-    position: [highestX / 2, -1],
-    type: p2.Body.STATIC,
-  })
-
-  ceilingShape = new p2.Box({
-    position: [0, 0],
-    width: highestX,
-    height: 2,
-    collisionGroup: CEILING,
-  })
-
-  ceilingBody.addShape(ceilingShape)
-
-  world.addBody(ceilingBody)
-
-}
-
-var getFileNameFromUrl = function (str) {
-  return str.split('/').pop().split('.').shift()
-}
-
-var loadMap = function (mapLayer, propLayer) {
+MapLoader.prototype.loadMap = function (config) {
 
   var bodiesData
   var body
@@ -52506,20 +52211,34 @@ var loadMap = function (mapLayer, propLayer) {
   var imageName
   var imagesData
   var j
+  var k
+  var mapLayer
+  var ninjaBody
+  var pixelsPerMeter
+  var propLayer
   var sprite
   var spriteX
   var spriteY
+  var staticsColor
   var texture
   var widthHeightRatio
+  var world
   var worldPosition
 
+  world = config.world
+  mapLayer = config.mapLayer
+  propLayer = config.propLayer
+  ninjaBody = config.ninjaBody
+  pixelsPerMeter = config.pixelsPerMeter
+  staticsColor = config.staticsColor
+
   // props first (rendered below the level as of now)
-  imagesData = PIXI.loader.resources['level1'].data.image
+  imagesData = PIXI.loader.resources['level1'].data.image || []
 
   for (i = 0; i < imagesData.length; i++) {
 
     imageData = imagesData[i]
-    imageName = getFileNameFromUrl(imageData.file)
+    imageName = gameUtils.getFileNameFromUrl(imageData.file)
     imagePosition = [imageData.center.x, -imageData.center.y]
 
     texture = PIXI.loader.resources[imageName].texture
@@ -52559,7 +52278,7 @@ var loadMap = function (mapLayer, propLayer) {
 
     if (bodyData.name === 'ninja') {
 
-      ninjaStartPosition = [bodyData.position.x, -bodyData.position.y]
+      this.ninjaStartPosition = [bodyData.position.x, -bodyData.position.y]
       ninjaBody.position = [bodyData.position.x, -bodyData.position.y]
 
     } else if (bodyData.name === 'wall' || bodyData.name === 'goal') {
@@ -52581,35 +52300,57 @@ var loadMap = function (mapLayer, propLayer) {
       for (j = 0; j < fixturesData.length; j++) {
         fixtureData = fixturesData[j]
 
-        boxWidth = Math.abs(fixtureData.polygon.vertices.x[0] - fixtureData.polygon.vertices.x[2])
-        boxHeight = Math.abs(fixtureData.polygon.vertices.y[0] - fixtureData.polygon.vertices.y[2])
+        var vertices = []
 
-        boxPositionX = fixtureData.polygon.vertices.x[0] + fixtureData.polygon.vertices.x[2]
-        boxPositionY = fixtureData.polygon.vertices.y[0] + fixtureData.polygon.vertices.y[2]
+        var graphics = new PIXI.Graphics()
+        graphics.beginFill(staticsColor)
 
-        box = new p2.Box({
-          width: boxWidth,
-          height: boxHeight,
-          position: [boxPositionX, boxPositionY],
-          // NOTE: angle for fixtures in rube does not exist
-          collisionGroup: WALL,
-          collisionMask: PLAYER | SENSOR,
+        for (k = fixtureData.polygon.vertices.x.length - 1; k >= 0; k--) {
+
+          vertices.push([
+            fixtureData.polygon.vertices.x[k],
+            -fixtureData.polygon.vertices.y[k],
+            ])
+
+        }
+
+        for (k = 0; k < vertices.length; k++) {
+          if (k === 0) {
+            graphics.moveTo(
+                vertices[k][0] * pixelsPerMeter,
+                vertices[k][1] * pixelsPerMeter)
+          } else {
+            graphics.lineTo(
+                vertices[k][0] * pixelsPerMeter,
+                vertices[k][1] * pixelsPerMeter)
+          }
+        }
+
+        graphics.endFill()
+
+        var convex = new p2.Convex({
+          vertices: vertices,
+          collisionGroup: gameVars.WALL,
+          collisionMask: gameVars.PLAYER | gameVars.SENSOR | gameVars.WALL,
         })
 
-        body.addShape(box)
+        body.addShape(convex)
 
-        // create the sprite for this shape
-        var sprite = new PIXI.Sprite(PIXI.loader.resources['static_texture_8x8'].texture)
+        var container = new PIXI.Container()
+        container.addChild(graphics)
+        container.cacheAsBitmap = true
 
-        body.toWorldFrame(worldPosition, [boxPositionX, boxPositionY])
-        sprite.anchor.x = 0.5
-        sprite.anchor.y = 0.5
-        sprite.x = worldPosition[0] * pixelsPerMeter
-        sprite.y = worldPosition[1] * pixelsPerMeter
-        sprite.rotation = body.angle
-        sprite.width = boxWidth * pixelsPerMeter
-        sprite.height = boxHeight * pixelsPerMeter
-        mapLayer.addChild(sprite)
+        container.x = body.position[0] * pixelsPerMeter
+        container.y = body.position[1] * pixelsPerMeter
+        container.rotation = body.angle
+
+        mapLayer.addChild(container)
+
+        if (body.type === p2.Body.DYNAMIC) {
+          // add it to the collection 
+          config.dynamicSprites[body.id] = container // NOTE: I know this is backwards
+        }
+
       }
 
     } else if (bodyData.name === 'prop_texture') {
@@ -52643,7 +52384,569 @@ var loadMap = function (mapLayer, propLayer) {
 
   }
 
-  createCeiling()
+}
+
+module.exports = MapLoader
+
+},{"./gameUtils":264,"./gameVars":265,"p2":51}],261:[function(require,module,exports){
+var debug = require('debug')
+var eventLog = debug('NinjaGraphics:events')
+
+var NinjaGraphics = function (config) {
+
+  var spriteSizeFactor = 1.15 // to make up for the whitespace in the frames
+  var runningSpriteAnimationBaseSpeed = 0.20 // TODO: what is this in ms?
+
+  var ninjaHeight = config.ninjaHeight
+  var pixelsPerMeter = config.pixelsPerMeter
+  var scaleRatio = (ninjaHeight * pixelsPerMeter * spriteSizeFactor) / PIXI.loader.resources['inair_upwards'].texture.height
+
+  this.config = config
+  this.currentState = null
+
+  this.container = new PIXI.Container()
+  config.container.addChild(this.container)
+
+  this.scaleContainer = new PIXI.Container()
+  this.container.addChild(this.scaleContainer)
+
+  this.scaleContainer.scale.x = scaleRatio
+  this.scaleContainer.scale.y = scaleRatio
+
+  // in-air upwards sprite
+  this.inAirUpwardsSprite = new PIXI.Sprite(PIXI.loader.resources['inair_upwards'].texture)
+  this.inAirUpwardsSprite.anchor.x = 0.5
+  this.inAirUpwardsSprite.anchor.y = 0.5
+
+  // in-air falling sprite
+  this.inAirFallingSprite = new PIXI.Sprite(PIXI.loader.resources['inair_falling'].texture)
+  this.inAirFallingSprite.anchor.x = 0.5
+  this.inAirFallingSprite.anchor.y = 0.5
+
+  // running sprite
+  var runningTexture = PIXI.loader.resources['runninganimation'].texture
+  var frameWidth = runningTexture.width / 2
+  var frameHeight = runningTexture.height / 2
+
+  var runningSpriteStrip = config.spriteUtilities.filmstrip('runninganimation', frameWidth, frameHeight)
+  this.runningSprite = config.spriteUtilities.sprite(runningSpriteStrip)
+  this.runningSprite.anchor.x = 0.5
+  this.runningSprite.anchor.y = 0.5
+  this.runningSprite.animationSpeed = runningSpriteAnimationBaseSpeed
+  this.runningSprite.play()
+
+  // headband
+  var texture = PIXI.loader.resources['headband1'].texture
+  this.headband1Points = [
+    new PIXI.Point(0, 16),
+    new PIXI.Point(8, 16),
+    new PIXI.Point(16, 16),
+    new PIXI.Point(24, 16),
+    new PIXI.Point(31, 16),
+  ]
+  this.headband1 = new PIXI.mesh.Rope(texture, this.headband1Points)
+  this.headband1.x = -this.runningSprite.width * 0.20
+  this.headband1.y = -this.runningSprite.height * 0.30
+  this.headband1.pivot.x = texture.width
+  this.headband1.pivot.y = texture.height / 2
+
+  texture = PIXI.loader.resources['headband2'].texture
+  this.headband2Points = [
+    new PIXI.Point(0, 16),
+    new PIXI.Point(8, 16),
+    new PIXI.Point(16, 16),
+    new PIXI.Point(24, 16),
+    new PIXI.Point(31, 16),
+  ]
+  this.headband2 = new PIXI.mesh.Rope(texture, this.headband2Points)
+  this.headband2.x = -this.runningSprite.width * 0.18
+  this.headband2.y = -this.runningSprite.height * 0.28
+  this.headband2.pivot.x = texture.width
+  this.headband2.pivot.y = texture.height / 2
+
+  // add sprites in correct z-order
+  this.scaleContainer.addChild(this.headband2)
+  this.scaleContainer.addChild(this.inAirUpwardsSprite)
+  this.scaleContainer.addChild(this.inAirFallingSprite)
+  this.scaleContainer.addChild(this.runningSprite)
+  this.scaleContainer.addChild(this.headband1)
+
+  this.headbandCount = 0
+
+}
+
+NinjaGraphics.STATE_RUNNING = 'STATE_RUNNING'
+NinjaGraphics.STATE_INAIR_UPWARDS = 'STATE_INAIR_UPWARDS'
+NinjaGraphics.STATE_INAIR_FALLING = 'STATE_INAIR_FALLING'
+NinjaGraphics.STATE_INAIR_HOOKED = 'STATE_INAIR_HOOKED'
+NinjaGraphics.STATE_BOUNCED_LEFT = 'STATE_BOUNCED_LEFT'
+NinjaGraphics.STATE_BOUNCED_RIGHT = 'STATE_BOUNCED_RIGHT'
+
+NinjaGraphics.prototype.changeState = function (newState) {
+
+  if (newState === this.currentState) {
+    return
+  }
+
+  eventLog('change to', newState)
+
+  switch (newState) {
+    case NinjaGraphics.STATE_RUNNING:
+      this.runningSprite.visible = true
+
+      this.inAirUpwardsSprite.visible = false
+      this.inAirFallingSprite.visible = false
+
+      this.container.scale.x = 1
+      this.headband1.scale.x = 1
+      this.headband2.scale.x = 1
+      break
+    case NinjaGraphics.STATE_INAIR_UPWARDS:
+      this.inAirUpwardsSprite.visible = true
+
+      this.inAirFallingSprite.visible = false
+      this.runningSprite.visible = false
+
+      this.container.scale.x = 1
+      this.headband1.scale.x = 1
+      this.headband2.scale.x = 1
+      break
+    case NinjaGraphics.STATE_INAIR_HOOKED:
+    case NinjaGraphics.STATE_INAIR_FALLING:
+      this.inAirFallingSprite.visible = true
+
+      this.runningSprite.visible = false
+      this.inAirUpwardsSprite.visible = false
+
+      this.container.scale.x = 1
+      this.headband1.scale.x = 1
+      this.headband2.scale.x = 1
+      break
+    case NinjaGraphics.STATE_BOUNCED_LEFT:
+      this.inAirFallingSprite.visible = true
+
+      this.runningSprite.visible = false
+      this.inAirUpwardsSprite.visible = false
+
+      this.container.scale.x = 1
+      this.headband1.scale.x = 1
+      this.headband2.scale.x = 1
+      break
+    case NinjaGraphics.STATE_BOUNCED_RIGHT:
+      this.inAirFallingSprite.visible = true
+
+      this.runningSprite.visible = false
+      this.inAirUpwardsSprite.visible = false
+
+      this.container.scale.x = -1
+      this.headband1.scale.x = -1
+      this.headband2.scale.x = -1
+      break
+  }
+
+  this.currentState = newState
+}
+
+NinjaGraphics.prototype.draw = function (x, y, rotation, ninjaBody) {
+
+  // set the values to be used easier from outside
+  this.x = x
+  this.y = y
+  this.rotation = rotation
+
+  // set values to container
+  this.container.x = x
+  this.container.y = y
+  this.container.rotation = rotation
+
+  this.headbandCount++
+
+  var ninjaBodySpeed = Math.sqrt(ninjaBody.velocity[0] * ninjaBody.velocity[0] + ninjaBody.velocity[1] * ninjaBody.velocity[1])
+
+  var headbandSpeed = ninjaBodySpeed * 0.8
+  if (headbandSpeed < 0.1) {
+    headbandSpeed = 0.1
+  }
+
+  var velAngle = Math.atan2(ninjaBody.velocity[1], ninjaBody.velocity[0]) - 0.2
+  if (headbandSpeed < 1.5) {
+    velAngle = Math.PI * -0.4
+  }
+  this.headband1.rotation = velAngle
+  this.headband2.rotation = velAngle
+
+  for (var i = 0; i < this.headband1Points.length - 1; i++) {
+    var point = this.headband1Points[i]
+    point.y = Math.sin(i * 0.6 + this.headbandCount / 1.6) * (headbandSpeed * (32 - i * 8) / 32) + 16
+
+    point = this.headband2Points[i]
+    point.y = Math.cos(i * 0.6 + this.headbandCount / 1.6) * (headbandSpeed * (32 - i * 8) / 32) + 16
+  }
+
+}
+
+module.exports = NinjaGraphics
+
+},{"debug":5}],262:[function(require,module,exports){
+var p2 = require('p2')
+
+var NinjaSensor = function (config) {
+
+  this.config = config
+  this.name = config.name
+  this.relativePosition = p2.vec2.clone(config.relativePosition)
+
+  this.shape = new p2.Box({
+    width: config.width,
+    height: config.height,
+    collisionGroup: config.collisionGroup,
+    collisionMask: config.collisionMask,
+    sensor: true,
+  })
+  this.shape.worldPosition = [0, 0] // TODO: what is this? (debug draw?)
+  this.shape.previousWorldPosition = [0, 0] // TODO: what is this? (debug draw?)
+  this.shape.name = this.name
+
+  // NOTE: setting position needs to be done after it's been added to the body
+  var intervalId = setInterval(function () {
+    if (this.shape.body) {
+      this.shape.position = config.relativePosition // NOTE: using the one sent in, not the saved
+      clearInterval(intervalId)
+    }
+  }.bind(this), 2)
+
+  this.contactCount = 0
+  this.isContactUsed = false
+  this.stepsSinceUsed = 0
+}
+
+NinjaSensor.prototype.setContactUsed = function (value) {
+  this.isContactUsed = value
+
+  if (this.isContactUsed === true) {
+    this.stepsSinceUsed = 0
+  }
+}
+
+NinjaSensor.prototype.isContactUsable = function () {
+  return !this.isContactUsed && this.contactCount > 0
+}
+
+NinjaSensor.prototype.postStep = function () {
+
+  if (this.isContactUsed === true && this.contactCount === 0) {
+    this.isContactUsed = false
+  }
+
+  this.stepsSinceUsed++
+
+}
+
+module.exports = NinjaSensor
+
+},{"p2":51}],263:[function(require,module,exports){
+(function (global){
+var debug = require('debug')
+var p2 = require('p2')
+var DebugDraw = require('./DebugDraw')
+var SpriteUtilities = require('../lib/spriteUtilities')
+var gameUtils = require('./gameUtils')
+var NinjaGraphics = require('./NinjaGraphics')
+var NinjaSensor = require('./NinjaSensor')
+var Hook = require('./Hook')
+var MapLoader = require('./MapLoader')
+var gameVars = require('./gameVars')
+
+var actionsLog = debug('gameScene:actions')
+var buttonsLog = debug('gameScene:buttons')
+
+var isPaused = false
+
+var spriteUtilities
+var mapLoader
+
+var pixelsPerMeter = 50
+var heightInMeters = 10
+var widthInPixels
+
+var world = new p2.World({
+  gravity: [0, 10]
+})
+
+window.world = world
+
+var buttonEventQueue = []
+var BUTTON_UPWARD_DOWN = 'BUTTON_UPWARD_DOWN'
+var BUTTON_UPWARD_UP = 'BUTTON_UPWARD_UP'
+var BUTTON_FORWARD_DOWN = 'BUTTON_FORWARD_DOWN'
+var BUTTON_FORWARD_UP = 'BUTTON_FORWARD_UP'
+
+var leftButton
+var rightButton
+
+var forwardHook
+var shouldRemoveForwardHook = false
+var shouldAddForwardHook = false
+
+var upwardHook
+var shouldRemoveUpwardHook = false
+var shouldAddUpwardHook = false
+
+var currentHook = null
+
+var shouldJump = false
+var isRunning = false
+
+var wallPushForce = 85
+var wallBounceForceX = 100
+var wallBounceForceY = -70
+var wallBounceThreshold = 1
+var jumpUpForce = 100
+var pressingForce = 12
+var minimumRunningSpeed = 10
+var currentRunningSpeed = 0
+var forwardHookShortenSpeed = 0.015
+var forwardHookRelativeAimX = 10
+var forwardHookRelativeAimY = -12
+var upwardHookRelativeAimX = 0
+var upwardHookRelativeAimY = -12
+
+var ninjaBody
+var ninjaHandBody
+var ninjaGraphics
+var ropeSprite
+var backgroundSprite
+var skySprite
+var dynamicSprites = {}
+
+var ninjaBottomSensor
+var ninjaLeftSensor
+var ninjaRightSensor
+
+var isKeyUpwardDown = false
+var isKeyForwardDown = false
+
+var onLeftDown = function (event) {
+  buttonsLog('onLeftDown', event)
+  buttonEventQueue.push(BUTTON_UPWARD_DOWN)
+}
+
+var onLeftUp = function (event) {
+  buttonsLog('onLeftUp', event)
+  buttonEventQueue.push(BUTTON_UPWARD_UP)
+}
+
+var onRightDown = function (event) {
+  buttonsLog('onRightDown', event)
+  buttonEventQueue.push(BUTTON_FORWARD_DOWN)
+}
+
+var onRightUp = function (event) {
+  buttonsLog('onRightUp', event)
+  buttonEventQueue.push(BUTTON_FORWARD_UP)
+}
+
+// TODO: remove, this is only for debug
+var onKeyPress = function (event) {
+  if (event.key === 'r') {
+    restartNinja()
+  }
+
+  if (event.key === 'p') {
+    isPaused = !isPaused
+  }
+}
+
+var onKeyDown = function (event) {
+  if (event.key === 'ArrowUp' && !isKeyUpwardDown) {
+    buttonEventQueue.push(BUTTON_UPWARD_DOWN)
+    isKeyUpwardDown = true
+  }
+
+  if (event.key === 'ArrowRight' && !isKeyForwardDown) {
+    buttonEventQueue.push(BUTTON_FORWARD_DOWN)
+    isKeyForwardDown = true
+  }
+}
+
+var onKeyUp = function (event) {
+  if (event.key === 'ArrowUp' && isKeyUpwardDown) {
+    buttonEventQueue.push(BUTTON_UPWARD_UP)
+    isKeyUpwardDown = false
+  }
+
+  if (event.key === 'ArrowRight' && isKeyForwardDown) {
+    buttonEventQueue.push(BUTTON_FORWARD_UP)
+    isKeyForwardDown = false
+  }
+}
+
+var restartNinja = function () {
+  ninjaBody.position[0] = mapLoader.ninjaStartPosition[0]
+  ninjaBody.position[1] = mapLoader.ninjaStartPosition[1]
+
+  ninjaHandBody.position[0] = mapLoader.ninjaStartPosition[0]
+  ninjaHandBody.position[1] = mapLoader.ninjaStartPosition[1]
+
+  ninjaBody.velocity[0] = 0
+  ninjaBody.velocity[1] = 0
+}
+
+var createNinja = function() {
+
+  var ninjaRadius
+  var bottomShape
+  var topShape
+  var middleShape
+
+  ninjaRadius = 0.375
+
+  // body
+  ninjaBody = new p2.Body({
+    mass: 0.35,
+    velocity: [0.5, -3],
+  })
+  ninjaBody.fixedRotation = true
+
+  // hand body
+  ninjaHandBody = new p2.Body({
+    mass: 0.1,
+  })
+  ninjaHandBody.name = 'ninjaHandBody'
+  ninjaHandBody.position[0] = ninjaRadius + 0.07
+  ninjaHandBody.position[1] = -0.15
+
+  // shapes
+  middleShape = new p2.Box({
+    width: ninjaRadius * 2,
+    height: ninjaRadius * 2,
+    collisionGroup: gameVars.PLAYER,
+    collisionMask: gameVars.WALL,
+  })
+  ninjaBody.addShape(middleShape)
+  middleShape.name = 'middleShape'
+
+  bottomShape = new p2.Circle({
+    radius: ninjaRadius * 1.1,
+    collisionGroup: gameVars.PLAYER,
+    collisionMask: gameVars.WALL,
+  })
+  ninjaBody.addShape(bottomShape)
+  bottomShape.position[1] = ninjaRadius
+  bottomShape.name = 'bottomShape'
+
+  topShape = new p2.Circle({
+    radius: ninjaRadius,
+    collisionGroup: gameVars.PLAYER,
+    collisionMask: gameVars.WALL,
+  })
+  ninjaBody.addShape(topShape)
+  topShape.position[1] = -ninjaRadius
+  topShape.name = 'topShape'
+
+  // sensor bottom
+  ninjaBottomSensor = new NinjaSensor({
+    name: 'ninjaBottomSensor',
+    width: 0.4,
+    height: 0.2,
+    collisionGroup: gameVars.SENSOR,
+    collisionMask: gameVars.WALL,
+    relativePosition: [0, ninjaRadius * 2],
+  })
+
+  ninjaBody.addShape(ninjaBottomSensor.shape)
+
+  // sensor left
+  ninjaLeftSensor = new NinjaSensor({
+    name: 'ninjaLeftSensor',
+    width: 0.15,
+    height: 0.5,
+    collisionGroup: gameVars.SENSOR,
+    collisionMask: gameVars.WALL,
+    relativePosition: [-ninjaRadius, 0],
+  })
+
+  ninjaBody.addShape(ninjaLeftSensor.shape)
+
+  // sensor right
+  ninjaRightSensor = new NinjaSensor({
+    name: 'ninjaRightSensor',
+    width: 0.15,
+    height: 0.5,
+    collisionGroup: gameVars.SENSOR,
+    collisionMask: gameVars.WALL,
+    relativePosition: [ninjaRadius, 0],
+  })
+
+  ninjaBody.addShape(ninjaRightSensor.shape)
+
+  // add to world
+  ninjaBody.damping = 0
+  ninjaBody.angularDamping = 0
+  ninjaBody.name = 'ninjaBody'
+  world.addBody(ninjaBody)
+  world.addBody(ninjaHandBody)
+
+  // hand body constraint
+  ninjaHandBodyConstraint = new p2.LockConstraint(ninjaBody, ninjaHandBody, {
+    collideConnected: false,
+  })
+
+  world.addConstraint(ninjaHandBodyConstraint)
+
+}
+
+var createHooks = function () {
+  
+  forwardHook = new Hook({
+    world: world,
+    source: ninjaHandBody,
+    relativeAimPoint: [forwardHookRelativeAimX, forwardHookRelativeAimY],
+    collisionMask: gameVars.WALL | gameVars.CEILING,
+    shortenSpeed: forwardHookShortenSpeed,
+  })
+
+  upwardHook = new Hook({
+    world: world,
+    source: ninjaHandBody,
+    relativeAimPoint: [upwardHookRelativeAimX, upwardHookRelativeAimY],
+    collisionMask: gameVars.WALL | gameVars.CEILING,
+    shortenSpeed: forwardHookShortenSpeed,
+  })
+
+}
+
+var createCeiling = function () {
+
+  var ceilingBody
+  var ceilingShape
+  var highestX
+  var i
+
+  highestX = 0
+
+  // NOTE: only getting the bodies position since we only need an approx. value
+  for (i = 0; i < world.bodies.length; i++) {
+    if (world.bodies[i].position[0] > highestX) {
+      highestX = world.bodies[i].position[0]
+    }
+  }
+
+  ceilingBody = new p2.Body({
+    position: [highestX / 2, -1],
+    type: p2.Body.STATIC,
+  })
+
+  ceilingShape = new p2.Box({
+    position: [0, 0],
+    width: highestX,
+    height: 2,
+    collisionGroup: gameVars.CEILING,
+  })
+
+  ceilingBody.addShape(ceilingShape)
+
+  world.addBody(ceilingBody)
 
 }
 
@@ -52707,6 +53010,14 @@ var postStep = function () {
     }
   }
 
+  actionsLog('STEP')
+
+  // update the sensors' values
+  ninjaLeftSensor.postStep()
+  ninjaRightSensor.postStep()
+  ninjaBottomSensor.postStep()
+
+  // remove hook when flying above screen
   if (currentHook && ninjaBody.position[1] < 0) {
     currentHook.unsetHook()
     currentHook = null
@@ -52718,6 +53029,8 @@ var postStep = function () {
     // shorten the rope
     currentHook.shorten()
 
+    ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_HOOKED)
+
     // pressing (leaning back when swinging kind of)
     if (currentHook.body.position[0] - ninjaBody.position[0] < 1 &&
         currentHook.body.position[0] - ninjaBody.position[0] > 0 &&
@@ -52728,28 +53041,31 @@ var postStep = function () {
     }
 
     // push away from wall on left side
-    if (ninjaLeftSensorContactCount > 0 && !pushedLeft && ninjaBody.velocity[0] > 0) {
+    if (ninjaLeftSensor.isContactUsable() && ninjaBody.velocity[0] > 0) {
       if (ninjaBody.velocity[0] < 0) {
         ninjaBody.velocity[0] = 0
       }
       ninjaBody.applyForce([wallPushForce, 0])
-      pushedLeft = true
+      ninjaLeftSensor.setContactUsed(true)
       actionsLog('PUSHED LEFT')
     }
 
     // push away from wall on right side
-    if (ninjaRightSensorContactCount > 0 && !pushedRight && ninjaBody.velocity[0] < 0) {
+    if (ninjaRightSensor.isContactUsable() && ninjaBody.velocity[0] < 0) {
       if (ninjaBody.velocity[0] > 0) {
         ninjaBody.velocity[0] = 0
       }
       ninjaBody.applyForce([-wallPushForce, 0])
-      pushedRight = true
+      ninjaRightSensor.setContactUsed(true)
       actionsLog('PUSHED RIGHT')
     }
   }
 
   // determine if isRunning
-  if (ninjaBottomSensorContactCount > 0 && !hasJumped) {
+  if (!shouldJump &&
+      ninjaBottomSensor.isContactUsable() &&
+      ninjaLeftSensor.stepsSinceUsed > 2 &&
+      ninjaRightSensor.stepsSinceUsed > 2) {
     if (!isRunning) {
       if (ninjaBody.velocity[0] < minimumRunningSpeed) {
         currentRunningSpeed = minimumRunningSpeed
@@ -52758,16 +53074,22 @@ var postStep = function () {
       }
     }
     isRunning = true
+    ninjaBody.velocity[0] = currentRunningSpeed // TODO: don't set velocity, check velocity and apply force instead
+    actionsLog('RUNNING')
+    ninjaGraphics.changeState(NinjaGraphics.STATE_RUNNING)
   } else {
     isRunning = false
+    if (ninjaGraphics.currentState !== NinjaGraphics.STATE_BOUNCED_RIGHT &&
+      ninjaBody.velocity[1] > 0) {
+      ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_FALLING)
+    }
   }
 
   // jump away from wall on left side
-  if (!bounceLeft &&
-      !currentHook &&
+  if (!currentHook &&
       !isRunning &&
-      ninjaLeftSensorContactCount > 0 &&
-      ninjaBody.velocity[0] > 0) {
+      ninjaBody.velocity[0] > 0 &&
+      ninjaLeftSensor.isContactUsable()) {
 
     var y = 0
     if (ninjaBody.velocity[0] < 0) {
@@ -52777,22 +53099,16 @@ var postStep = function () {
       y = wallBounceForceY
     }
     ninjaBody.applyForce([wallBounceForceX, y])
-    bounceLeft = true
+    ninjaLeftSensor.setContactUsed(true)
+    ninjaGraphics.changeState(NinjaGraphics.STATE_BOUNCED_LEFT)
     actionsLog('BOUNCE LEFT', y)
   }
 
-  // reset left sensor logic
-  if (ninjaLeftSensorContactCount === 0) {
-    pushedLeft = false
-    bounceLeft = false
-  }
-
   // jump away from wall on right side
-  if (!bounceRight &&
-      !currentHook &&
+  if (!currentHook &&
       !isRunning &&
-      ninjaRightSensorContactCount > 0 &&
-      ninjaBody.velocity[0] < 0) {
+      ninjaBody.velocity[0] < 0 &&
+      ninjaRightSensor.isContactUsable()) {
 
     var y = 0
     if (ninjaBody.velocity[0] > 0) {
@@ -52802,14 +53118,9 @@ var postStep = function () {
       y = wallBounceForceY
     }
     ninjaBody.applyForce([-wallBounceForceX, y])
-    bounceRight = true
+    ninjaRightSensor.setContactUsed(true)
+    ninjaGraphics.changeState(NinjaGraphics.STATE_BOUNCED_RIGHT)
     actionsLog('BOUNCE RIGHT', y)
-  }
-
-  // reset right sensor logic
-  if (ninjaRightSensorContactCount === 0) {
-    pushedRight = false
-    bounceRight = false
   }
 
   // jump up
@@ -52818,56 +53129,39 @@ var postStep = function () {
       ninjaBody.velocity[1] = 0
     }
     ninjaBody.applyForce([0, -jumpUpForce])
-    hasJumped = true
+    ninjaBottomSensor.setContactUsed(true)
     shouldJump = false
-    isRunning = false
     actionsLog('JUMP')
-    ninjaGraphics.handleEvent(NinjaGraphics.EVENT_INAIR_UPWARDS)
+    ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_UPWARDS)
   }
 
-  // determine if already jumped while in contact with ground
-  if (ninjaBottomSensorContactCount === 0) {
-    hasJumped = false
-    ninjaGraphics.handleEvent(NinjaGraphics.EVENT_INAIR_UPWARDS)
+  if (!isRunning &&
+      ninjaGraphics.currentState === NinjaGraphics.STATE_RUNNING) {
+    ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_FALLING)
   }
 
-  if (!currentHook && isRunning && !hasJumped) {
-    // is on top of wall and should be running
-
-    ninjaBody.velocity[0] = currentRunningSpeed // TODO: don't set velocity, check velocity and apply force instead
-    actionsLog('RUNNING')
-    ninjaGraphics.handleEvent(NinjaGraphics.EVENT_RUNNING)
-
+  if (ninjaGraphics.currentState === NinjaGraphics.STATE_INAIR_FALLING &&
+      ninjaBody.velocity[1] < 0) {
+    ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_UPWARDS)
+  } else if (ninjaGraphics.currentState === NinjaGraphics.STATE_INAIR_UPWARDS &&
+      ninjaBody.velocity[1] > 0) {
+    ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_FALLING)
   }
-
-  if (!isRunning) {
-    if (currentHook) {
-      ninjaGraphics.handleEvent(NinjaGraphics.EVENT_INAIR_FALLING)
-    } else if (ninjaBody.velocity[1] < 0) {
-      ninjaGraphics.handleEvent(NinjaGraphics.EVENT_INAIR_UPWARDS)
-    } else if (ninjaBody.velocity[1] > 0) {
-      ninjaGraphics.handleEvent(NinjaGraphics.EVENT_INAIR_FALLING)
-    }
-  }
-
-  // TODO: what is this? is it for debugging?
-  ninjaBottomSensor.previousWorldPosition = p2.vec2.clone(ninjaBottomSensor.worldPosition)
-  ninjaBody.toWorldFrame(ninjaBottomSensor.worldPosition, ninjaBottomSensor.position)
 
 }
 
 var beginContact = function (contactEvent) {
   // console.log('beginContact', contactEvent.shapeA.name, contactEvent.shapeB.name, contactEvent)
-  if (contactEvent.shapeA === ninjaBottomSensor || contactEvent.shapeB === ninjaBottomSensor) {
-    ninjaBottomSensorContactCount++
+  if (contactEvent.shapeA === ninjaBottomSensor.shape || contactEvent.shapeB === ninjaBottomSensor.shape) {
+    ninjaBottomSensor.contactCount++
   }
 
-  if (contactEvent.shapeA === ninjaLeftSensor || contactEvent.shapeB === ninjaLeftSensor) {
-    ninjaLeftSensorContactCount++
+  if (contactEvent.shapeA === ninjaLeftSensor.shape || contactEvent.shapeB === ninjaLeftSensor.shape) {
+    ninjaLeftSensor.contactCount++
   }
 
-  if (contactEvent.shapeA === ninjaRightSensor || contactEvent.shapeB === ninjaRightSensor) {
-    ninjaRightSensorContactCount++
+  if (contactEvent.shapeA === ninjaRightSensor.shape || contactEvent.shapeB === ninjaRightSensor.shape) {
+    ninjaRightSensor.contactCount++
 
     // end of level check
     if (contactEvent.bodyA.name === 'goal' || contactEvent.bodyB.name === 'goal') {
@@ -52878,16 +53172,16 @@ var beginContact = function (contactEvent) {
 
 var endContact = function (contactEvent) {
   // console.log('endContact',  contactEvent.shapeA.name, contactEvent.shapeB.name, contactEvent)
-  if (contactEvent.shapeA === ninjaBottomSensor || contactEvent.shapeB === ninjaBottomSensor) {
-    ninjaBottomSensorContactCount--
+  if (contactEvent.shapeA === ninjaBottomSensor.shape || contactEvent.shapeB === ninjaBottomSensor.shape) {
+    ninjaBottomSensor.contactCount--
   }
 
-  if (contactEvent.shapeA === ninjaLeftSensor || contactEvent.shapeB === ninjaLeftSensor) {
-    ninjaLeftSensorContactCount--
+  if (contactEvent.shapeA === ninjaLeftSensor.shape || contactEvent.shapeB === ninjaLeftSensor.shape) {
+    ninjaLeftSensor.contactCount--
   }
 
-  if (contactEvent.shapeA === ninjaRightSensor || contactEvent.shapeB === ninjaRightSensor) {
-    ninjaRightSensorContactCount--
+  if (contactEvent.shapeA === ninjaRightSensor.shape || contactEvent.shapeB === ninjaRightSensor.shape) {
+    ninjaRightSensor.contactCount--
   }
 }
 
@@ -52899,21 +53193,23 @@ var gameScene = {
     pixelsPerMeter = this.renderer.view.height / heightInMeters
 
     spriteUtilities = new SpriteUtilities(PIXI, this.renderer)
+    mapLoader = new MapLoader()
 
     // set up layers
     this.backgroundLayer = new PIXI.Container()
     this.stage = new PIXI.Container()
+    var mapLayer = new PIXI.Container()
     var propLayer = new PIXI.Container()
     var guiLayer = new PIXI.Container()
-    // this.debugDrawContainer = new PIXI.Container()
-    // this.debugDrawContainer.alpha = 0.3
+    this.debugDrawContainer = new PIXI.Container()
 
     this.baseStage.addChild(this.backgroundLayer)
     this.baseStage.addChild(this.stage)
     this.baseStage.addChild(guiLayer)
-    // this.baseStage.addChild(this.debugDrawContainer)
+    this.baseStage.addChild(this.debugDrawContainer)
 
     this.stage.addChild(propLayer)
+    this.stage.addChild(mapLayer)
 
     // set up background layer contents
     // NOTE: bc of the nature of the image it has to be this exact square (suns/moons are round)
@@ -52964,16 +53260,26 @@ var gameScene = {
     // set up physics
     createNinja()
     createHooks() // depends on createNinja
-    loadMap(this.stage, propLayer) // depends on createNinja
+    mapLoader.loadMap({ // depends on createNinja
+      world: world,
+      mapLayer: mapLayer,
+      propLayer: propLayer,
+      ninjaBody: ninjaBody,
+      pixelsPerMeter: pixelsPerMeter,
+      staticsColor: 0x261d05,
+      dynamicSprites: dynamicSprites,
+    })
+    createCeiling()
 
-    // set up ninja and hook
+    // set up ninja and hook graphics
+    createHookSprite(this.stage)
     ninjaGraphics = new NinjaGraphics({
       container: this.stage,
-      ninjaRadius: ninjaRadius,
+      ninjaHeight: 1.5,
       pixelsPerMeter: pixelsPerMeter,
       spriteUtilities: spriteUtilities,
     })
-    createHookSprite(this.stage)
+    ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_FALLING)
 
     world.on('beginContact', beginContact)
     world.on('endContact', endContact)
@@ -52984,6 +53290,9 @@ var gameScene = {
     document.addEventListener('keydown', onKeyDown)
     document.addEventListener('keyup', onKeyUp)
 
+    // NOTE: for debugging purposes only, remove in prod
+    window.world = world
+
   },
   destroy: function () {
     this.stage = null
@@ -52993,6 +53302,10 @@ var gameScene = {
     // update objects
     // leave previous/next positions accessible
     // (velocities are in units/ms)
+
+    if (isPaused) {
+      return
+    }
 
     var stepInSeconds = stepInMilliseconds / 1000
     world.step(stepInSeconds)
@@ -53013,6 +53326,10 @@ var gameScene = {
     // (ratio is how far in the frame we've gone represented as a percentage, 0 - 1)
     // currentPosition * ratio + previousPosition * (1 - ratio)
 
+    if (isPaused) {
+      return
+    }
+
     currentHook = null
 
     x = gameUtils.calcInterpolatedValue(
@@ -53028,12 +53345,13 @@ var gameScene = {
     rotation = gameUtils.calcInterpolatedValue(
         ninjaBody.angle,
         ninjaBody.previousAngle,
-        ratio) * pixelsPerMeter
+        ratio)
 
     ninjaGraphics.draw(
         x,
         y,
-        rotation)
+        rotation,
+        ninjaBody)
 
     if (forwardHook.isHooked) {
       currentHook = forwardHook
@@ -53054,10 +53372,20 @@ var gameScene = {
           currentHook.body.previousPosition[1],
           ratio) * pixelsPerMeter
 
-      a = hookBodyX - ninjaGraphics.x
-      b = hookBodyY - ninjaGraphics.y
-      ropeSprite.x = ninjaGraphics.x
-      ropeSprite.y = ninjaGraphics.y
+      handX = gameUtils.calcInterpolatedValue(
+        ninjaHandBody.position[0],
+        ninjaHandBody.previousPosition[0],
+        ratio) * pixelsPerMeter
+
+      handY = gameUtils.calcInterpolatedValue(
+        ninjaHandBody.position[1],
+        ninjaHandBody.previousPosition[1],
+        ratio) * pixelsPerMeter
+
+      a = hookBodyX - handX
+      b = hookBodyY - handY
+      ropeSprite.x = handX
+      ropeSprite.y = handY
       ropeSprite.width = Math.sqrt(a * a + b * b)
       ropeSprite.rotation = Math.atan2(b, a)
 
@@ -53066,20 +53394,52 @@ var gameScene = {
       ropeSprite.visible = false
     }
 
+    for (var i = 0; i < world.bodies.length; i++) {
+      var body = world.bodies[i]
+
+      if (body.type === p2.Body.DYNAMIC &&
+          body.name !== 'ninjaBody' &&
+          body.name !== 'ninjaHandBody' &&
+          body.name !== 'hook') {
+
+        x = gameUtils.calcInterpolatedValue(
+            body.position[0],
+            body.previousPosition[0],
+            ratio) * pixelsPerMeter
+
+        y = gameUtils.calcInterpolatedValue(
+            body.position[1],
+            body.previousPosition[1],
+            ratio) * pixelsPerMeter
+
+        rotation = gameUtils.calcInterpolatedValue(
+            body.angle,
+            body.previousAngle,
+            ratio)
+
+        dynamicSprites[body.id].x = x
+        dynamicSprites[body.id].y = y
+        dynamicSprites[body.id].rotation = rotation
+      }
+    }
+
     if (ninjaGraphics.x > this.renderer.view.width / 4) {
       this.stage.x = -ninjaGraphics.x + this.renderer.view.width / 4
       backgroundSprite.tilePosition.x = this.stage.x * 0.1
     }
 
-    // DebugDraw.draw(this.debugDrawContainer, world, pixelsPerMeter, ratio)
-    // this.debugDrawContainer.x = this.stage.x
+    if (global.DEBUG_DRAW) {
+      DebugDraw.draw(this.debugDrawContainer, world, pixelsPerMeter, ratio)
+      this.debugDrawContainer.x = this.stage.x
+    }
 
   },
 }
 
 module.exports = gameScene
 
-},{"../lib/spriteUtilities":264,"./DebugDraw":256,"./Hook":257,"./NinjaGraphics":258,"./gameUtils":260,"debug":5,"p2":51}],260:[function(require,module,exports){
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../lib/spriteUtilities":269,"./DebugDraw":258,"./Hook":259,"./MapLoader":260,"./NinjaGraphics":261,"./NinjaSensor":262,"./gameUtils":264,"./gameVars":265,"debug":5,"p2":51}],264:[function(require,module,exports){
 
 var gameUtils = {}
 
@@ -53087,9 +53447,26 @@ gameUtils.calcInterpolatedValue = function (value, previousValue, interpolationR
   return value * interpolationRatio + previousValue * (1 - interpolationRatio)
 }
 
+gameUtils.getFileNameFromUrl = function (str) {
+  return str.split('/').pop().split('.').shift()
+}
+
 module.exports = gameUtils
 
-},{}],261:[function(require,module,exports){
+},{}],265:[function(require,module,exports){
+
+var gameVars = {}
+
+// collision groups
+gameVars.PLAYER = Math.pow(2, 0)
+gameVars.WALL = Math.pow(2, 1)
+gameVars.SENSOR = Math.pow(2, 2)
+gameVars.CEILING = Math.pow(2, 3)
+
+module.exports = gameVars
+
+},{}],266:[function(require,module,exports){
+(function (global){
 // var DebugConsole = require('./DebugConsole')
 console.log(require('./version'))
 var PIXI = require('pixi.js')
@@ -53098,13 +53475,18 @@ var gameScene = require('./gameScene.js')
 var loadGameScene = require('./loadGameScene.js')
 var ob = require('obscen')
 var windowLoad = require('window-load')
+var screenOrientation = require('screen-orientation')
 
 windowLoad(function () {
 
   // DebugConsole.init()
 
-  // init pixi renderer
+  global.DEBUG_DRAW = !!localStorage.getItem('DEBUG_DRAW')
+  global.DEBUG_MONITOR = !!localStorage.getItem('DEBUG_MONITOR')
+
   var noWebgl = !!localStorage.getItem('vars:noWebgl')
+
+  // init pixi renderer
   var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight, {}, noWebgl)
   document.body.appendChild(renderer.view)
   renderer.backgroundColor = 0xcbdbfc
@@ -53121,11 +53503,40 @@ windowLoad(function () {
     gameScene,
     ])
 
+  var appContainer = new PIXI.Container()
   var baseStage = new PIXI.Container()
+  var turnDeviceContainer = new PIXI.Container()
+  var debugTexts = new PIXI.Container()
 
-  var text = new PIXI.Text('This is a pixi text')
+  appContainer.addChild(baseStage)
+  appContainer.addChild(turnDeviceContainer)
+  appContainer.addChild(debugTexts)
 
-  baseStage.addChild(text)
+  // debug monitor text
+  if (!global.DEBUG_MONITOR) {
+    debugTexts.visible = false
+  }
+
+  var fpsText = new PIXI.Text('This is a pixi text', {
+    fill: 0x00ff00,
+  })
+  debugTexts.addChild(fpsText)
+
+  // turn device graphics
+  var turnDeviceBackground = new PIXI.Graphics()
+  turnDeviceBackground.beginFill(0x292929)
+  turnDeviceBackground.drawRect(0, 0, 8, 8)
+  turnDeviceBackground.scale.x = 200
+  turnDeviceBackground.scale.y = 300
+  turnDeviceBackground.endFill()
+  turnDeviceContainer.addChild(turnDeviceBackground)
+
+  var turnDeviceText = new PIXI.Text('Turn device to landscape', {
+    fill: 0xfcfcfc,
+  })
+  turnDeviceText.x = 200
+  turnDeviceText.y = 200
+  turnDeviceContainer.addChild(turnDeviceText)
 
   // init browserGameLoop
   var loop = browserGameLoop({
@@ -53134,34 +53545,52 @@ windowLoad(function () {
       slow: 1,
       input: function() {},
       update: function(step) {
-        sceneManager.update(step)
+        if (screenOrientation().direction === 'portrait') {
+          turnDeviceContainer.visible = true
+        } else {
+          turnDeviceContainer.visible = false
+          sceneManager.update(step)
+        }
       },
       render: function(ratio) {
-        sceneManager.draw(renderer, ratio)
-        text.text = 'fps: ' + Math.round(loop.getFps())
-        renderer.render(baseStage)
+        if (screenOrientation().direction === 'portrait') {
+          turnDeviceContainer.visible = true
+        } else {
+          turnDeviceContainer.visible = false
+          sceneManager.draw(renderer, ratio)
+        }
+        fpsText.text = 'fps: ' + Math.round(loop.getFps()) + '\nscreen orientation: ' + screenOrientation().direction
+        renderer.render(appContainer)
       },
   })
+  global.loop = loop
 
-  // start it!
-  gameScene.renderer = renderer
-  gameScene.baseStage = baseStage
-  sceneManager.changeScene('loadGame')
+  var intervalId = setInterval(function () {
+    if (screenOrientation().direction === 'portrait') {
+      turnDeviceContainer.visible = true
+      renderer.render(appContainer)
+    } else {
 
-  setTimeout(function () {
-    console.log('starting')
-    loop.start()
-  }, 1000)
+      // start it!
+      clearInterval(intervalId)
+
+      gameScene.renderer = renderer
+      gameScene.baseStage = baseStage
+      sceneManager.changeScene('loadGame')
+
+      loop.start()
+    }
+  }, 100)
   
 })
 
-},{"./gameScene.js":259,"./loadGameScene.js":262,"./version":263,"browser-game-loop":2,"obscen":16,"pixi.js":205,"window-load":255}],262:[function(require,module,exports){
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./gameScene.js":263,"./loadGameScene.js":267,"./version":268,"browser-game-loop":2,"obscen":16,"pixi.js":205,"screen-orientation":253,"window-load":257}],267:[function(require,module,exports){
 var loadGameScene = {
   name: 'loadGame',
   create: function () {
     PIXI.loader
     .add('rope', 'assets/images/rope.png')
-    .add('static_texture_8x8', 'assets/images/static_texture_8x8.png')
     .add('background1', 'assets/images/background1.png')
     .add('backgroundsky1', 'assets/images/backgroundsky1.png')
     .add('antenn001', 'assets/images/antenn001.png')
@@ -53173,6 +53602,8 @@ var loadGameScene = {
     .add('runninganimation', 'assets/images/gris_running.png')
     .add('inair_upwards', 'assets/images/gris_in_air_upwards.png')
     .add('inair_falling', 'assets/images/gris_in_air_falling.png')
+    .add('headband1', 'assets/images/headband1.png')
+    .add('headband2', 'assets/images/headband2.png')
     .add('level1', 'assets/json/level1.json') // TODO: bake this into bundle.js instead
     .load(function () {
       this.changeScene('game')
@@ -53191,10 +53622,10 @@ var loadGameScene = {
 
 module.exports = loadGameScene
 
-},{}],263:[function(require,module,exports){
-module.exports = "1.0.0-8"
+},{}],268:[function(require,module,exports){
+module.exports = "1.0.0-9"
 
-},{}],264:[function(require,module,exports){
+},{}],269:[function(require,module,exports){
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -56054,4 +56485,4 @@ var SpriteUtilities = (function () {
 
 
 module.exports = SpriteUtilities
-},{}]},{},[261]);
+},{}]},{},[266]);
