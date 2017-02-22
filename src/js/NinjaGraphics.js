@@ -130,12 +130,15 @@ NinjaGraphics.prototype.draw = function (x, y, rotation, ninjaBody) {
 
   var ninjaBodySpeed = Math.sqrt(ninjaBody.velocity[0] * ninjaBody.velocity[0] + ninjaBody.velocity[1] * ninjaBody.velocity[1])
 
-  var headbandSpeed = ninjaBodySpeed
-  if (headbandSpeed > 15) {
-    headbandSpeed = 15
+  var headbandSpeed = ninjaBodySpeed * 0.8
+  if (headbandSpeed < 0.1) {
+    headbandSpeed = 0.1
   }
 
-  var velAngle = Math.atan2(ninjaBody.velocity[1], ninjaBody.velocity[0])
+  var velAngle = Math.atan2(ninjaBody.velocity[1], ninjaBody.velocity[0]) - 0.2
+  if (headbandSpeed < 1.5) {
+    velAngle = Math.PI * -0.4
+  }
   this.headband1.rotation = velAngle
   this.headband2.rotation = velAngle
 
