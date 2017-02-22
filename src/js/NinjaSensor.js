@@ -37,7 +37,7 @@ NinjaSensor.prototype.isContactUsable = function () {
   return !this.isContactUsed && this.contactCount > 0
 }
 
-NinjaSensor.prototype.updateContact = function () {
+NinjaSensor.prototype.postStep = function () {
 
   if (this.isContactUsed === true && this.contactCount === 0) {
     this.isContactUsed = false

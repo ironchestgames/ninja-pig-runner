@@ -357,9 +357,9 @@ var postStep = function () {
   }
 
   // update the sensors' values
-  ninjaLeftSensor.updateContact()
-  ninjaRightSensor.updateContact()
-  ninjaBottomSensor.updateContact()
+  ninjaLeftSensor.postStep()
+  ninjaRightSensor.postStep()
+  ninjaBottomSensor.postStep()
 
   // remove hook when flying above screen
   if (currentHook && ninjaBody.position[1] < 0) {
