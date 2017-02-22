@@ -20,16 +20,12 @@ var NinjaGraphics = function (config) {
   this.inAirUpwardsSprite.width = ninjaHeight * pixelsPerMeter * spriteSizeFactor
   this.inAirUpwardsSprite.height = ninjaHeight * pixelsPerMeter * spriteSizeFactor
 
-  this.container.addChild(this.inAirUpwardsSprite)
-
   // in-air falling sprite
   this.inAirFallingSprite = new PIXI.Sprite(PIXI.loader.resources['inair_falling'].texture)
   this.inAirFallingSprite.anchor.x = 0.5
   this.inAirFallingSprite.anchor.y = 0.5
   this.inAirFallingSprite.width = ninjaHeight * pixelsPerMeter * spriteSizeFactor
   this.inAirFallingSprite.height = ninjaHeight * pixelsPerMeter * spriteSizeFactor
-
-  this.container.addChild(this.inAirFallingSprite)
 
   // running sprite
   var runningTexture = PIXI.loader.resources['runninganimation'].texture
@@ -46,10 +42,8 @@ var NinjaGraphics = function (config) {
   this.runningSprite.animationSpeed = runningSpriteAnimationBaseSpeed
   this.runningSprite.play()
 
-  this.container.addChild(this.runningSprite)
-
   // headband
-  var texture = PIXI.loader.resources['headband'].texture
+  var texture = PIXI.loader.resources['headband1'].texture
   this.headband1Points = [
     new PIXI.Point(0, 16),
     new PIXI.Point(8, 16),
@@ -63,6 +57,26 @@ var NinjaGraphics = function (config) {
   this.headband1.pivot.x = texture.width
   this.headband1.pivot.y = texture.height / 2
 
+  texture = PIXI.loader.resources['headband2'].texture
+  this.headband2Points = [
+    new PIXI.Point(0, 16),
+    new PIXI.Point(8, 16),
+    new PIXI.Point(16, 16),
+    new PIXI.Point(24, 16),
+    new PIXI.Point(31, 16),
+  ]
+  this.headband2 = new PIXI.mesh.Rope(texture, this.headband2Points)
+  this.headband2.x = -this.runningSprite.width * 0.18
+  this.headband2.y = -this.runningSprite.height * 0.28
+  this.headband2.pivot.x = texture.width
+  this.headband2.pivot.y = texture.height / 2
+
+
+  // add sprites in correct z-order
+  this.container.addChild(this.headband2)
+  this.container.addChild(this.inAirUpwardsSprite)
+  this.container.addChild(this.inAirFallingSprite)
+  this.container.addChild(this.runningSprite)
   this.container.addChild(this.headband1)
 
   this.headbandCount = 0
@@ -126,10 +140,14 @@ NinjaGraphics.prototype.draw = function (x, y, rotation, ninjaBody) {
 
   var velAngle = Math.atan2(ninjaBody.velocity[1], ninjaBody.velocity[0])
   this.headband1.rotation = velAngle
+  this.headband2.rotation = velAngle
 
   for (var i = 0; i < this.headband1Points.length - 1; i++) {
     var point = this.headband1Points[i]
     point.y = Math.sin(i * 0.6 + this.headbandCount / 1.6) * (headbandSpeed * (32 - i * 8) / 32) + 16
+
+    point = this.headband2Points[i]
+    point.y = Math.cos(i * 0.6 + this.headbandCount / 1.6) * (headbandSpeed * (32 - i * 8) / 32) + 16
   }
 
 }
