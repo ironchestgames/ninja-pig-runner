@@ -362,6 +362,8 @@ var postStep = function () {
     }
   }
 
+  actionsLog('STEP')
+
   // update the sensors' values
   ninjaLeftSensor.postStep()
   ninjaRightSensor.postStep()
@@ -410,7 +412,9 @@ var postStep = function () {
   }
 
   // determine if isRunning
-  if (ninjaBottomSensor.isContactUsable()) {
+  if (ninjaBottomSensor.isContactUsable() &&
+      ninjaLeftSensor.stepsSinceUsed > 2 &&
+      ninjaRightSensor.stepsSinceUsed > 2) {
     if (!isRunning) {
       if (ninjaBody.velocity[0] < minimumRunningSpeed) {
         currentRunningSpeed = minimumRunningSpeed

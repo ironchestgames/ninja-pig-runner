@@ -27,10 +27,15 @@ var NinjaSensor = function (config) {
 
   this.contactCount = 0
   this.isContactUsed = false
+  this.stepsSinceUsed = 0
 }
 
 NinjaSensor.prototype.setContactUsed = function (value) {
   this.isContactUsed = value
+
+  if (this.isContactUsed === true) {
+    this.stepsSinceUsed = 0
+  }
 }
 
 NinjaSensor.prototype.isContactUsable = function () {
@@ -42,6 +47,8 @@ NinjaSensor.prototype.postStep = function () {
   if (this.isContactUsed === true && this.contactCount === 0) {
     this.isContactUsed = false
   }
+
+  this.stepsSinceUsed++
 
 }
 
