@@ -17,10 +17,10 @@ var levelWonScene = {
       this.container = new PIXI.Container()
 
       this.animationLayer = new PIXI.Container()
-      this.buttonLayer = new PIXI.Container()
+      this.inputLayer = new PIXI.Container()
 
       this.container.addChild(this.animationLayer)
-      this.container.addChild(this.buttonLayer)
+      this.container.addChild(this.inputLayer)
 
       global.baseStage.addChild(this.container)
 
@@ -58,8 +58,8 @@ var levelWonScene = {
         onKeyUp: goToNext,
       })
 
-      this.buttonLayer.addChild(buttonPlayAgain)
-      this.buttonLayer.addChild(buttonNext)
+      this.inputLayer.addChild(buttonPlayAgain)
+      this.inputLayer.addChild(buttonNext)
 
       this.isLoading = false
 
