@@ -62,6 +62,7 @@ var forwardHookRelativeAimX = 10
 var forwardHookRelativeAimY = -12
 var upwardHookRelativeAimX = 0
 var upwardHookRelativeAimY = -12
+var gameOverY = 13
 
 var ninjaBody
 var ninjaHandBody
@@ -134,6 +135,8 @@ var onKeyUp = function (event) {
 }
 
 var restartNinja = function () {
+  isPaused = false
+
   ninjaBody.position[0] = mapLoader.ninjaStartPosition[0]
   ninjaBody.position[1] = mapLoader.ninjaStartPosition[1]
 
@@ -142,6 +145,11 @@ var restartNinja = function () {
 
   ninjaBody.velocity[0] = 0
   ninjaBody.velocity[1] = 0
+}
+
+var gameOver = function () {
+  console.log('GAME OVER')
+  isPaused = true
 }
 
 var createNinja = function() {
@@ -485,6 +493,10 @@ var postStep = function () {
     shouldJump = false
     actionsLog('JUMP')
     ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_UPWARDS)
+  }
+
+  if (!currentHook && ninjaBody.position[1] > gameOverY) {
+    gameOver()
   }
 
   if (!isRunning &&
