@@ -24,11 +24,7 @@ var pixelsPerMeter = 50
 var heightInMeters = 10
 var widthInPixels
 
-var world = new p2.World({
-  gravity: [0, 10]
-})
-
-window.world = world
+var world
 
 var buttonEventQueue = []
 var BUTTON_UPWARD_DOWN = 'BUTTON_UPWARD_DOWN'
@@ -542,6 +538,12 @@ var gameScene = {
     spriteUtilities = new SpriteUtilities(PIXI, global.renderer)
     mapLoader = new MapLoader()
 
+    world = new p2.World({
+      gravity: [0, 10]
+    })
+
+    window.world = world // TODO: remove before prod
+
     // set up layers
     this.container = new PIXI.Container()
     this.backgroundLayer = new PIXI.Container()
@@ -657,6 +659,8 @@ var gameScene = {
     this.container.destroy()
     keyRight.destroy()
     keyUp.destroy()
+    world.clear()
+    world = null
   },
   update: function (stepInMilliseconds) {
 
