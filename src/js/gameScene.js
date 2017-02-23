@@ -62,7 +62,7 @@ var forwardHookRelativeAimX = 10
 var forwardHookRelativeAimY = -12
 var upwardHookRelativeAimX = 0
 var upwardHookRelativeAimY = -12
-var gameOverY = 13
+var dieOfFallY = 13
 
 var ninjaBody
 var ninjaHandBody
@@ -147,9 +147,13 @@ var restartNinja = function () {
   ninjaBody.velocity[1] = 0
 }
 
-var gameOver = function () {
+var levelLost = function () {
   console.log('GAME OVER')
   isPaused = true
+}
+
+var levelWon = function () {
+  restartNinja()
 }
 
 var createNinja = function() {
@@ -495,8 +499,8 @@ var postStep = function () {
     ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_UPWARDS)
   }
 
-  if (!currentHook && ninjaBody.position[1] > gameOverY) {
-    gameOver()
+  if (!currentHook && ninjaBody.position[1] > dieOfFallY) {
+    levelLost()
   }
 
   if (!isRunning &&
