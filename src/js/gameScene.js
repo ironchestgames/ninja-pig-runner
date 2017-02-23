@@ -9,6 +9,7 @@ var Hook = require('./Hook')
 var MapLoader = require('./MapLoader')
 var gameVars = require('./gameVars')
 var buttonAreaFactory = require('./buttonAreaFactory')
+var KeyButton = require('./KeyButton')
 
 var actionsLog = debug('gameScene:actions')
 var buttonsLog = debug('gameScene:buttons')
@@ -37,6 +38,9 @@ var BUTTON_FORWARD_UP = 'BUTTON_FORWARD_UP'
 
 var leftButton
 var rightButton
+
+var keyRight
+var keyUp
 
 var forwardHook
 var shouldRemoveForwardHook = false
@@ -78,9 +82,6 @@ var ninjaBottomSensor
 var ninjaLeftSensor
 var ninjaRightSensor
 
-var isKeyUpwardDown = false
-var isKeyForwardDown = false
-
 var onLeftDown = function (event) {
   buttonsLog('onLeftDown', event)
   buttonEventQueue.push(BUTTON_UPWARD_DOWN)
@@ -109,30 +110,6 @@ var onKeyPress = function (event) {
 
   if (event.key === 'p') {
     isPaused = !isPaused
-  }
-}
-
-var onKeyDown = function (event) {
-  if (event.key === 'ArrowUp' && !isKeyUpwardDown) {
-    buttonEventQueue.push(BUTTON_UPWARD_DOWN)
-    isKeyUpwardDown = true
-  }
-
-  if (event.key === 'ArrowRight' && !isKeyForwardDown) {
-    buttonEventQueue.push(BUTTON_FORWARD_DOWN)
-    isKeyForwardDown = true
-  }
-}
-
-var onKeyUp = function (event) {
-  if (event.key === 'ArrowUp' && isKeyUpwardDown) {
-    buttonEventQueue.push(BUTTON_UPWARD_UP)
-    isKeyUpwardDown = false
-  }
-
-  if (event.key === 'ArrowRight' && isKeyForwardDown) {
-    buttonEventQueue.push(BUTTON_FORWARD_UP)
-    isKeyForwardDown = false
   }
 }
 
@@ -659,8 +636,18 @@ var gameScene = {
 
     // set up inputs
     document.addEventListener('keypress', onKeyPress.bind(this))
-    document.addEventListener('keydown', onKeyDown)
-    document.addEventListener('keyup', onKeyUp)
+
+    keyRight = new KeyButton({
+      key: 'ArrowRight',
+      onKeyDown: onRightDown,
+      onKeyUp: onRightUp,
+    })
+
+    keyUp = new KeyButton({
+      key: 'ArrowUp',
+      onKeyDown: onLeftDown,
+      onKeyUp: onLeftUp,
+    })
 
     // NOTE: for debugging purposes only, remove in prod
     window.world = world
@@ -668,6 +655,8 @@ var gameScene = {
   },
   destroy: function () {
     this.container.destroy()
+    keyRight.destroy()
+    keyUp.destroy()
   },
   update: function (stepInMilliseconds) {
 
