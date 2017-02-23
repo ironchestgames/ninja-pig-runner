@@ -1,4 +1,5 @@
 var buttonAreaFactory = require('./buttonAreaFactory')
+var KeyButton = require('./KeyButton')
 
 var levelWonScene = {
   name: 'levelWon',
@@ -28,21 +29,33 @@ var levelWonScene = {
       this.animationLayer.addChild(image)
 
       // create button layer
+      var goToNext = function () {
+        console.log('go to next')
+      }
+      var playAgain = function () {
+        global.sceneManager.changeScene('loadGame')
+      }
       var buttonPlayAgain = buttonAreaFactory({
         width: global.renderer.view.width / 2,
         height: global.renderer.view.height,
-        touchEnd: function () {
-          global.sceneManager.changeScene('loadGame')
-        },
+        touchEnd: playAgain,
       })
 
       var buttonNext = buttonAreaFactory({
         width: global.renderer.view.width / 2,
         height: global.renderer.view.height,
         x: global.renderer.view.width / 2,
-        touchEnd: function () {
-          console.log('go to next')
-        },
+        touchEnd: goToNext,
+      })
+
+      this.keyUp = new KeyButton({
+        key: 'ArrowUp',
+        onKeyUp: playAgain,
+      })
+
+      this.keyRight = new KeyButton({
+        key: 'ArrowRight',
+        onKeyUp: goToNext,
       })
 
       this.buttonLayer.addChild(buttonPlayAgain)
@@ -55,6 +68,8 @@ var levelWonScene = {
   },
   destroy: function () {
     this.container.destroy()
+    this.keyRight.destroy()
+    this.keyUp.destroy()
   },
   update: function () {
 
