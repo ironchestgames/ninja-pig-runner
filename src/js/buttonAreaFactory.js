@@ -15,8 +15,13 @@ var buttonAreaFactory = function (config) {
   sprite.position.x = x
   sprite.position.y = y
 
-  sprite.on('touchstart', touchStart)
-  sprite.on('touchend', touchEnd)
+  if (touchStart) {
+    sprite.on('touchstart', touchStart)
+  }
+
+  if (touchEnd) {
+    sprite.on('touchend', touchEnd)
+  }
 
   return sprite
 }
