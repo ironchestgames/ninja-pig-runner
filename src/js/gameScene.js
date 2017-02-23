@@ -153,7 +153,7 @@ var levelLost = function () {
 }
 
 var levelWon = function () {
-  restartNinja()
+  global.sceneManager.changeScene('levelWon')
 }
 
 var createNinja = function() {
@@ -532,7 +532,7 @@ var beginContact = function (contactEvent) {
 
     // end of level check
     if (contactEvent.bodyA.name === 'goal' || contactEvent.bodyB.name === 'goal') {
-      restartNinja()
+      levelWon()
     }
   }
 }
@@ -666,7 +666,7 @@ var gameScene = {
 
   },
   destroy: function () {
-    this.stage = null // TODO: destroy this.container instead
+    this.container.destroy()
   },
   update: function (stepInMilliseconds) {
 

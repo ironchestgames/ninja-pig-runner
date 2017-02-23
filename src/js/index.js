@@ -4,6 +4,7 @@ var PIXI = require('pixi.js')
 var browserGameLoop = require('browser-game-loop')
 var gameScene = require('./gameScene.js')
 var loadGameScene = require('./loadGameScene.js')
+var levelWonScene = require('./levelWonScene.js')
 var ob = require('obscen')
 var windowLoad = require('window-load')
 var screenOrientation = require('screen-orientation')
@@ -20,7 +21,7 @@ windowLoad(function () {
   // init pixi renderer
   var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight, {}, noWebgl)
   document.body.appendChild(renderer.view)
-  renderer.backgroundColor = 0xcbdbfc
+  renderer.backgroundColor = 0x261D05
 
   window.onresize = function () {
     renderer.resize(window.innerWidth, window.innerHeight)
@@ -32,6 +33,7 @@ windowLoad(function () {
   sceneManager.setScenes([
     loadGameScene,
     gameScene,
+    levelWonScene,
     ])
 
   var appContainer = new PIXI.Container()
@@ -45,6 +47,7 @@ windowLoad(function () {
 
   global.baseStage = baseStage
   global.renderer = renderer
+  global.sceneManager = sceneManager
 
   // debug monitor text
   if (!global.DEBUG_MONITOR) {
