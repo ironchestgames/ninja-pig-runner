@@ -32,6 +32,7 @@ MapLoader.prototype.loadMap = function (config) {
   var ninjaBody
   var pixelsPerMeter
   var propLayer
+  var resourceLoader
   var sprite
   var spriteX
   var spriteY
@@ -48,9 +49,10 @@ MapLoader.prototype.loadMap = function (config) {
   pixelsPerMeter = config.pixelsPerMeter
   staticsColor = config.staticsColor
   levelName = config.name
+  resourceLoader = config.resourceLoader
 
   // props first (rendered below the level as of now)
-  imagesData = PIXI.loader.resources[levelName].data.image || []
+  imagesData = resourceLoader.resources[levelName].data.image || []
 
   for (i = 0; i < imagesData.length; i++) {
 
@@ -58,7 +60,7 @@ MapLoader.prototype.loadMap = function (config) {
     imageName = gameUtils.getFileNameFromUrl(imageData.file)
     imagePosition = [imageData.center.x, -imageData.center.y]
 
-    texture = PIXI.loader.resources[imageName].texture
+    texture = resourceLoader.resources[imageName].texture
 
     widthHeightRatio = texture.width / texture.height
 
@@ -87,7 +89,7 @@ MapLoader.prototype.loadMap = function (config) {
 
   worldPosition = [0, 0]
 
-  bodiesData = PIXI.loader.resources['level1'].data.body
+  bodiesData = resourceLoader.resources['level1'].data.body
 
   for (i = 0; i < bodiesData.length; i++) {
 
@@ -185,7 +187,7 @@ MapLoader.prototype.loadMap = function (config) {
         boxPositionY = -bodyData.position.y
 
         // create the sprite for this shape
-        var sprite = new PIXI.Sprite(PIXI.loader.resources['prop_texture_8x8'].texture)
+        var sprite = new PIXI.Sprite(resourceLoader.resources['prop_texture_8x8'].texture)
 
         sprite.anchor.x = 0.5
         sprite.anchor.y = 0.5

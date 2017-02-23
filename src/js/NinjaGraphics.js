@@ -6,9 +6,10 @@ var NinjaGraphics = function (config) {
   var spriteSizeFactor = 1.15 // to make up for the whitespace in the frames
   var runningSpriteAnimationBaseSpeed = 0.20 // TODO: what is this in ms?
 
+  var resourceLoader = config.resourceLoader
   var ninjaHeight = config.ninjaHeight
   var pixelsPerMeter = config.pixelsPerMeter
-  var scaleRatio = (ninjaHeight * pixelsPerMeter * spriteSizeFactor) / PIXI.loader.resources['inair_upwards'].texture.height
+  var scaleRatio = (ninjaHeight * pixelsPerMeter * spriteSizeFactor) / resourceLoader.resources['inair_upwards'].texture.height
 
   this.config = config
   this.currentState = null
@@ -23,17 +24,17 @@ var NinjaGraphics = function (config) {
   this.scaleContainer.scale.y = scaleRatio
 
   // in-air upwards sprite
-  this.inAirUpwardsSprite = new PIXI.Sprite(PIXI.loader.resources['inair_upwards'].texture)
+  this.inAirUpwardsSprite = new PIXI.Sprite(resourceLoader.resources['inair_upwards'].texture)
   this.inAirUpwardsSprite.anchor.x = 0.5
   this.inAirUpwardsSprite.anchor.y = 0.5
 
   // in-air falling sprite
-  this.inAirFallingSprite = new PIXI.Sprite(PIXI.loader.resources['inair_falling'].texture)
+  this.inAirFallingSprite = new PIXI.Sprite(resourceLoader.resources['inair_falling'].texture)
   this.inAirFallingSprite.anchor.x = 0.5
   this.inAirFallingSprite.anchor.y = 0.5
 
   // running sprite
-  var runningTexture = PIXI.loader.resources['runninganimation'].texture
+  var runningTexture = resourceLoader.resources['runninganimation'].texture
   var frameWidth = runningTexture.width / 2
   var frameHeight = runningTexture.height / 2
 
@@ -45,7 +46,7 @@ var NinjaGraphics = function (config) {
   this.runningSprite.play()
 
   // headband
-  var texture = PIXI.loader.resources['headband1'].texture
+  var texture = resourceLoader.resources['headband1'].texture
   this.headband1Points = [
     new PIXI.Point(0, 16),
     new PIXI.Point(8, 16),
@@ -59,7 +60,7 @@ var NinjaGraphics = function (config) {
   this.headband1.pivot.x = texture.width
   this.headband1.pivot.y = texture.height / 2
 
-  texture = PIXI.loader.resources['headband2'].texture
+  texture = resourceLoader.resources['headband2'].texture
   this.headband2Points = [
     new PIXI.Point(0, 16),
     new PIXI.Point(8, 16),

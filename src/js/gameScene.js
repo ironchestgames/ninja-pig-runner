@@ -17,6 +17,7 @@ var isPaused = false
 
 var spriteUtilities
 var mapLoader
+var resourceLoader
 
 var pixelsPerMeter = 50
 var heightInMeters = 10
@@ -316,7 +317,7 @@ var createCeiling = function () {
 }
 
 var createHookSprite = function (layer) {
-  ropeSprite = new PIXI.Sprite(PIXI.loader.resources['rope'].texture)
+  ropeSprite = new PIXI.Sprite(resourceLoader.resources['rope'].texture)
   ropeSprite.anchor.y = 0.5
 
   layer.addChild(ropeSprite)
@@ -555,11 +556,12 @@ var endContact = function (contactEvent) {
 
 var gameScene = {
   name: 'game',
-  create: function () {
+  create: function (_resourceLoader) {
 
     widthInPixels = global.renderer.view.width
     pixelsPerMeter = global.renderer.view.height / heightInMeters
 
+    resourceLoader = _resourceLoader
     spriteUtilities = new SpriteUtilities(PIXI, global.renderer)
     mapLoader = new MapLoader()
 
@@ -584,7 +586,7 @@ var gameScene = {
 
     // set up background layer contents
     // NOTE: bc of the nature of the image it has to be this exact square (suns/moons are round)
-    skySprite = new PIXI.Sprite(PIXI.loader.resources['backgroundsky1'].texture)
+    skySprite = new PIXI.Sprite(resourceLoader.resources['backgroundsky1'].texture)
     skySprite.anchor.x = 0.5
     skySprite.anchor.y = 0.5
     skySprite.position.x = global.renderer.view.width / 2
@@ -594,7 +596,7 @@ var gameScene = {
 
     // NOTE: bc of the nature of the image it doesn't matter that much to stretch it
     backgroundSprite = new PIXI.extras.TilingSprite(
-        PIXI.loader.resources['background1'].texture,
+        resourceLoader.resources['background1'].texture,
         512,
         512)
     backgroundSprite.tileScale.x = global.renderer.view.height / 512
@@ -628,6 +630,7 @@ var gameScene = {
     createNinja()
     createHooks() // depends on createNinja
     mapLoader.loadMap({ // depends on createNinja
+      resourceLoader: resourceLoader,
       name: 'level1',
       world: world,
       mapLayer: mapLayer,
@@ -642,6 +645,7 @@ var gameScene = {
     // set up ninja and hook graphics
     createHookSprite(this.stage)
     ninjaGraphics = new NinjaGraphics({
+      resourceLoader: resourceLoader,
       container: this.stage,
       ninjaHeight: 1.5,
       pixelsPerMeter: pixelsPerMeter,
