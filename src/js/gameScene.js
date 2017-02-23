@@ -123,8 +123,8 @@ var restartNinja = function () {
 }
 
 var levelFail = function () {
-  console.log('GAME OVER')
   isPaused = true
+  global.sceneManager.changeScene('levelFail')
 }
 
 var levelWon = function () {

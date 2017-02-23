@@ -5,6 +5,7 @@ var browserGameLoop = require('browser-game-loop')
 var gameScene = require('./gameScene.js')
 var loadGameScene = require('./loadGameScene.js')
 var levelWonScene = require('./levelWonScene.js')
+var levelFailScene = require('./levelFailScene.js')
 var ob = require('obscen')
 var windowLoad = require('window-load')
 var screenOrientation = require('screen-orientation')
@@ -34,6 +35,7 @@ windowLoad(function () {
     loadGameScene,
     gameScene,
     levelWonScene,
+    levelFailScene,
     ])
 
   var appContainer = new PIXI.Container()
