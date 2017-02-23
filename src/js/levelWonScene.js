@@ -11,22 +11,42 @@ var levelWonScene = {
 
     this.loader
     .add('finish_level_1', 'assets/images/finish_level_1.png')
+    .add('button_next', 'assets/images/button_next.png')
+    .add('button_playagain', 'assets/images/button_playagain.png')
     .load(function () {
 
       // set up layers etc
       this.container = new PIXI.Container()
 
       this.animationLayer = new PIXI.Container()
+      this.guiLayer = new PIXI.Container()
       this.inputLayer = new PIXI.Container()
 
       this.container.addChild(this.animationLayer)
       this.container.addChild(this.inputLayer)
+      this.container.addChild(this.guiLayer)
 
       global.baseStage.addChild(this.container)
 
       // create animation layer
       var image = new PIXI.Sprite(this.loader.resources['finish_level_1'].texture)
       this.animationLayer.addChild(image)
+
+      // create gui layer
+      var imageButtonPlayAgain = new PIXI.Sprite(this.loader.resources['button_playagain'].texture)
+      imageButtonPlayAgain.anchor.x = 0.5
+      imageButtonPlayAgain.anchor.y = 0.5
+      imageButtonPlayAgain.x = global.renderer.view.width * 0.25
+      imageButtonPlayAgain.y = global.renderer.view.height * 0.75
+
+      var imageButtonNext = new PIXI.Sprite(this.loader.resources['button_next'].texture)
+      imageButtonNext.anchor.x = 0.5
+      imageButtonNext.anchor.y = 0.5
+      imageButtonNext.x = global.renderer.view.width * 0.75
+      imageButtonNext.y = global.renderer.view.height * 0.75
+
+      this.guiLayer.addChild(imageButtonPlayAgain)
+      this.guiLayer.addChild(imageButtonNext)
 
       // create button layer
       var goToNext = function () {
