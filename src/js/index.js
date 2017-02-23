@@ -43,6 +43,9 @@ windowLoad(function () {
   appContainer.addChild(turnDeviceContainer)
   appContainer.addChild(debugTexts)
 
+  global.baseStage = baseStage
+  global.renderer = renderer
+
   // debug monitor text
   if (!global.DEBUG_MONITOR) {
     debugTexts.visible = false
@@ -105,8 +108,6 @@ windowLoad(function () {
       // start it!
       clearInterval(intervalId)
 
-      gameScene.renderer = renderer
-      gameScene.baseStage = baseStage
       sceneManager.changeScene('loadGame')
 
       loop.start()

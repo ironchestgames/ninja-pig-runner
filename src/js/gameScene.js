@@ -556,10 +556,10 @@ var gameScene = {
   name: 'game',
   create: function () {
 
-    widthInPixels = this.renderer.view.width
-    pixelsPerMeter = this.renderer.view.height / heightInMeters
+    widthInPixels = global.renderer.view.width
+    pixelsPerMeter = global.renderer.view.height / heightInMeters
 
-    spriteUtilities = new SpriteUtilities(PIXI, this.renderer)
+    spriteUtilities = new SpriteUtilities(PIXI, global.renderer)
     mapLoader = new MapLoader()
 
     // set up layers
@@ -571,7 +571,7 @@ var gameScene = {
     var guiLayer = new PIXI.Container()
     this.debugDrawContainer = new PIXI.Container()
 
-    this.baseStage.addChild(this.container)
+    global.baseStage.addChild(this.container)
 
     this.container.addChild(this.backgroundLayer)
     this.container.addChild(this.stage)
@@ -586,20 +586,20 @@ var gameScene = {
     skySprite = new PIXI.Sprite(PIXI.loader.resources['backgroundsky1'].texture)
     skySprite.anchor.x = 0.5
     skySprite.anchor.y = 0.5
-    skySprite.position.x = this.renderer.view.width / 2
-    skySprite.position.y = this.renderer.view.height / 2
-    skySprite.width = this.renderer.view.width
-    skySprite.height = this.renderer.view.width
+    skySprite.position.x = global.renderer.view.width / 2
+    skySprite.position.y = global.renderer.view.height / 2
+    skySprite.width = global.renderer.view.width
+    skySprite.height = global.renderer.view.width
 
     // NOTE: bc of the nature of the image it doesn't matter that much to stretch it
     backgroundSprite = new PIXI.extras.TilingSprite(
         PIXI.loader.resources['background1'].texture,
         512,
         512)
-    backgroundSprite.tileScale.x = this.renderer.view.height / 512
-    backgroundSprite.tileScale.y = this.renderer.view.height / 512
-    backgroundSprite.height = this.renderer.view.height
-    backgroundSprite.width = this.renderer.view.width
+    backgroundSprite.tileScale.x = global.renderer.view.height / 512
+    backgroundSprite.tileScale.y = global.renderer.view.height / 512
+    backgroundSprite.height = global.renderer.view.height
+    backgroundSprite.width = global.renderer.view.width
 
     this.backgroundLayer.addChild(skySprite)
     this.backgroundLayer.addChild(backgroundSprite)
@@ -608,8 +608,8 @@ var gameScene = {
     leftButton = new PIXI.Sprite(PIXI.Texture.EMPTY)
     leftButton.renderable = false
     leftButton.interactive = true
-    leftButton.width = this.renderer.view.width / 2
-    leftButton.height = this.renderer.view.height
+    leftButton.width = global.renderer.view.width / 2
+    leftButton.height = global.renderer.view.height
 
     leftButton.on('touchstart', onLeftDown)
     leftButton.on('touchend', onLeftUp)
@@ -617,9 +617,9 @@ var gameScene = {
     rightButton = new PIXI.Sprite(PIXI.Texture.EMPTY)
     rightButton.renderable = false
     rightButton.interactive = true
-    rightButton.width = this.renderer.view.width / 2
-    rightButton.height = this.renderer.view.height
-    rightButton.position.x = this.renderer.view.width / 2
+    rightButton.width = global.renderer.view.width / 2
+    rightButton.height = global.renderer.view.height
+    rightButton.position.x = global.renderer.view.width / 2
 
     rightButton.on('touchstart', onRightDown)
     rightButton.on('touchend', onRightUp)
@@ -794,8 +794,8 @@ var gameScene = {
       }
     }
 
-    if (ninjaGraphics.x > this.renderer.view.width / 4) {
-      this.stage.x = -ninjaGraphics.x + this.renderer.view.width / 4
+    if (ninjaGraphics.x > global.renderer.view.width / 4) {
+      this.stage.x = -ninjaGraphics.x + global.renderer.view.width / 4
       backgroundSprite.tilePosition.x = this.stage.x * 0.1
     }
 
