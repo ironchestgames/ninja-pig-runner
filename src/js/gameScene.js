@@ -455,12 +455,12 @@ var postStep = function () {
       ninjaLeftSensor.isContactUsable()) {
 
     var y = 0
-    if (ninjaBody.velocity[0] < 0) {
-      ninjaBody.velocity[0] = 0
-    }
     if (ninjaBody.velocity[1] <= wallBounceThreshold) {
       y = wallBounceForceY
     }
+
+    ninjaBody.velocity[0] = 0
+
     ninjaBody.applyForce([wallBounceForceX, y])
     ninjaLeftSensor.setContactUsed(true)
     ninjaGraphics.changeState(NinjaGraphics.STATE_BOUNCED_LEFT)
@@ -474,12 +474,12 @@ var postStep = function () {
       ninjaRightSensor.isContactUsable()) {
 
     var y = 0
-    if (ninjaBody.velocity[0] > 0) {
-      ninjaBody.velocity[0] = 0
-    }
     if (ninjaBody.velocity[1] <= wallBounceThreshold) {
       y = wallBounceForceY
     }
+
+    ninjaBody.velocity[0] = 0
+
     ninjaBody.applyForce([-wallBounceForceX, y])
     ninjaRightSensor.setContactUsed(true)
     ninjaGraphics.changeState(NinjaGraphics.STATE_BOUNCED_RIGHT)
