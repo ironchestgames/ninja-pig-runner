@@ -27,6 +27,7 @@ MapLoader.prototype.loadMap = function (config) {
   var imagesData
   var j
   var k
+  var levelName
   var mapLayer
   var ninjaBody
   var pixelsPerMeter
@@ -46,9 +47,10 @@ MapLoader.prototype.loadMap = function (config) {
   ninjaBody = config.ninjaBody
   pixelsPerMeter = config.pixelsPerMeter
   staticsColor = config.staticsColor
+  levelName = config.name
 
   // props first (rendered below the level as of now)
-  imagesData = PIXI.loader.resources['level1'].data.image || []
+  imagesData = PIXI.loader.resources[levelName].data.image || []
 
   for (i = 0; i < imagesData.length; i++) {
 

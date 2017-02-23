@@ -628,6 +628,7 @@ var gameScene = {
     createNinja()
     createHooks() // depends on createNinja
     mapLoader.loadMap({ // depends on createNinja
+      name: 'level1',
       world: world,
       mapLayer: mapLayer,
       propLayer: propLayer,
