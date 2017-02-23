@@ -560,6 +560,7 @@ var gameScene = {
     mapLoader = new MapLoader()
 
     // set up layers
+    this.container = new PIXI.Container()
     this.backgroundLayer = new PIXI.Container()
     this.stage = new PIXI.Container()
     var mapLayer = new PIXI.Container()
@@ -567,10 +568,12 @@ var gameScene = {
     var guiLayer = new PIXI.Container()
     this.debugDrawContainer = new PIXI.Container()
 
-    this.baseStage.addChild(this.backgroundLayer)
-    this.baseStage.addChild(this.stage)
-    this.baseStage.addChild(guiLayer)
-    this.baseStage.addChild(this.debugDrawContainer)
+    this.baseStage.addChild(this.container)
+
+    this.container.addChild(this.backgroundLayer)
+    this.container.addChild(this.stage)
+    this.container.addChild(guiLayer)
+    this.container.addChild(this.debugDrawContainer)
 
     this.stage.addChild(propLayer)
     this.stage.addChild(mapLayer)
@@ -659,7 +662,7 @@ var gameScene = {
 
   },
   destroy: function () {
-    this.stage = null
+    this.stage = null // TODO: destroy this.container instead
   },
   update: function (stepInMilliseconds) {
 
