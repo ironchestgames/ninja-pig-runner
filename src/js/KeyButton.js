@@ -1,13 +1,17 @@
 
 var KeyButton = function (config) {
-  this._onKeyDown = config.onKeyDown
-  this._onKeyUp = config.onKeyUp
+  this._onKeyDown = config.onKeyDown || function () {}
+  this._onKeyUp = config.onKeyUp || function () {}
   this.key = config.key
 
   this.isDown = false
 
-  document.addEventListener('keydown', this.onKeyDown.bind(this))
-  document.addEventListener('keyup', this.onKeyUp.bind(this))
+  this.onKeyDown = this.onKeyDown.bind(this)
+  document.addEventListener('keydown', this.onKeyDown)
+
+  this.onKeyUp = this.onKeyUp.bind(this)
+  document.addEventListener('keyup', this.onKeyUp)
+
 }
 
 KeyButton.prototype.onKeyDown = function (event) {
