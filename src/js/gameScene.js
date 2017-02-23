@@ -122,7 +122,7 @@ var restartNinja = function () {
   ninjaBody.velocity[1] = 0
 }
 
-var levelLost = function () {
+var levelFail = function () {
   console.log('GAME OVER')
   isPaused = true
 }
@@ -474,7 +474,7 @@ var postStep = function () {
   }
 
   if (!currentHook && ninjaBody.position[1] > dieOfFallY) {
-    levelLost()
+    levelFail()
   }
 
   if (!isRunning &&
