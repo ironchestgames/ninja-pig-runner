@@ -489,9 +489,7 @@ var postStep = function () {
 
   // jump up
   if (shouldJump) {
-    if (ninjaBody.velocity[1] > 0) {
-      ninjaBody.velocity[1] = 0
-    }
+    ninjaBody.velocity[1] = 0
     ninjaBody.applyForce([0, -jumpUpForce])
     ninjaBottomSensor.setContactUsed(true)
     shouldJump = false
