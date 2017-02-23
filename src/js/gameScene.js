@@ -396,11 +396,10 @@ var postStep = function () {
     ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_HOOKED)
 
     // pressing (leaning back when swinging kind of)
-    if (currentHook.body.position[0] - ninjaBody.position[0] < 1 &&
-        currentHook.body.position[0] - ninjaBody.position[0] > 0 &&
+    if (currentHook.body.position[0] - ninjaBody.position[0] > 0 &&
         ninjaBody.velocity[0] > 0 &&
         ninjaBody.velocity[1] < 0) {
-      ninjaBody.applyForce([pressingForce, 0])
+      ninjaBody.applyForce([pressingForce, pressingForce])
       actionsLog('PRESSING')
     }
 
