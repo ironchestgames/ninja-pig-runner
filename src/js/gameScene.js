@@ -398,7 +398,8 @@ var postStep = function () {
     // pressing (leaning back when swinging kind of)
     if (currentHook.body.position[0] - ninjaBody.position[0] > 0 &&
         ninjaBody.velocity[0] > 0 &&
-        ninjaBody.velocity[1] < 0) {
+        ninjaBody.velocity[1] < 0 &&
+        ninjaBottomSensor.contactCount <= 0) {
       ninjaBody.applyForce([pressingForce, pressingForce])
       actionsLog('PRESSING')
     }
@@ -425,7 +426,8 @@ var postStep = function () {
   }
 
   // determine if isRunning
-  if (!shouldJump &&
+  if (!currentHook &&
+      !shouldJump &&
       ninjaBottomSensor.isContactUsable() &&
       ninjaLeftSensor.stepsSinceUsed > 2 &&
       ninjaRightSensor.stepsSinceUsed > 2) {
