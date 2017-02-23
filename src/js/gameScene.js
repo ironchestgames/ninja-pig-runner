@@ -8,6 +8,7 @@ var NinjaSensor = require('./NinjaSensor')
 var Hook = require('./Hook')
 var MapLoader = require('./MapLoader')
 var gameVars = require('./gameVars')
+var buttonAreaFactory = require('./buttonAreaFactory')
 
 var actionsLog = debug('gameScene:actions')
 var buttonsLog = debug('gameScene:buttons')
@@ -605,24 +606,20 @@ var gameScene = {
     this.backgroundLayer.addChild(backgroundSprite)
 
     // set up input buttons
-    leftButton = new PIXI.Sprite(PIXI.Texture.EMPTY)
-    leftButton.renderable = false
-    leftButton.interactive = true
-    leftButton.width = global.renderer.view.width / 2
-    leftButton.height = global.renderer.view.height
+    leftButton = buttonAreaFactory({
+      width: global.renderer.view.width / 2,
+      height: global.renderer.view.height,
+      touchStart: onLeftDown,
+      touchEnd: onLeftUp,
+    })
 
-    leftButton.on('touchstart', onLeftDown)
-    leftButton.on('touchend', onLeftUp)
-
-    rightButton = new PIXI.Sprite(PIXI.Texture.EMPTY)
-    rightButton.renderable = false
-    rightButton.interactive = true
-    rightButton.width = global.renderer.view.width / 2
-    rightButton.height = global.renderer.view.height
-    rightButton.position.x = global.renderer.view.width / 2
-
-    rightButton.on('touchstart', onRightDown)
-    rightButton.on('touchend', onRightUp)
+    rightButton = buttonAreaFactory({
+      width: global.renderer.view.width / 2,
+      height: global.renderer.view.height,
+      x: global.renderer.view.width / 2,
+      touchStart: onRightDown,
+      touchEnd: onRightUp,
+    })
 
     guiLayer.addChild(leftButton)
     guiLayer.addChild(rightButton)
