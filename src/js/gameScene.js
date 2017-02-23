@@ -128,6 +128,7 @@ var levelFail = function () {
 }
 
 var levelWon = function () {
+  isPaused = true
   global.sceneManager.changeScene('levelWon')
 }
 
@@ -538,6 +539,10 @@ var gameScene = {
     spriteUtilities = new SpriteUtilities(PIXI, global.renderer)
     mapLoader = new MapLoader()
 
+    if (world) {
+      world.clear()
+    }
+
     world = new p2.World({
       gravity: [0, 10]
     })
@@ -651,6 +656,8 @@ var gameScene = {
       onKeyUp: onLeftUp,
     })
 
+    isPaused = false
+
     // NOTE: for debugging purposes only, remove in prod
     window.world = world
 
@@ -659,8 +666,6 @@ var gameScene = {
     this.container.destroy()
     keyRight.destroy()
     keyUp.destroy()
-    world.clear()
-    world = null
   },
   update: function (stepInMilliseconds) {
 
