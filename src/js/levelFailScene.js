@@ -61,14 +61,14 @@ var levelFailScene = {
       var buttonBack = buttonAreaFactory({
         width: global.renderer.view.width / 2,
         height: global.renderer.view.height,
-        touchEnd: tryAgain,
+        touchEnd: goToMenu,
       })
 
       var buttonTryAgain = buttonAreaFactory({
         width: global.renderer.view.width / 2,
         height: global.renderer.view.height,
         x: global.renderer.view.width / 2,
-        touchEnd: goToMenu,
+        touchEnd: tryAgain,
       })
 
       this.keyUp = new KeyButton({
