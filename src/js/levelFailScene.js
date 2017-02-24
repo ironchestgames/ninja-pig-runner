@@ -31,6 +31,9 @@ var levelFailScene = {
       // create animation layer
       var image = new PIXI.Sprite(this.loader.resources['finish_level_1'].texture)
       this.animationLayer.addChild(image)
+      this.animationLayer.scale.y = global.renderer.view.height / this.animationLayer.height
+      this.animationLayer.scale.x = this.animationLayer.scale.y
+      this.animationLayer.x = (global.renderer.view.width - this.animationLayer.width) / 2
 
       // create gui layer
       var imageButtonBack = new PIXI.Sprite(this.loader.resources['button_back'].texture)
