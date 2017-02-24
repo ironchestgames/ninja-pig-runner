@@ -53718,6 +53718,9 @@ var levelFailScene = {
       // create animation layer
       var image = new PIXI.Sprite(this.loader.resources['finish_level_1'].texture)
       this.animationLayer.addChild(image)
+      this.animationLayer.scale.y = global.renderer.view.height / this.animationLayer.height
+      this.animationLayer.scale.x = this.animationLayer.scale.y
+      this.animationLayer.x = (global.renderer.view.width - this.animationLayer.width) / 2
 
       // create gui layer
       var imageButtonBack = new PIXI.Sprite(this.loader.resources['button_back'].texture)
@@ -53745,14 +53748,14 @@ var levelFailScene = {
       var buttonBack = buttonAreaFactory({
         width: global.renderer.view.width / 2,
         height: global.renderer.view.height,
-        touchEnd: tryAgain,
+        touchEnd: goToMenu,
       })
 
       var buttonTryAgain = buttonAreaFactory({
         width: global.renderer.view.width / 2,
         height: global.renderer.view.height,
         x: global.renderer.view.width / 2,
-        touchEnd: goToMenu,
+        touchEnd: tryAgain,
       })
 
       this.keyUp = new KeyButton({
@@ -53830,6 +53833,9 @@ var levelWonScene = {
       // create animation layer
       var image = new PIXI.Sprite(this.loader.resources['finish_level_1'].texture)
       this.animationLayer.addChild(image)
+      this.animationLayer.scale.y = global.renderer.view.height / this.animationLayer.height
+      this.animationLayer.scale.x = this.animationLayer.scale.y
+      this.animationLayer.x = (global.renderer.view.width - this.animationLayer.width) / 2
 
       // create gui layer
       var imageButtonPlayAgain = new PIXI.Sprite(this.loader.resources['button_playagain'].texture)
@@ -53947,7 +53953,7 @@ var loadGameScene = {
 module.exports = loadGameScene
 
 },{}],272:[function(require,module,exports){
-module.exports = "1.0.0-10"
+module.exports = "1.0.0-11"
 
 },{}],273:[function(require,module,exports){
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
