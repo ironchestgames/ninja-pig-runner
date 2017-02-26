@@ -10,7 +10,7 @@ var levelFailScene = {
     this.loader = new PIXI.loaders.Loader()
 
     this.loader
-    .add('finish_level_1', 'assets/images/fail_level_1.png')
+    .add('fail_level_1', 'assets/images/fail_level_1.png')
     .add('button_menu', 'assets/images/button_menu.png')
     .add('button_tryagain', 'assets/images/button_tryagain.png')
     .load(function () {
@@ -29,7 +29,7 @@ var levelFailScene = {
       global.baseStage.addChild(this.container)
 
       // create animation layer
-      var image = new PIXI.Sprite(this.loader.resources['finish_level_1'].texture)
+      var image = new PIXI.Sprite(this.loader.resources['fail_level_1'].texture)
       this.animationLayer.addChild(image)
       this.animationLayer.scale.y = global.renderer.view.height / this.animationLayer.height
       this.animationLayer.scale.x = this.animationLayer.scale.y
