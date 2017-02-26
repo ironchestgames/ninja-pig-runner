@@ -1,6 +1,6 @@
 {
   "name": "ninjaswing",
-  "version": "1.0.0-11",
+  "version": "1.0.0-12",
   "description": "Ninja Swing",
   "main": "src/js/index.js",
   "scripts": {

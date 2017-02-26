@@ -53531,7 +53531,7 @@ var gameScene = {
 module.exports = gameScene
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../lib/spriteUtilities":273,"./DebugDraw":258,"./Hook":259,"./KeyButton":260,"./MapLoader":261,"./NinjaGraphics":262,"./NinjaSensor":263,"./buttonAreaFactory":264,"./gameUtils":266,"./gameVars":267,"debug":5,"p2":51}],266:[function(require,module,exports){
+},{"../lib/spriteUtilities":274,"./DebugDraw":258,"./Hook":259,"./KeyButton":260,"./MapLoader":261,"./NinjaGraphics":262,"./NinjaSensor":263,"./buttonAreaFactory":264,"./gameUtils":266,"./gameVars":267,"debug":5,"p2":51}],266:[function(require,module,exports){
 
 var gameUtils = {}
 
@@ -53567,6 +53567,7 @@ var gameScene = require('./gameScene.js')
 var loadGameScene = require('./loadGameScene.js')
 var levelWonScene = require('./levelWonScene.js')
 var levelFailScene = require('./levelFailScene.js')
+var splashScene = require('./splashScene.js')
 var ob = require('obscen')
 var windowLoad = require('window-load')
 var screenOrientation = require('screen-orientation')
@@ -53593,6 +53594,7 @@ windowLoad(function () {
   var sceneManager = new ob.SceneManager()
 
   sceneManager.setScenes([
+    splashScene,
     loadGameScene,
     gameScene,
     levelWonScene,
@@ -53674,7 +53676,7 @@ windowLoad(function () {
       // start it!
       clearInterval(intervalId)
 
-      sceneManager.changeScene('loadGame')
+      sceneManager.changeScene('splash')
 
       loop.start()
     }
@@ -53683,7 +53685,7 @@ windowLoad(function () {
 })
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./gameScene.js":265,"./levelFailScene.js":269,"./levelWonScene.js":270,"./loadGameScene.js":271,"./version":272,"browser-game-loop":2,"obscen":16,"pixi.js":205,"screen-orientation":253,"window-load":257}],269:[function(require,module,exports){
+},{"./gameScene.js":265,"./levelFailScene.js":269,"./levelWonScene.js":270,"./loadGameScene.js":271,"./splashScene.js":272,"./version":273,"browser-game-loop":2,"obscen":16,"pixi.js":205,"screen-orientation":253,"window-load":257}],269:[function(require,module,exports){
 (function (global){
 var buttonAreaFactory = require('./buttonAreaFactory')
 var KeyButton = require('./KeyButton')
@@ -53697,8 +53699,8 @@ var levelFailScene = {
     this.loader = new PIXI.loaders.Loader()
 
     this.loader
-    .add('finish_level_1', 'assets/images/fail_level_1.png')
-    .add('button_back', 'assets/images/button_back.png')
+    .add('fail_level_1', 'assets/images/fail_level_1.png')
+    .add('button_menu', 'assets/images/button_menu.png')
     .add('button_tryagain', 'assets/images/button_tryagain.png')
     .load(function () {
 
@@ -53716,14 +53718,14 @@ var levelFailScene = {
       global.baseStage.addChild(this.container)
 
       // create animation layer
-      var image = new PIXI.Sprite(this.loader.resources['finish_level_1'].texture)
+      var image = new PIXI.Sprite(this.loader.resources['fail_level_1'].texture)
       this.animationLayer.addChild(image)
       this.animationLayer.scale.y = global.renderer.view.height / this.animationLayer.height
       this.animationLayer.scale.x = this.animationLayer.scale.y
       this.animationLayer.x = (global.renderer.view.width - this.animationLayer.width) / 2
 
       // create gui layer
-      var imageButtonBack = new PIXI.Sprite(this.loader.resources['button_back'].texture)
+      var imageButtonBack = new PIXI.Sprite(this.loader.resources['button_menu'].texture)
       imageButtonBack.anchor.x = 0.5
       imageButtonBack.anchor.y = 0.5
       imageButtonBack.x = global.renderer.view.width * 0.25
@@ -53953,9 +53955,111 @@ var loadGameScene = {
 module.exports = loadGameScene
 
 },{}],272:[function(require,module,exports){
-module.exports = "1.0.0-11"
+(function (global){
+var buttonAreaFactory = require('./buttonAreaFactory')
+var KeyButton = require('./KeyButton')
 
-},{}],273:[function(require,module,exports){
+var splashScene = {
+  name: 'splash',
+  create: function () {
+
+    this.isLoading = true
+
+    this.loader = new PIXI.loaders.Loader()
+
+    this.loader
+    .add('splash', 'assets/images/splash.png')
+    .add('button_start', 'assets/images/button_start.png')
+    .load(function () {
+
+      // set up layers etc
+      this.container = new PIXI.Container()
+
+      this.animationLayer = new PIXI.Container()
+      this.guiLayer = new PIXI.Container()
+      this.inputLayer = new PIXI.Container()
+
+      this.container.addChild(this.animationLayer)
+      this.container.addChild(this.inputLayer)
+      this.container.addChild(this.guiLayer)
+
+      global.baseStage.addChild(this.container)
+
+      // create animation layer
+      var image = new PIXI.Sprite(this.loader.resources['splash'].texture)
+      this.animationLayer.addChild(image)
+      this.animationLayer.scale.y = global.renderer.view.height / this.animationLayer.height
+      this.animationLayer.scale.x = this.animationLayer.scale.y
+
+      if (this.animationLayer.width < global.renderer.view.width) {
+        this.animationLayer.width = global.renderer.view.width
+      }
+
+      this.animationLayer.x = (global.renderer.view.width - this.animationLayer.width) / 2
+
+      // create gui layer
+      var imageButtonStart = new PIXI.Sprite(this.loader.resources['button_start'].texture)
+      imageButtonStart.anchor.x = 0.5
+      imageButtonStart.anchor.y = 0.5
+      imageButtonStart.x = global.renderer.view.width * 0.75
+      imageButtonStart.y = global.renderer.view.height * 0.75
+
+      this.guiLayer.addChild(imageButtonStart)
+
+      // create button layer
+      var startGame = function () {
+        global.sceneManager.changeScene('loadGame')
+      }
+
+      var buttonStart = buttonAreaFactory({
+        width: global.renderer.view.width,
+        height: global.renderer.view.height,
+        touchEnd: startGame,
+      })
+
+      this.keyUp = new KeyButton({
+        key: 'ArrowUp',
+        onKeyUp: startGame,
+      })
+
+      this.keyRight = new KeyButton({
+        key: 'ArrowRight',
+        onKeyUp: startGame,
+      })
+
+      this.inputLayer.addChild(buttonStart)
+
+      this.isLoading = false
+
+    }.bind(this))
+
+  },
+  destroy: function () {
+    this.container.destroy()
+    this.keyRight.destroy()
+    this.keyUp.destroy()
+  },
+  update: function () {
+
+  },
+  draw: function () {
+
+    if (this.isLoading === true) {
+      return
+    }
+
+    global.renderer.render(this.container)
+
+  },
+}
+
+module.exports = splashScene
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./KeyButton":260,"./buttonAreaFactory":264}],273:[function(require,module,exports){
+module.exports = "1.0.0-12"
+
+},{}],274:[function(require,module,exports){
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
