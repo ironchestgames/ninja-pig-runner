@@ -32,6 +32,11 @@ var splashScene = {
       this.animationLayer.addChild(image)
       this.animationLayer.scale.y = global.renderer.view.height / this.animationLayer.height
       this.animationLayer.scale.x = this.animationLayer.scale.y
+
+      if (this.animationLayer.width < global.renderer.view.width) {
+        this.animationLayer.width = global.renderer.view.width
+      }
+
       this.animationLayer.x = (global.renderer.view.width - this.animationLayer.width) / 2
 
       // create gui layer
