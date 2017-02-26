@@ -11,7 +11,7 @@ var levelFailScene = {
 
     this.loader
     .add('finish_level_1', 'assets/images/fail_level_1.png')
-    .add('button_back', 'assets/images/button_back.png')
+    .add('button_menu', 'assets/images/button_menu.png')
     .add('button_tryagain', 'assets/images/button_tryagain.png')
     .load(function () {
 
@@ -36,7 +36,7 @@ var levelFailScene = {
       this.animationLayer.x = (global.renderer.view.width - this.animationLayer.width) / 2
 
       // create gui layer
-      var imageButtonBack = new PIXI.Sprite(this.loader.resources['button_back'].texture)
+      var imageButtonBack = new PIXI.Sprite(this.loader.resources['button_menu'].texture)
       imageButtonBack.anchor.x = 0.5
       imageButtonBack.anchor.y = 0.5
       imageButtonBack.x = global.renderer.view.width * 0.25
