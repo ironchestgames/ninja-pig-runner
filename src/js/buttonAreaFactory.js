@@ -17,10 +17,12 @@ var buttonAreaFactory = function (config) {
 
   if (touchStart) {
     sprite.on('touchstart', touchStart)
+    sprite.on('mousedown', touchStart)
   }
 
   if (touchEnd) {
     sprite.on('touchend', touchEnd)
+    sprite.on('mouseup', touchEnd)
   }
 
   return sprite
