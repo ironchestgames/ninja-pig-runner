@@ -3,7 +3,7 @@ var KeyButton = require('./KeyButton')
 
 var levelFailScene = {
   name: 'levelFail',
-  create: function () {
+  create: function (sceneParams) {
 
     this.isLoading = true
 
@@ -56,7 +56,7 @@ var levelFailScene = {
         console.log('go to menu')
       }
       var tryAgain = function () {
-        global.sceneManager.changeScene('loadGame')
+        global.sceneManager.changeScene('loadGame', sceneParams)
       }
       var buttonBack = buttonAreaFactory({
         width: global.renderer.view.width / 2,

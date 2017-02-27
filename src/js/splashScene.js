@@ -50,7 +50,9 @@ var splashScene = {
 
       // create button layer
       var startGame = function () {
-        global.sceneManager.changeScene('loadGame')
+        global.sceneManager.changeScene('loadGame', {
+          level: 1,
+        })
       }
 
       var buttonStart = buttonAreaFactory({

@@ -3,7 +3,7 @@ var KeyButton = require('./KeyButton')
 
 var levelWonScene = {
   name: 'levelWon',
-  create: function () {
+  create: function (sceneParams) {
 
     this.isLoading = true
 
@@ -56,7 +56,7 @@ var levelWonScene = {
         console.log('go to next')
       }
       var playAgain = function () {
-        global.sceneManager.changeScene('loadGame')
+        global.sceneManager.changeScene('loadGame', sceneParams)
       }
       var buttonPlayAgain = buttonAreaFactory({
         width: global.renderer.view.width / 2,

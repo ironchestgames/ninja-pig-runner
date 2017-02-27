@@ -1,6 +1,6 @@
 var loadGameScene = {
   name: 'loadGame',
-  create: function () {
+  create: function (sceneParams) {
     this.loader = new PIXI.loaders.Loader()
 
     this.loader
@@ -18,9 +18,12 @@ var loadGameScene = {
     .add('inair_falling', 'assets/images/gris_in_air_falling.png')
     .add('headband1', 'assets/images/headband1.png')
     .add('headband2', 'assets/images/headband2.png')
-    .add('level1', 'assets/json/level1.json') // TODO: bake this into bundle.js instead
+    .add('level' + sceneParams.level, 'assets/json/level' + sceneParams.level + '.json') // TODO: bake this into bundle.js instead
     .load(function () {
-      this.changeScene('game', this.loader)
+      this.changeScene('game', {
+        resourceLoader: this.loader,
+        level: sceneParams.level,
+      })
     }.bind(this))
   },
   destroy: function () {

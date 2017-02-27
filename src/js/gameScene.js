@@ -19,6 +19,7 @@ var isPaused = false
 var spriteUtilities
 var mapLoader
 var resourceLoader
+var sceneParams
 
 var pixelsPerMeter = 50
 var heightInMeters = 10
@@ -122,14 +123,14 @@ var restartNinja = function () {
   ninjaBody.velocity[1] = 0
 }
 
-var levelFail = function () {
+var levelFail = function (sceneParams) {
   isPaused = true
-  global.sceneManager.changeScene('levelFail')
+  global.sceneManager.changeScene('levelFail', sceneParams)
 }
 
-var levelWon = function () {
+var levelWon = function (sceneParams) {
   isPaused = true
-  global.sceneManager.changeScene('levelWon')
+  global.sceneManager.changeScene('levelWon', sceneParams)
 }
 
 var createNinja = function() {
@@ -475,7 +476,7 @@ var postStep = function () {
   }
 
   if (!currentHook && ninjaBody.position[1] > dieOfFallY) {
-    levelFail()
+    levelFail(sceneParams)
   }
 
   if (!isRunning &&
@@ -508,7 +509,7 @@ var beginContact = function (contactEvent) {
 
     // end of level check
     if (contactEvent.bodyA.name === 'goal' || contactEvent.bodyB.name === 'goal') {
-      levelWon()
+      levelWon(sceneParams)
     }
   }
 }
@@ -530,12 +531,13 @@ var endContact = function (contactEvent) {
 
 var gameScene = {
   name: 'game',
-  create: function (_resourceLoader) {
+  create: function (_sceneParams) {
 
     widthInPixels = global.renderer.view.width
     pixelsPerMeter = global.renderer.view.height / heightInMeters
 
-    resourceLoader = _resourceLoader
+    sceneParams = _sceneParams
+    resourceLoader = sceneParams.resourceLoader
     spriteUtilities = new SpriteUtilities(PIXI, global.renderer)
     mapLoader = new MapLoader()
 
@@ -615,7 +617,7 @@ var gameScene = {
     createHooks() // depends on createNinja
     mapLoader.loadMap({ // depends on createNinja
       resourceLoader: resourceLoader,
-      name: 'level1',
+      name: 'level' + sceneParams.level,
       world: world,
       mapLayer: mapLayer,
       propLayer: propLayer,
