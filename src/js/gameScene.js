@@ -26,6 +26,7 @@ var heightInMeters = 10
 var widthInPixels
 
 var world
+var bodiesToRemove = []
 
 var buttonEventQueue = []
 var BUTTON_UPWARD_DOWN = 'BUTTON_UPWARD_DOWN'
@@ -66,6 +67,7 @@ var forwardHookRelativeAimY = -12
 var upwardHookRelativeAimX = 0
 var upwardHookRelativeAimY = -12
 var dieOfFallY = 13
+var ninjaRadius = 0.375
 
 var ninjaBody
 var ninjaHandBody
@@ -74,6 +76,7 @@ var ropeSprite
 var backgroundSprite
 var skySprite
 var dynamicSprites = {}
+var mapLayer
 
 var ninjaBottomSensor
 var ninjaLeftSensor
@@ -135,12 +138,9 @@ var levelWon = function (sceneParams) {
 
 var createNinja = function() {
 
-  var ninjaRadius
   var bottomShape
   var topShape
   var middleShape
-
-  ninjaRadius = 0.375
 
   // body
   ninjaBody = new p2.Body({
@@ -170,7 +170,7 @@ var createNinja = function() {
   bottomShape = new p2.Circle({
     radius: ninjaRadius * 1.1,
     collisionGroup: gameVars.PLAYER,
-    collisionMask: gameVars.WALL,
+    collisionMask: gameVars.WALL | gameVars.COIN,
   })
   ninjaBody.addShape(bottomShape)
   bottomShape.position[1] = ninjaRadius
@@ -179,7 +179,7 @@ var createNinja = function() {
   topShape = new p2.Circle({
     radius: ninjaRadius,
     collisionGroup: gameVars.PLAYER,
-    collisionMask: gameVars.WALL,
+    collisionMask: gameVars.WALL | gameVars.COIN,
   })
   ninjaBody.addShape(topShape)
   topShape.position[1] = -ninjaRadius
@@ -191,7 +191,7 @@ var createNinja = function() {
     width: 0.4,
     height: 0.2,
     collisionGroup: gameVars.SENSOR,
-    collisionMask: gameVars.WALL,
+    collisionMask: gameVars.WALL | gameVars.COIN,
     relativePosition: [0, ninjaRadius * 2],
   })
 
@@ -353,6 +353,14 @@ var postStep = function () {
 
   actionsLog('STEP')
 
+  // remove bodies from bodiesToRemove
+  while (bodiesToRemove.length > 0) {
+    var body = bodiesToRemove.pop()
+    var sprite = dynamicSprites[body.id]
+    mapLayer.removeChild(sprite)
+    world.removeBody(body)
+  }
+
   // update the sensors' values
   ninjaLeftSensor.postStep()
   ninjaRightSensor.postStep()
@@ -512,6 +520,15 @@ var beginContact = function (contactEvent) {
       levelWon(sceneParams)
     }
   }
+
+  if ((contactEvent.bodyA.name === 'coin' || contactEvent.bodyB.name === 'coin') &&
+    (contactEvent.bodyA.name === 'ninjaBody' || contactEvent.bodyB.name === 'ninjaBody')) {
+    var coinBody = contactEvent.bodyA
+    if (contactEvent.bodyB.name === 'coin') {
+      coinBody = contactEvent.bodyB
+    }
+    bodiesToRemove.push(coinBody)
+  }
 }
 
 var endContact = function (contactEvent) {
@@ -551,11 +568,13 @@ var gameScene = {
 
     window.world = world // TODO: remove before prod
 
+    bodiesToRemove = []
+
     // set up layers
     this.container = new PIXI.Container()
     this.backgroundLayer = new PIXI.Container()
     this.stage = new PIXI.Container()
-    var mapLayer = new PIXI.Container()
+    mapLayer = new PIXI.Container()
     var propLayer = new PIXI.Container()
     var guiLayer = new PIXI.Container()
     this.debugDrawContainer = new PIXI.Container()
@@ -622,6 +641,7 @@ var gameScene = {
       mapLayer: mapLayer,
       propLayer: propLayer,
       ninjaBody: ninjaBody,
+      ninjaRadius: ninjaRadius,
       pixelsPerMeter: pixelsPerMeter,
       staticsColor: 0x261d05,
       dynamicSprites: dynamicSprites,

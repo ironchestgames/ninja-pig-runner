@@ -30,9 +30,11 @@ MapLoader.prototype.loadMap = function (config) {
   var levelName
   var mapLayer
   var ninjaBody
+  var ninjaRadius
   var pixelsPerMeter
   var propLayer
   var resourceLoader
+  var shape
   var sprite
   var spriteX
   var spriteY
@@ -46,6 +48,7 @@ MapLoader.prototype.loadMap = function (config) {
   mapLayer = config.mapLayer
   propLayer = config.propLayer
   ninjaBody = config.ninjaBody
+  ninjaRadius = config.ninjaRadius
   pixelsPerMeter = config.pixelsPerMeter
   staticsColor = config.staticsColor
   levelName = config.name
@@ -202,6 +205,41 @@ MapLoader.prototype.loadMap = function (config) {
         sprite.height = boxHeight * pixelsPerMeter
         propLayer.addChild(sprite)
       }
+
+    } else if (bodyData.name === 'coin') {
+
+      body = new p2.Body({
+        position: [bodyData.position.x, -bodyData.position.y],
+        angle: -bodyData.angle,
+        collisionResponse: null,
+      })
+
+      body.type = bodyTypeMap[bodyData.type]
+      body.name = bodyData.name // NOTE: not in p2 spec, but a nice-to-have for debugging purposes
+
+      shape = new p2.Box({
+        width: ninjaRadius * 2,
+        height: ninjaRadius * 2,
+        collisionGroup: gameVars.COIN,
+        collisionMask: gameVars.PLAYER,
+      })
+
+      body.addShape(shape)
+
+      world.addBody(body)
+
+      // create the sprite
+      var sprite = new PIXI.Sprite(resourceLoader.resources['coin'].texture)
+
+      sprite.anchor.x = 0.5
+      sprite.anchor.y = 0.5
+      sprite.x = bodyData.position.x * pixelsPerMeter
+      sprite.y = -bodyData.position.y * pixelsPerMeter
+      sprite.width = ninjaRadius * 2 * pixelsPerMeter
+      sprite.height = ninjaRadius * 2 * pixelsPerMeter
+      mapLayer.addChild(sprite)
+
+      config.dynamicSprites[body.id] = sprite
 
     }
 
