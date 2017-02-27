@@ -89,7 +89,7 @@ MapLoader.prototype.loadMap = function (config) {
 
   worldPosition = [0, 0]
 
-  bodiesData = resourceLoader.resources['level1'].data.body
+  bodiesData = resourceLoader.resources[levelName].data.body
 
   for (i = 0; i < bodiesData.length; i++) {
 
