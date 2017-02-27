@@ -11,6 +11,8 @@ var ob = require('obscen')
 var windowLoad = require('window-load')
 var screenOrientation = require('screen-orientation')
 
+global.levelCount = 2 // TODO: move to some level manager when it exists
+
 windowLoad(function () {
 
   // DebugConsole.init()
