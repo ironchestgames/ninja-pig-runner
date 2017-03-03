@@ -28,6 +28,7 @@ var widthInPixels
 var world
 var bodiesToRemove = []
 var capturedBalloonBodies = []
+var balloonBodies = []
 
 var buttonEventQueue = []
 var BUTTON_UPWARD_DOWN = 'BUTTON_UPWARD_DOWN'
@@ -82,6 +83,7 @@ var dynamicSprites = {}
 var ballonStringSprites = {}
 var mapLayer
 var ballonStringLayer
+var indicatorSprite
 
 var ninjaBottomSensor
 var ninjaLeftSensor
@@ -574,6 +576,8 @@ var beginContact = function (contactEvent) {
       shape.collisionResponse = true
     }
 
+    var balloonIndex = balloonBodies.indexOf(balloonBody)
+    balloonBodies.splice(balloonIndex, 1)
     capturedBalloonBodies.push(balloonBody)
 
     balloonBody.toWorldFrame(tempVector, balloonHolderLocalAnchor)
@@ -625,6 +629,7 @@ var gameScene = {
     bodiesToRemove = []
     capturedBalloonBodies = []
     ballonStringSprites = {} // TODO: do the same to dynamic sprites
+    balloonBodies = []
 
     // set up layers
     this.container = new PIXI.Container()
@@ -670,6 +675,9 @@ var gameScene = {
     this.backgroundLayer.addChild(skySprite)
     this.backgroundLayer.addChild(backgroundSprite)
 
+    indicatorSprite = new PIXI.Sprite(resourceLoader.resources['indicator'].texture)
+    indicatorSprite.x = global.renderer.view.width - 128
+
     // set up input buttons
     leftButton = buttonAreaFactory({
       width: global.renderer.view.width / 2,
@@ -686,6 +694,7 @@ var gameScene = {
       touchEnd: onRightUp,
     })
 
+    guiLayer.addChild(indicatorSprite)
     guiLayer.addChild(leftButton)
     guiLayer.addChild(rightButton)
 
@@ -703,6 +712,7 @@ var gameScene = {
       pixelsPerMeter: pixelsPerMeter,
       staticsColor: 0x261d05,
       dynamicSprites: dynamicSprites,
+      balloonBodies: balloonBodies,
     })
     createCeiling()
 
@@ -913,6 +923,29 @@ var gameScene = {
     if (ninjaGraphics.x > global.renderer.view.width / 4) {
       this.stage.x = -ninjaGraphics.x + global.renderer.view.width / 4
       backgroundSprite.tilePosition.x = this.stage.x * 0.1
+    }
+
+    var closestBalloon = balloonBodies[0]
+    for (var i = 0; i < balloonBodies.length; i++) {
+      if (balloonBodies[i].position[0] < closestBalloon.position[0]) {
+        closestBalloon = balloonBodies[i]
+      }
+    }
+
+    if (closestBalloon && closestBalloon.sleepState === p2.Body.SLEEPING) {
+      closestBalloon.wakeUp() // move this to update/postStep
+    }
+
+    if (closestBalloon &&
+        (closestBalloon.position[0] * pixelsPerMeter) + this.stage.x > global.renderer.view.width) {
+      indicatorSprite.y = closestBalloon.position[1] * pixelsPerMeter
+      indicatorSprite.visible = true
+
+      if (indicatorSprite.y < 0) {
+        indicatorSprite.y = 0
+      }
+    } else {
+      indicatorSprite.visible = false
     }
 
     if (global.DEBUG_DRAW) {

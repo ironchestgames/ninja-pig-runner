@@ -229,6 +229,8 @@ MapLoader.prototype.loadMap = function (config) {
 
       world.addBody(body)
 
+      body.sleep() // NOTE: game wake it when it is closest to the avatar
+
       // create the sprite
       var sprite = new PIXI.Sprite(resourceLoader.resources['balloon1'].texture)
 
@@ -241,6 +243,8 @@ MapLoader.prototype.loadMap = function (config) {
       mapLayer.addChild(sprite)
 
       config.dynamicSprites[body.id] = sprite
+
+      config.balloonBodies.push(body)
 
     }
 
