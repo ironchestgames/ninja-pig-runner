@@ -153,8 +153,8 @@
         "name" : "balloon",
         "position" : 
         {
-          "x" : 9.284157752990723,
-          "y" : -6.485388755798340
+          "x" : 28.25808715820312,
+          "y" : -9.335936546325684
         },
         "type" : "static"
       },
@@ -219,6 +219,81 @@
         {
           "x" : 8.761256217956543,
           "y" : -9.775070190429688
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 6,
+        "linearVelocity" : 0,
+        "name" : "balloon",
+        "position" : 
+        {
+          "x" : 73.25853729248047,
+          "y" : -7.988570213317871
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 7,
+        "linearVelocity" : 0,
+        "name" : "balloon",
+        "position" : 
+        {
+          "x" : 49.91009902954102,
+          "y" : -8.215593338012695
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 8,
+        "linearVelocity" : 0,
+        "name" : "balloon",
+        "position" : 
+        {
+          "x" : 129.9334259033203,
+          "y" : -9.906055450439453
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 9,
+        "linearVelocity" : 0,
+        "name" : "balloon",
+        "position" : 
+        {
+          "x" : 138.2151794433594,
+          "y" : -9.110488891601562
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 10,
+        "linearVelocity" : 0,
+        "name" : "balloon",
+        "position" : 
+        {
+          "x" : 201.2608489990234,
+          "y" : -9.488712310791016
         },
         "type" : "static"
       },
@@ -611,21 +686,6 @@
         {
           "x" : 224.3582763671875,
           "y" : 1.562089800834656
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 0,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "id" : 27,
-        "linearVelocity" : 0,
-        "name" : "balloon",
-        "position" : 
-        {
-          "x" : 11.68930530548096,
-          "y" : -6.841704368591309
         },
         "type" : "static"
       },
