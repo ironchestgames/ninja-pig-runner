@@ -113,9 +113,26 @@ BalloonHandler.prototype.draw = function (ratio) {
 
 BalloonHandler.prototype.postStep = function () {
 
-  var closestBalloon = this.balloonBodies[0]
+  var balloonBody
+  var closestBalloon
+  var i
+  var minBalloonY = -1.5
+  var sprite
 
-  for (var i = 0; i < this.balloonBodies.length; i++) {
+  for(i = this.balloonBodies.length - 1; i >= 0; i--) {
+    balloonBody = this.balloonBodies[i]
+    if (balloonBody.position[1] < minBalloonY) {
+      this.balloonBodies.splice(i, 1)
+      world.removeBody(balloonBody)
+
+      // TODO: remove balloon sprite from dynamicSprites (gameScene)
+      // TODO: lost balloon count
+    }
+  }
+
+  closestBalloon = this.balloonBodies[0]
+
+  for (i = 0; i < this.balloonBodies.length; i++) {
     if (this.balloonBodies[i].position[0] < closestBalloon.position[0]) {
       closestBalloon = this.balloonBodies[i]
     }
