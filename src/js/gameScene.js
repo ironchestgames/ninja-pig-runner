@@ -27,6 +27,7 @@ var widthInPixels
 
 var world
 var bodiesToRemove = []
+var capturedBalloonBodies = []
 
 var buttonEventQueue = []
 var BUTTON_UPWARD_DOWN = 'BUTTON_UPWARD_DOWN'
@@ -68,6 +69,7 @@ var upwardHookRelativeAimX = 0
 var upwardHookRelativeAimY = -12
 var dieOfFallY = 13
 var ninjaRadius = 0.375
+var balloonHolderLocalAnchor = [0, 0.25]
 
 var ninjaBody
 var ninjaHandBody
@@ -77,11 +79,15 @@ var ropeSprite
 var backgroundSprite
 var skySprite
 var dynamicSprites = {}
+var ballonStringSprites = {}
 var mapLayer
+var ballonStringLayer
 
 var ninjaBottomSensor
 var ninjaLeftSensor
 var ninjaRightSensor
+
+var tempVector = [0, 0]
 
 var onLeftDown = function (event) {
   buttonsLog('onLeftDown', event)
@@ -297,6 +303,15 @@ var createCeiling = function () {
 
   world.addBody(ceilingBody)
 
+}
+
+var createBalloonString = function () {
+  var sprite = new PIXI.Sprite(resourceLoader.resources['rope'].texture)
+  sprite.anchor.y = 0.5
+
+  ballonStringLayer.addChild(sprite)
+
+  return sprite
 }
 
 var createHookSprite = function (layer) {
@@ -542,7 +557,7 @@ var beginContact = function (contactEvent) {
 
     // constrain balloon to balloon holder
     var constraint = new p2.DistanceConstraint(ninjaBalloonHolderBody, balloonBody, {
-      localAnchorB: [0, 0.3],
+      localAnchorB: balloonHolderLocalAnchor,
     })
     constraint.upperLimitEnabled = true
     constraint.lowerLimitEnabled = true
@@ -558,6 +573,13 @@ var beginContact = function (contactEvent) {
       shape.collisionGroup = gameVars.CAPTURED_BALLOON
       shape.collisionResponse = true
     }
+
+    capturedBalloonBodies.push(balloonBody)
+
+    balloonBody.toWorldFrame(tempVector, balloonHolderLocalAnchor)
+    balloonBody.localAnchorBPreviousWorldPosition = p2.vec2.clone(tempVector)
+
+    ballonStringSprites[balloonBody.id] = createBalloonString()
 
     // TODO: count the balloons, target next
   }
@@ -601,12 +623,15 @@ var gameScene = {
     window.world = world // TODO: remove before prod
 
     bodiesToRemove = []
+    capturedBalloonBodies = []
+    ballonStringSprites = {} // TODO: do the same to dynamic sprites
 
     // set up layers
     this.container = new PIXI.Container()
     this.backgroundLayer = new PIXI.Container()
     this.stage = new PIXI.Container()
     mapLayer = new PIXI.Container()
+    ballonStringLayer = new PIXI.Container()
     var propLayer = new PIXI.Container()
     var guiLayer = new PIXI.Container()
     this.debugDrawContainer = new PIXI.Container()
@@ -619,6 +644,7 @@ var gameScene = {
     this.container.addChild(this.debugDrawContainer)
 
     this.stage.addChild(propLayer)
+    this.stage.addChild(ballonStringLayer)
     this.stage.addChild(mapLayer)
 
     // set up background layer contents
@@ -816,6 +842,43 @@ var gameScene = {
     } else {
 
       ropeSprite.visible = false
+    }
+
+    for (var i = 0; i < capturedBalloonBodies.length; i++) {
+      var balloonBody = capturedBalloonBodies[i]
+      var sprite = ballonStringSprites[balloonBody.id]
+
+      balloonBody.toWorldFrame(tempVector, balloonHolderLocalAnchor)
+
+
+      balloonX = gameUtils.calcInterpolatedValue(
+          tempVector[0],
+          balloonBody.localAnchorBPreviousWorldPosition[0],
+          ratio) * pixelsPerMeter
+      balloonY = gameUtils.calcInterpolatedValue(
+          tempVector[1],
+          balloonBody.localAnchorBPreviousWorldPosition[1],
+          ratio) * pixelsPerMeter
+
+      balloonBody.localAnchorBPreviousWorldPosition = p2.vec2.clone(tempVector) // NOTE: save this world position
+
+      ninjaX = gameUtils.calcInterpolatedValue(
+        ninjaBody.position[0],
+        ninjaBody.previousPosition[0],
+        ratio) * pixelsPerMeter
+
+      ninjaY = gameUtils.calcInterpolatedValue(
+        ninjaBody.position[1],
+        ninjaBody.previousPosition[1],
+        ratio) * pixelsPerMeter
+
+      a = balloonX - ninjaX
+      b = balloonY - ninjaY
+      sprite.x = ninjaX
+      sprite.y = ninjaY
+      sprite.width = Math.sqrt(a * a + b * b)
+      sprite.rotation = Math.atan2(b, a)
+
     }
 
     for (var i = 0; i < world.bodies.length; i++) {
