@@ -68,8 +68,24 @@
         "name" : "balloon",
         "position" : 
         {
-          "x" : 158.5708923339844,
-          "y" : -8.507781028747559
+          "x" : 39.91214752197266,
+          "y" : -10.33850097656250
+        },
+        "type" : "dynamic"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 3,
+        "linearVelocity" : 0,
+        "massData-mass" : 1,
+        "name" : "balloon",
+        "position" : 
+        {
+          "x" : 69.51424407958984,
+          "y" : -10.32826232910156
         },
         "type" : "dynamic"
       },
@@ -87,6 +103,38 @@
           "y" : -1.465489983558655
         },
         "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 5,
+        "linearVelocity" : 0,
+        "massData-mass" : 1,
+        "name" : "balloon",
+        "position" : 
+        {
+          "x" : 109.5405807495117,
+          "y" : -10.57510757446289
+        },
+        "type" : "dynamic"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 6,
+        "linearVelocity" : 0,
+        "massData-mass" : 1,
+        "name" : "balloon",
+        "position" : 
+        {
+          "x" : 156.62597656250,
+          "y" : -9.551612854003906
+        },
+        "type" : "dynamic"
       },
       
       {

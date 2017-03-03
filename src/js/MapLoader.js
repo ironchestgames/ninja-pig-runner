@@ -211,7 +211,7 @@ MapLoader.prototype.loadMap = function (config) {
       body = new p2.Body({
         position: [bodyData.position.x, -bodyData.position.y],
         angle: -bodyData.angle,
-        gravityScale: -0.5,
+        gravityScale: -0.3,
         mass: 0.08,
         damping: 0.99,
       })
