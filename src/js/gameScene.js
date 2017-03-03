@@ -10,6 +10,7 @@ var MapLoader = require('./MapLoader')
 var gameVars = require('./gameVars')
 var buttonAreaFactory = require('./buttonAreaFactory')
 var KeyButton = require('./KeyButton')
+var BalloonHandler = require('./BalloonHandler')
 
 var actionsLog = debug('gameScene:actions')
 var buttonsLog = debug('gameScene:buttons')
@@ -27,8 +28,6 @@ var widthInPixels
 
 var world
 var bodiesToRemove = []
-var capturedBalloonBodies = []
-var balloonBodies = []
 
 var buttonEventQueue = []
 var BUTTON_UPWARD_DOWN = 'BUTTON_UPWARD_DOWN'
@@ -79,10 +78,8 @@ var ninjaGraphics
 var ropeSprite
 var backgroundSprite
 var skySprite
-var dynamicSprites = {}
-var ballonStringSprites = {}
+var dynamicSprites = {} // TODO: make sure these are destroyed properly
 var mapLayer
-var ballonStringLayer
 var indicatorSprite
 
 var ninjaBottomSensor
@@ -307,15 +304,6 @@ var createCeiling = function () {
 
 }
 
-var createBalloonString = function () {
-  var sprite = new PIXI.Sprite(resourceLoader.resources['balloonstring'].texture)
-  sprite.anchor.y = 0.5
-
-  ballonStringLayer.addChild(sprite)
-
-  return sprite
-}
-
 var createHookSprite = function (layer) {
   ropeSprite = new PIXI.Sprite(resourceLoader.resources['rope'].texture)
   ropeSprite.anchor.y = 0.5
@@ -529,6 +517,8 @@ var postStep = function () {
     ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_FALLING)
   }
 
+  balloonHandler.postStep()
+
 }
 
 var beginContact = function (contactEvent) {
@@ -557,33 +547,7 @@ var beginContact = function (contactEvent) {
       balloonBody = contactEvent.bodyB
     }
 
-    // constrain balloon to balloon holder
-    var constraint = new p2.DistanceConstraint(ninjaBalloonHolderBody, balloonBody, {
-      localAnchorB: balloonHolderLocalAnchor,
-    })
-    constraint.upperLimitEnabled = true
-    constraint.lowerLimitEnabled = true
-    constraint.lowerLimit = 0
-    constraint.upperLimit = 0.5
-    constraint.setStiffness(10)
-    constraint.setRelaxation(1)
-    world.addConstraint(constraint)
-
-    for (var i = 0; i < balloonBody.shapes.length; i++) {
-      var shape = balloonBody.shapes[i]
-      shape.collisionMask = gameVars.CAPTURED_BALLOON
-      shape.collisionGroup = gameVars.CAPTURED_BALLOON
-      shape.collisionResponse = true
-    }
-
-    var balloonIndex = balloonBodies.indexOf(balloonBody)
-    balloonBodies.splice(balloonIndex, 1)
-    capturedBalloonBodies.push(balloonBody)
-
-    balloonBody.toWorldFrame(tempVector, balloonHolderLocalAnchor)
-    balloonBody.localAnchorBPreviousWorldPosition = p2.vec2.clone(tempVector)
-
-    ballonStringSprites[balloonBody.id] = createBalloonString()
+    balloonHandler.captureBalloon(balloonBody, ninjaBalloonHolderBody)
 
     // TODO: count the balloons, target next
   }
@@ -627,16 +591,13 @@ var gameScene = {
     window.world = world // TODO: remove before prod
 
     bodiesToRemove = []
-    capturedBalloonBodies = []
-    ballonStringSprites = {} // TODO: do the same to dynamic sprites
-    balloonBodies = []
 
     // set up layers
     this.container = new PIXI.Container()
     this.backgroundLayer = new PIXI.Container()
     this.stage = new PIXI.Container()
     mapLayer = new PIXI.Container()
-    ballonStringLayer = new PIXI.Container()
+    var balloonStringLayer = new PIXI.Container()
     var propLayer = new PIXI.Container()
     var guiLayer = new PIXI.Container()
     this.debugDrawContainer = new PIXI.Container()
@@ -649,7 +610,7 @@ var gameScene = {
     this.container.addChild(this.debugDrawContainer)
 
     this.stage.addChild(propLayer)
-    this.stage.addChild(ballonStringLayer)
+    this.stage.addChild(balloonStringLayer)
     this.stage.addChild(mapLayer)
 
     // set up background layer contents
@@ -712,9 +673,15 @@ var gameScene = {
       pixelsPerMeter: pixelsPerMeter,
       staticsColor: 0x261d05,
       dynamicSprites: dynamicSprites,
-      balloonBodies: balloonBodies,
     })
     createCeiling()
+
+    balloonHandler = new BalloonHandler({
+      world: world,
+      container: balloonStringLayer,
+      stringTexture: resourceLoader.resources['balloonstring'].texture,
+      pixelsPerMeter: pixelsPerMeter,
+    })
 
     // set up ninja and hook graphics
     createHookSprite(this.stage)
@@ -854,42 +821,7 @@ var gameScene = {
       ropeSprite.visible = false
     }
 
-    for (var i = 0; i < capturedBalloonBodies.length; i++) {
-      var balloonBody = capturedBalloonBodies[i]
-      var sprite = ballonStringSprites[balloonBody.id]
-
-      balloonBody.toWorldFrame(tempVector, balloonHolderLocalAnchor)
-
-
-      balloonX = gameUtils.calcInterpolatedValue(
-          tempVector[0],
-          balloonBody.localAnchorBPreviousWorldPosition[0],
-          ratio) * pixelsPerMeter
-      balloonY = gameUtils.calcInterpolatedValue(
-          tempVector[1],
-          balloonBody.localAnchorBPreviousWorldPosition[1],
-          ratio) * pixelsPerMeter
-
-      balloonBody.localAnchorBPreviousWorldPosition = p2.vec2.clone(tempVector) // NOTE: save this world position
-
-      ninjaX = gameUtils.calcInterpolatedValue(
-        ninjaBody.position[0],
-        ninjaBody.previousPosition[0],
-        ratio) * pixelsPerMeter
-
-      ninjaY = gameUtils.calcInterpolatedValue(
-        ninjaBody.position[1],
-        ninjaBody.previousPosition[1],
-        ratio) * pixelsPerMeter
-
-      a = balloonX - ninjaX
-      b = balloonY - ninjaY
-      sprite.x = ninjaX
-      sprite.y = ninjaY
-      sprite.width = Math.sqrt(a * a + b * b)
-      sprite.rotation = Math.atan2(b, a)
-
-    }
+    balloonHandler.draw(ratio, ninjaBody)
 
     for (var i = 0; i < world.bodies.length; i++) {
       var body = world.bodies[i]
@@ -925,16 +857,7 @@ var gameScene = {
       backgroundSprite.tilePosition.x = this.stage.x * 0.1
     }
 
-    var closestBalloon = balloonBodies[0]
-    for (var i = 0; i < balloonBodies.length; i++) {
-      if (balloonBodies[i].position[0] < closestBalloon.position[0]) {
-        closestBalloon = balloonBodies[i]
-      }
-    }
-
-    if (closestBalloon && closestBalloon.sleepState === p2.Body.SLEEPING) {
-      closestBalloon.wakeUp() // move this to update/postStep
-    }
+    var closestBalloon = balloonHandler.getClosestBalloon()
 
     if (closestBalloon &&
         (closestBalloon.position[0] * pixelsPerMeter) + this.stage.x > global.renderer.view.width) {
