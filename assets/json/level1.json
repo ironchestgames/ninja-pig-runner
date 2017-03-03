@@ -6,20 +6,6 @@
 	[
 		
 		{
-			"angle" : 0,
-			"angularVelocity" : 0,
-			"awake" : true,
-			"linearVelocity" : 0,
-			"name" : "balloon",
-			"position" : 
-			{
-				"x" : 206.4395599365234,
-				"y" : -7.956112384796143
-			},
-			"type" : 0
-		},
-		
-		{
 			"angle" : 3.141592502593994,
 			"angularVelocity" : 0,
 			"awake" : true,
@@ -746,8 +732,8 @@
 			"name" : "balloon",
 			"position" : 
 			{
-				"x" : 20.25637626647949,
-				"y" : -5.206965446472168
+				"x" : 11.68930530548096,
+				"y" : -6.841704368591309
 			},
 			"type" : 0
 		},
