@@ -306,7 +306,7 @@ var createCeiling = function () {
 }
 
 var createBalloonString = function () {
-  var sprite = new PIXI.Sprite(resourceLoader.resources['rope'].texture)
+  var sprite = new PIXI.Sprite(resourceLoader.resources['balloonstring'].texture)
   sprite.anchor.y = 0.5
 
   ballonStringLayer.addChild(sprite)

@@ -19,6 +19,7 @@ var loadGameScene = {
     .add('headband1', 'assets/images/headband1.png')
     .add('headband2', 'assets/images/headband2.png')
     .add('balloon1', 'assets/images/balloon1.png')
+    .add('balloonstring', 'assets/images/balloonstring.png')
     .add('level' + sceneParams.level, 'assets/json/level' + sceneParams.level + '.json') // TODO: bake this into bundle.js instead
     .load(function () {
       this.changeScene('game', {
