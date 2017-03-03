@@ -71,6 +71,7 @@ var ninjaRadius = 0.375
 
 var ninjaBody
 var ninjaHandBody
+var ninjaBalloonHolderBody
 var ninjaGraphics
 var ropeSprite
 var backgroundSprite
@@ -157,6 +158,11 @@ var createNinja = function() {
   ninjaHandBody.position[0] = ninjaRadius + 0.07
   ninjaHandBody.position[1] = -0.15
 
+  // balloon holder body
+  ninjaBalloonHolderBody = new p2.Body()
+  ninjaBalloonHolderBody.name = 'ninjaBalloonHolderBody'
+  ninjaBalloonHolderBody.type = p2.Body.KINEMATIC
+
   // shapes
   middleShape = new p2.Box({
     width: ninjaRadius * 2,
@@ -225,8 +231,10 @@ var createNinja = function() {
   ninjaBody.damping = 0
   ninjaBody.angularDamping = 0
   ninjaBody.name = 'ninjaBody'
+
   world.addBody(ninjaBody)
   world.addBody(ninjaHandBody)
+  world.addBody(ninjaBalloonHolderBody)
 
   // hand body constraint
   ninjaHandBodyConstraint = new p2.LockConstraint(ninjaBody, ninjaHandBody, {
@@ -360,6 +368,10 @@ var postStep = function () {
     mapLayer.removeChild(sprite)
     world.removeBody(body)
   }
+
+  // update balloon holder position
+  ninjaBalloonHolderBody.position[0] = ninjaBody.position[0]
+  ninjaBalloonHolderBody.position[1] = ninjaBody.position[1]
 
   // update the sensors' values
   ninjaLeftSensor.postStep()
@@ -527,7 +539,18 @@ var beginContact = function (contactEvent) {
     if (contactEvent.bodyB.name === 'balloon') {
       balloonBody = contactEvent.bodyB
     }
-    bodiesToRemove.push(balloonBody)
+
+    // constrain balloon to balloon holder
+    balloonBody.collisionMask = 0
+    var constraint = new p2.DistanceConstraint(ninjaBalloonHolderBody, balloonBody)
+    constraint.upperLimitEnabled = true
+    constraint.lowerLimitEnabled = true
+    constraint.lowerLimit = 0
+    constraint.setStiffness(10)
+    constraint.setRelaxation(4)
+    world.addConstraint(constraint)
+
+    // TODO: count the balloons, target next
   }
 }
 

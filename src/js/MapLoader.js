@@ -212,9 +212,11 @@ MapLoader.prototype.loadMap = function (config) {
         position: [bodyData.position.x, -bodyData.position.y],
         angle: -bodyData.angle,
         collisionResponse: null,
+        gravityScale: -0.5,
+        mass: 0.08,
+        damping: 0.99,
       })
 
-      body.type = bodyTypeMap[bodyData.type]
       body.name = bodyData.name // NOTE: not in p2 spec, but a nice-to-have for debugging purposes
 
       shape = new p2.Box({
