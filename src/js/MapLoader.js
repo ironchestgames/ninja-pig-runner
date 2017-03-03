@@ -155,7 +155,7 @@ MapLoader.prototype.loadMap = function (config) {
         var convex = new p2.Convex({
           vertices: vertices,
           collisionGroup: gameVars.WALL,
-          collisionMask: gameVars.PLAYER | gameVars.SENSOR | gameVars.WALL,
+          collisionMask: gameVars.PLAYER | gameVars.SENSOR | gameVars.WALL | gameVars.BALLOON,
         })
 
         body.addShape(convex)
@@ -222,7 +222,7 @@ MapLoader.prototype.loadMap = function (config) {
         radius: ninjaRadius * 0.7,
         collisionGroup: gameVars.BALLOON,
         collisionMask: gameVars.PLAYER | gameVars.WALL,
-        collisionResponse: false,
+        // collisionResponse: false, // TODO: make it care about wall but not affect player
       })
 
       body.addShape(shape)

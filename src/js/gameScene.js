@@ -943,6 +943,8 @@ var gameScene = {
 
       if (indicatorSprite.y < 0) {
         indicatorSprite.y = 0
+      } else if (indicatorSprite.y > global.renderer.view.height - indicatorSprite.height) {
+        indicatorSprite.y = global.renderer.view.height - indicatorSprite.height
       }
     } else {
       indicatorSprite.visible = false
