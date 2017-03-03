@@ -206,7 +206,7 @@ MapLoader.prototype.loadMap = function (config) {
         propLayer.addChild(sprite)
       }
 
-    } else if (bodyData.name === 'coin') {
+    } else if (bodyData.name === 'balloon') {
 
       body = new p2.Body({
         position: [bodyData.position.x, -bodyData.position.y],
@@ -220,7 +220,7 @@ MapLoader.prototype.loadMap = function (config) {
       shape = new p2.Box({
         width: ninjaRadius * 2,
         height: ninjaRadius * 2,
-        collisionGroup: gameVars.COIN,
+        collisionGroup: gameVars.BALLOON,
         collisionMask: gameVars.PLAYER,
       })
 
@@ -229,7 +229,7 @@ MapLoader.prototype.loadMap = function (config) {
       world.addBody(body)
 
       // create the sprite
-      var sprite = new PIXI.Sprite(resourceLoader.resources['coin'].texture)
+      var sprite = new PIXI.Sprite(resourceLoader.resources['balloon1'].texture)
 
       sprite.anchor.x = 0.5
       sprite.anchor.y = 0.5

@@ -62,6 +62,22 @@
         "angle" : 0,
         "angularVelocity" : 0,
         "awake" : true,
+        "id" : 2,
+        "linearVelocity" : 0,
+        "massData-mass" : 1,
+        "name" : "balloon",
+        "position" : 
+        {
+          "x" : 158.5708923339844,
+          "y" : -8.507781028747559
+        },
+        "type" : "dynamic"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
         "id" : 4,
         "linearVelocity" : 0,
         "name" : "ninja",
@@ -509,36 +525,6 @@
       },
       
       {
-        "angle" : 0,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "id" : 24,
-        "linearVelocity" : 0,
-        "name" : "coin",
-        "position" : 
-        {
-          "x" : 14.14529514312744,
-          "y" : -2.905161857604980
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 0,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "id" : 25,
-        "linearVelocity" : 0,
-        "name" : "coin",
-        "position" : 
-        {
-          "x" : 15.57308387756348,
-          "y" : -2.905161857604980
-        },
-        "type" : "static"
-      },
-      
-      {
         "angle" : 3.141592502593994,
         "angularVelocity" : 0,
         "awake" : true,
@@ -583,141 +569,6 @@
         {
           "x" : 183.9103698730469,
           "y" : -1.460454940795898
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 0,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "id" : 27,
-        "linearVelocity" : 0,
-        "name" : "coin",
-        "position" : 
-        {
-          "x" : 16.97987556457520,
-          "y" : -2.905161857604980
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 0,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "id" : 28,
-        "linearVelocity" : 0,
-        "name" : "coin",
-        "position" : 
-        {
-          "x" : 20.40237045288086,
-          "y" : -2.989149093627930
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 0,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "id" : 29,
-        "linearVelocity" : 0,
-        "name" : "coin",
-        "position" : 
-        {
-          "x" : 23.61489677429199,
-          "y" : -3.934008598327637
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 0,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "id" : 30,
-        "linearVelocity" : 0,
-        "name" : "coin",
-        "position" : 
-        {
-          "x" : 26.23950386047363,
-          "y" : -5.928713321685791
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 0,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "id" : 31,
-        "linearVelocity" : 0,
-        "name" : "coin",
-        "position" : 
-        {
-          "x" : 45.87557220458984,
-          "y" : -8.784719467163086
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 0,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "id" : 32,
-        "linearVelocity" : 0,
-        "name" : "coin",
-        "position" : 
-        {
-          "x" : 50.04501342773438,
-          "y" : -4.668467521667480
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 0,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "id" : 33,
-        "linearVelocity" : 0,
-        "name" : "coin",
-        "position" : 
-        {
-          "x" : 54.30038070678711,
-          "y" : -1.436024188995361
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 0,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "id" : 34,
-        "linearVelocity" : 0,
-        "name" : "coin",
-        "position" : 
-        {
-          "x" : 58.70713806152344,
-          "y" : -4.431146621704102
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 0,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "id" : 35,
-        "linearVelocity" : 0,
-        "name" : "coin",
-        "position" : 
-        {
-          "x" : 62.98296737670898,
-          "y" : -8.674238204956055
         },
         "type" : "static"
       },

@@ -10,221 +10,11 @@
 			"angularVelocity" : 0,
 			"awake" : true,
 			"linearVelocity" : 0,
-			"name" : "coin",
+			"name" : "balloon",
 			"position" : 
 			{
-				"x" : 27.15767669677734,
-				"y" : -5.206965446472168
-			},
-			"type" : 0
-		},
-		
-		{
-			"angle" : 0,
-			"angularVelocity" : 0,
-			"awake" : true,
-			"linearVelocity" : 0,
-			"name" : "coin",
-			"position" : 
-			{
-				"x" : 20.25637626647949,
-				"y" : -5.206965446472168
-			},
-			"type" : 0
-		},
-		
-		{
-			"angle" : 0,
-			"angularVelocity" : 0,
-			"awake" : true,
-			"linearVelocity" : 0,
-			"name" : "coin",
-			"position" : 
-			{
-				"x" : 184.8370361328125,
-				"y" : -5.711604595184326
-			},
-			"type" : 0
-		},
-		
-		{
-			"angle" : 0,
-			"angularVelocity" : 0,
-			"awake" : true,
-			"linearVelocity" : 0,
-			"name" : "coin",
-			"position" : 
-			{
-				"x" : 180.1718597412109,
-				"y" : -7.975123882293701
-			},
-			"type" : 0
-		},
-		
-		{
-			"angle" : 0,
-			"angularVelocity" : 0,
-			"awake" : true,
-			"linearVelocity" : 0,
-			"name" : "coin",
-			"position" : 
-			{
-				"x" : 182.5044403076172,
-				"y" : -6.796597480773926
-			},
-			"type" : 0
-		},
-		
-		{
-			"angle" : 0,
-			"angularVelocity" : 0,
-			"awake" : true,
-			"linearVelocity" : 0,
-			"name" : "coin",
-			"position" : 
-			{
-				"x" : 193.4715118408203,
-				"y" : -3.681993007659912
-			},
-			"type" : 0
-		},
-		
-		{
-			"angle" : 0,
-			"angularVelocity" : 0,
-			"awake" : true,
-			"linearVelocity" : 0,
-			"name" : "coin",
-			"position" : 
-			{
-				"x" : 161.5363922119141,
-				"y" : -0.7748594284057617
-			},
-			"type" : 0
-		},
-		
-		{
-			"angle" : 0,
-			"angularVelocity" : 0,
-			"awake" : true,
-			"linearVelocity" : 0,
-			"name" : "coin",
-			"position" : 
-			{
-				"x" : 148.7614288330078,
-				"y" : -2.682666301727295
-			},
-			"type" : 0
-		},
-		
-		{
-			"angle" : 0,
-			"angularVelocity" : 0,
-			"awake" : true,
-			"linearVelocity" : 0,
-			"name" : "coin",
-			"position" : 
-			{
-				"x" : 140.5957946777344,
-				"y" : -7.921560287475586
-			},
-			"type" : 0
-		},
-		
-		{
-			"angle" : 0,
-			"angularVelocity" : 0,
-			"awake" : true,
-			"linearVelocity" : 0,
-			"name" : "coin",
-			"position" : 
-			{
-				"x" : 137.8703765869141,
-				"y" : -7.921560287475586
-			},
-			"type" : 0
-		},
-		
-		{
-			"angle" : 0,
-			"angularVelocity" : 0,
-			"awake" : true,
-			"linearVelocity" : 0,
-			"name" : "coin",
-			"position" : 
-			{
-				"x" : 135.1449432373047,
-				"y" : -7.921560287475586
-			},
-			"type" : 0
-		},
-		
-		{
-			"angle" : 0,
-			"angularVelocity" : 0,
-			"awake" : true,
-			"linearVelocity" : 0,
-			"name" : "coin",
-			"position" : 
-			{
-				"x" : 108.8532791137695,
-				"y" : -6.178146362304688
-			},
-			"type" : 0
-		},
-		
-		{
-			"angle" : 0,
-			"angularVelocity" : 0,
-			"awake" : true,
-			"linearVelocity" : 0,
-			"name" : "coin",
-			"position" : 
-			{
-				"x" : 74.11621093750,
-				"y" : -8.402771949768066
-			},
-			"type" : 0
-		},
-		
-		{
-			"angle" : 0,
-			"angularVelocity" : 0,
-			"awake" : true,
-			"linearVelocity" : 0,
-			"name" : "coin",
-			"position" : 
-			{
-				"x" : 23.85861206054688,
-				"y" : -3.946381568908691
-			},
-			"type" : 0
-		},
-		
-		{
-			"angle" : 0,
-			"angularVelocity" : 0,
-			"awake" : true,
-			"linearVelocity" : 0,
-			"name" : "coin",
-			"position" : 
-			{
-				"x" : 49.93627166748047,
-				"y" : -8.613735198974609
-			},
-			"type" : 0
-		},
-		
-		{
-			"angle" : 0,
-			"angularVelocity" : 0,
-			"awake" : true,
-			"linearVelocity" : 0,
-			"name" : "coin",
-			"position" : 
-			{
-				"x" : 117.0166091918945,
-				"y" : -8.830039024353027
+				"x" : 206.4395599365234,
+				"y" : -7.956112384796143
 			},
 			"type" : 0
 		},
@@ -944,6 +734,20 @@
 			{
 				"x" : 37.22539520263672,
 				"y" : -9.723648071289062
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "balloon",
+			"position" : 
+			{
+				"x" : 20.25637626647949,
+				"y" : -5.206965446472168
 			},
 			"type" : 0
 		},

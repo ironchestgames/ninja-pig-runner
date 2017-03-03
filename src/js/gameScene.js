@@ -170,7 +170,7 @@ var createNinja = function() {
   bottomShape = new p2.Circle({
     radius: ninjaRadius * 1.1,
     collisionGroup: gameVars.PLAYER,
-    collisionMask: gameVars.WALL | gameVars.COIN,
+    collisionMask: gameVars.WALL | gameVars.BALLOON,
   })
   ninjaBody.addShape(bottomShape)
   bottomShape.position[1] = ninjaRadius
@@ -179,7 +179,7 @@ var createNinja = function() {
   topShape = new p2.Circle({
     radius: ninjaRadius,
     collisionGroup: gameVars.PLAYER,
-    collisionMask: gameVars.WALL | gameVars.COIN,
+    collisionMask: gameVars.WALL | gameVars.BALLOON,
   })
   ninjaBody.addShape(topShape)
   topShape.position[1] = -ninjaRadius
@@ -191,7 +191,7 @@ var createNinja = function() {
     width: 0.4,
     height: 0.2,
     collisionGroup: gameVars.SENSOR,
-    collisionMask: gameVars.WALL | gameVars.COIN,
+    collisionMask: gameVars.WALL | gameVars.BALLOON,
     relativePosition: [0, ninjaRadius * 2],
   })
 
@@ -521,13 +521,13 @@ var beginContact = function (contactEvent) {
     }
   }
 
-  if ((contactEvent.bodyA.name === 'coin' || contactEvent.bodyB.name === 'coin') &&
+  if ((contactEvent.bodyA.name === 'balloon' || contactEvent.bodyB.name === 'balloon') &&
     (contactEvent.bodyA.name === 'ninjaBody' || contactEvent.bodyB.name === 'ninjaBody')) {
-    var coinBody = contactEvent.bodyA
-    if (contactEvent.bodyB.name === 'coin') {
-      coinBody = contactEvent.bodyB
+    var balloonBody = contactEvent.bodyA
+    if (contactEvent.bodyB.name === 'balloon') {
+      balloonBody = contactEvent.bodyB
     }
-    bodiesToRemove.push(coinBody)
+    bodiesToRemove.push(balloonBody)
   }
 }
 
