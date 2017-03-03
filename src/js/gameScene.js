@@ -541,14 +541,23 @@ var beginContact = function (contactEvent) {
     }
 
     // constrain balloon to balloon holder
-    balloonBody.collisionMask = 0
-    var constraint = new p2.DistanceConstraint(ninjaBalloonHolderBody, balloonBody)
+    var constraint = new p2.DistanceConstraint(ninjaBalloonHolderBody, balloonBody, {
+      localAnchorB: [0, 0.3],
+    })
     constraint.upperLimitEnabled = true
     constraint.lowerLimitEnabled = true
     constraint.lowerLimit = 0
+    constraint.upperLimit = 0.5
     constraint.setStiffness(10)
-    constraint.setRelaxation(4)
+    constraint.setRelaxation(1)
     world.addConstraint(constraint)
+
+    for (var i = 0; i < balloonBody.shapes.length; i++) {
+      var shape = balloonBody.shapes[i]
+      shape.collisionMask = gameVars.CAPTURED_BALLOON
+      shape.collisionGroup = gameVars.CAPTURED_BALLOON
+      shape.collisionResponse = true
+    }
 
     // TODO: count the balloons, target next
   }

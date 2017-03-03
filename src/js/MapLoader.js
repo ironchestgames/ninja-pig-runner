@@ -211,7 +211,6 @@ MapLoader.prototype.loadMap = function (config) {
       body = new p2.Body({
         position: [bodyData.position.x, -bodyData.position.y],
         angle: -bodyData.angle,
-        collisionResponse: null,
         gravityScale: -0.5,
         mass: 0.08,
         damping: 0.99,
@@ -219,11 +218,11 @@ MapLoader.prototype.loadMap = function (config) {
 
       body.name = bodyData.name // NOTE: not in p2 spec, but a nice-to-have for debugging purposes
 
-      shape = new p2.Box({
-        width: ninjaRadius * 2,
-        height: ninjaRadius * 2,
+      shape = new p2.Circle({
+        radius: ninjaRadius * 0.7,
         collisionGroup: gameVars.BALLOON,
-        collisionMask: gameVars.PLAYER,
+        collisionMask: gameVars.PLAYER | gameVars.WALL,
+        collisionResponse: false,
       })
 
       body.addShape(shape)

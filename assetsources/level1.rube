@@ -148,6 +148,21 @@
         "angle" : 0,
         "angularVelocity" : 0,
         "awake" : true,
+        "id" : 3,
+        "linearVelocity" : 0,
+        "name" : "balloon",
+        "position" : 
+        {
+          "x" : 9.284157752990723,
+          "y" : -6.485388755798340
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
         "id" : 4,
         "linearVelocity" : 0,
         "name" : "ninja",
