@@ -7,11 +7,13 @@ var tempVector = [0, 0]
 var BalloonHandler = function (config) {
 
   this.world = config.world
-  this.container = config.container
   this.stringTexture = config.stringTexture
   this.pixelsPerMeter = config.pixelsPerMeter
+  this.container = new PIXI.Container()
 
-  this.capturedBalloonBodies = []
+  config.container.addChild(this.container)
+
+  this.constraints = []
   this.balloonBodies = []
   this.balloonStringSprites = {}
   this.localAnchor = [0, 0.25]
@@ -42,6 +44,7 @@ BalloonHandler.prototype.captureBalloon = function (balloonBody, balloonHolderBo
   constraint.setStiffness(10)
   constraint.setRelaxation(1)
   this.world.addConstraint(constraint)
+  this.constraints.push(constraint)
 
   for (var i = 0; i < balloonBody.shapes.length; i++) {
     var shape = balloonBody.shapes[i]
@@ -53,7 +56,6 @@ BalloonHandler.prototype.captureBalloon = function (balloonBody, balloonHolderBo
   // move balloon to captured collection
   var balloonIndex = this.balloonBodies.indexOf(balloonBody)
   this.balloonBodies.splice(balloonIndex, 1)
-  this.capturedBalloonBodies.push(balloonBody)
 
   // drawing the string needs previous position
   balloonBody.localAnchorBPreviousWorldPosition = [0, 0]
@@ -69,10 +71,11 @@ BalloonHandler.prototype.captureBalloon = function (balloonBody, balloonHolderBo
   this.balloonStringSprites[balloonBody.id] = sprite
 }
 
-BalloonHandler.prototype.draw = function (ratio, ninjaBody) {
+BalloonHandler.prototype.draw = function (ratio) {
 
-  for (var i = 0; i < this.capturedBalloonBodies.length; i++) {
-    var balloonBody = this.capturedBalloonBodies[i]
+  for (var i = 0; i < this.constraints.length; i++) {
+    var balloonBody = this.constraints[i].bodyB
+    var capturerBody = this.constraints[i].bodyA
     var sprite = this.balloonStringSprites[balloonBody.id]
 
     balloonBody.toWorldFrame(tempVector, this.localAnchor)
@@ -89,13 +92,13 @@ BalloonHandler.prototype.draw = function (ratio, ninjaBody) {
     balloonBody.localAnchorBPreviousWorldPosition = p2.vec2.clone(tempVector) // NOTE: save this world position
 
     var ninjaX = gameUtils.calcInterpolatedValue(
-      ninjaBody.position[0],
-      ninjaBody.previousPosition[0],
+      capturerBody.position[0],
+      capturerBody.previousPosition[0],
       ratio) * this.pixelsPerMeter
 
     var ninjaY = gameUtils.calcInterpolatedValue(
-      ninjaBody.position[1],
-      ninjaBody.previousPosition[1],
+      capturerBody.position[1],
+      capturerBody.previousPosition[1],
       ratio) * this.pixelsPerMeter
 
     var a = balloonX - ninjaX

@@ -610,8 +610,8 @@ var gameScene = {
     this.container.addChild(this.debugDrawContainer)
 
     this.stage.addChild(propLayer)
-    this.stage.addChild(balloonStringLayer)
     this.stage.addChild(mapLayer)
+    this.stage.addChild(balloonStringLayer)
 
     // set up background layer contents
     // NOTE: bc of the nature of the image it has to be this exact square (suns/moons are round)
@@ -821,7 +821,7 @@ var gameScene = {
       ropeSprite.visible = false
     }
 
-    balloonHandler.draw(ratio, ninjaBody)
+    balloonHandler.draw(ratio)
 
     for (var i = 0; i < world.bodies.length; i++) {
       var body = world.bodies[i]
