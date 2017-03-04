@@ -229,8 +229,10 @@ MapLoader.prototype.loadMap = function (config) {
 
       world.addBody(body)
 
+      var balloonTextureNr = gameUtils.getRandomInt(1, 8)
+
       // create the sprite
-      var sprite = new PIXI.Sprite(resourceLoader.resources['balloon1'].texture)
+      var sprite = new PIXI.Sprite(resourceLoader.resources['balloon' + balloonTextureNr].texture)
 
       sprite.anchor.x = 0.5
       sprite.anchor.y = 0.5
