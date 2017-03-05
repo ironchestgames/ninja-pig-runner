@@ -82,6 +82,7 @@ var dynamicSprites = {} // TODO: make sure these are destroyed properly
 var mapLayer
 var indicatorContainer
 var indicatorArrowSprite
+var indicatorDistanceText
 
 var ninjaBottomSensor
 var ninjaLeftSensor
@@ -520,6 +521,11 @@ var postStep = function () {
 
   balloonHandler.postStep()
 
+  var closestBalloon = balloonHandler.getClosestBalloon()
+  var distance = Math.round(p2.vec2.distance(ninjaBody.position, closestBalloon.position))
+
+  indicatorDistanceText.text = distance + 'm'
+
 }
 
 var beginContact = function (contactEvent) {
@@ -642,7 +648,16 @@ var gameScene = {
 
     indicatorArrowSprite = new PIXI.Sprite(resourceLoader.resources['indicator'].texture)
 
+    indicatorDistanceText = new PIXI.Text({
+      fill: 0x000000,
+    })
+    indicatorDistanceText.y = 50
+    indicatorDistanceText.x = 40
+
+    indicatorDistanceText.text = '100 m'
+
     indicatorContainer.addChild(indicatorArrowSprite)
+    indicatorContainer.addChild(indicatorDistanceText)
 
     // set up input buttons
     leftButton = buttonAreaFactory({
