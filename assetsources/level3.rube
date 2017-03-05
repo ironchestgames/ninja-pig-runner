@@ -1,0 +1,607 @@
+
+{
+  "collisionbitplanes" : 
+  {
+    "names" : 
+    [
+      "bitplane1",
+      "bitplane2",
+      "bitplane3",
+      "bitplane4",
+      "bitplane5",
+      "bitplane6",
+      "bitplane7",
+      "bitplane8",
+      "bitplane9",
+      "bitplane10",
+      "bitplane11",
+      "bitplane12",
+      "bitplane13",
+      "bitplane14",
+      "bitplane15",
+      "bitplane16",
+      "bitplane17",
+      "bitplane18",
+      "bitplane19",
+      "bitplane20",
+      "bitplane21",
+      "bitplane22",
+      "bitplane23",
+      "bitplane24",
+      "bitplane25",
+      "bitplane26",
+      "bitplane27",
+      "bitplane28",
+      "bitplane29",
+      "bitplane30",
+      "bitplane31",
+      "bitplane32"
+    ]
+  },
+  "metaworld" : 
+  {
+    "allowSleep" : true,
+    "autoClearForces" : true,
+    "continuousPhysics" : true,
+    "exportOptions" : 
+    {
+      "compactCommonFloats" : true,
+      "compactZeroVecs" : true,
+      "saveFullPathForImages" : false,
+      "saveFullPathForSamplerOutput" : false,
+      "saveImagePathsRelativeToRUBEFile" : false,
+      "saveSamplerOutputPathsRelativeToRUBEFile" : false,
+      "useHumanReadableFloats" : true,
+      "usePrettyPrint" : true
+    },
+    "gravity" : 
+    {
+      "x" : 0,
+      "y" : -10
+    },
+    "metabody" : 
+    [
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 1,
+        "linearVelocity" : 0,
+        "massData-mass" : 1,
+        "name" : "balloon",
+        "position" : 
+        {
+          "x" : 30.68031883239746,
+          "y" : -6.393775939941406
+        },
+        "type" : "dynamic"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "fixture" : 
+        [
+          
+          {
+            "density" : 1,
+            "friction" : 0.2,
+            "id" : 1,
+            "name" : "fixture0",
+            "shapes" : 
+            [
+              
+              {
+                "type" : "polygon"
+              }
+            ],
+            "vertices" : 
+            {
+              "x" : 
+              [
+                -13.27523803710938,
+                13.27525329589844,
+                13.27525329589844,
+                -13.27523803710938
+              ],
+              "y" : 
+              [
+                -0.4006948471069336,
+                -0.4006948471069336,
+                0.4006948471069336,
+                0.4006948471069336
+              ]
+            }
+          }
+        ],
+        "id" : 2,
+        "linearVelocity" : 0,
+        "name" : "wall",
+        "position" : 
+        {
+          "x" : 13.81455612182617,
+          "y" : -6.538930892944336
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "fixture" : 
+        [
+          
+          {
+            "density" : 1,
+            "friction" : 0.2,
+            "id" : 2,
+            "name" : "fixture0",
+            "shapes" : 
+            [
+              
+              {
+                "type" : "polygon"
+              }
+            ],
+            "vertices" : 
+            {
+              "x" : 
+              [
+                -12.84893798828125,
+                12.84898376464844,
+                12.84898376464844,
+                -12.84893798828125
+              ],
+              "y" : 
+              [
+                -14.41047859191895,
+                -14.41047859191895,
+                14.67525291442871,
+                14.67525291442871
+              ]
+            }
+          }
+        ],
+        "id" : 3,
+        "linearVelocity" : 0,
+        "name" : "wall",
+        "position" : 
+        {
+          "x" : 13.81455612182617,
+          "y" : -21.135253906250
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 3.141592502593994,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "fixture" : 
+        [
+          
+          {
+            "density" : 1,
+            "friction" : 0.2,
+            "id" : 3,
+            "name" : "fixture0",
+            "shapes" : 
+            [
+              
+              {
+                "type" : "polygon"
+              }
+            ],
+            "vertices" : 
+            {
+              "x" : 
+              [
+                -14.75549983978271,
+                14.75549983978271,
+                14.75549983978271,
+                -14.75549983978271
+              ],
+              "y" : 
+              [
+                -11.98490047454834,
+                -11.98490047454834,
+                11.98490047454834,
+                11.98490047454834
+              ]
+            }
+          }
+        ],
+        "id" : 4,
+        "linearVelocity" : 0,
+        "name" : "goal",
+        "position" : 
+        {
+          "x" : 156.2926025390625,
+          "y" : -0.2189464569091797
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 5,
+        "linearVelocity" : 0,
+        "name" : "ninja",
+        "position" : 
+        {
+          "x" : 2.536119937896729,
+          "y" : -1.465489983558655
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "fixture" : 
+        [
+          
+          {
+            "density" : 1,
+            "friction" : 0.2,
+            "id" : 4,
+            "name" : "fixture0",
+            "shapes" : 
+            [
+              
+              {
+                "type" : "polygon"
+              }
+            ],
+            "vertices" : 
+            {
+              "x" : 
+              [
+                -6.46936035156250,
+                6.469383239746094,
+                6.469383239746094,
+                -6.46936035156250
+              ],
+              "y" : 
+              [
+                -14.41048049926758,
+                -14.41048049926758,
+                14.67525291442871,
+                14.67525291442871
+              ]
+            }
+          }
+        ],
+        "id" : 6,
+        "linearVelocity" : 0,
+        "name" : "wall",
+        "position" : 
+        {
+          "x" : 46.87700653076172,
+          "y" : -19.92261314392090
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "fixture" : 
+        [
+          
+          {
+            "density" : 1,
+            "friction" : 0.2,
+            "id" : 5,
+            "name" : "fixture0",
+            "shapes" : 
+            [
+              
+              {
+                "type" : "polygon"
+              }
+            ],
+            "vertices" : 
+            {
+              "x" : 
+              [
+                -6.951160430908203,
+                6.951168060302734,
+                6.951168060302734,
+                -6.951160430908203
+              ],
+              "y" : 
+              [
+                -0.4006948471069336,
+                -0.4006948471069336,
+                0.4006948471069336,
+                0.4006948471069336
+              ]
+            }
+          }
+        ],
+        "id" : 7,
+        "linearVelocity" : 0,
+        "name" : "wall",
+        "position" : 
+        {
+          "x" : 46.87700653076172,
+          "y" : -5.326290130615234
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 8,
+        "linearVelocity" : 0,
+        "massData-mass" : 1,
+        "name" : "balloon",
+        "position" : 
+        {
+          "x" : 58.96961975097656,
+          "y" : -6.728721618652344
+        },
+        "type" : "dynamic"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 9,
+        "linearVelocity" : 0,
+        "massData-mass" : 1,
+        "name" : "balloon",
+        "position" : 
+        {
+          "x" : 61.88464736938477,
+          "y" : -5.203558921813965
+        },
+        "type" : "dynamic"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "fixture" : 
+        [
+          
+          {
+            "density" : 1,
+            "friction" : 0.2,
+            "id" : 6,
+            "name" : "fixture0",
+            "shapes" : 
+            [
+              
+              {
+                "type" : "polygon"
+              }
+            ],
+            "vertices" : 
+            {
+              "x" : 
+              [
+                -6.951160430908203,
+                6.951168060302734,
+                6.951168060302734,
+                -6.951160430908203
+              ],
+              "y" : 
+              [
+                -0.4006948471069336,
+                -0.4006948471069336,
+                0.4006948471069336,
+                0.4006948471069336
+              ]
+            }
+          }
+        ],
+        "id" : 10,
+        "linearVelocity" : 0,
+        "name" : "wall",
+        "position" : 
+        {
+          "x" : 80.23484802246094,
+          "y" : -5.326290130615234
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "fixture" : 
+        [
+          
+          {
+            "density" : 1,
+            "friction" : 0.2,
+            "id" : 7,
+            "name" : "fixture0",
+            "shapes" : 
+            [
+              
+              {
+                "type" : "polygon"
+              }
+            ],
+            "vertices" : 
+            {
+              "x" : 
+              [
+                -6.46936035156250,
+                6.469383239746094,
+                6.469383239746094,
+                -6.46936035156250
+              ],
+              "y" : 
+              [
+                -14.41048049926758,
+                -14.41048049926758,
+                14.67525291442871,
+                14.67525291442871
+              ]
+            }
+          }
+        ],
+        "id" : 11,
+        "linearVelocity" : 0,
+        "name" : "wall",
+        "position" : 
+        {
+          "x" : 80.23484802246094,
+          "y" : -19.92261314392090
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "fixture" : 
+        [
+          
+          {
+            "density" : 1,
+            "friction" : 0.2,
+            "id" : 8,
+            "name" : "fixture0",
+            "shapes" : 
+            [
+              
+              {
+                "type" : "polygon"
+              }
+            ],
+            "vertices" : 
+            {
+              "x" : 
+              [
+                -2.755966186523438,
+                2.75598144531250,
+                2.75598144531250,
+                -2.755966186523438
+              ],
+              "y" : 
+              [
+                -6.138906478881836,
+                -6.138906478881836,
+                6.251700401306152,
+                6.251700401306152
+              ]
+            }
+          }
+        ],
+        "id" : 12,
+        "linearVelocity" : 0,
+        "name" : "wall",
+        "position" : 
+        {
+          "x" : 102.7564620971680,
+          "y" : 3.309759140014648
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "fixture" : 
+        [
+          
+          {
+            "density" : 1,
+            "friction" : 0.2,
+            "id" : 9,
+            "name" : "fixture0",
+            "shapes" : 
+            [
+              
+              {
+                "type" : "polygon"
+              }
+            ],
+            "vertices" : 
+            {
+              "x" : 
+              [
+                -2.755966186523438,
+                2.75598144531250,
+                2.75598144531250,
+                -2.755966186523438
+              ],
+              "y" : 
+              [
+                -6.138906478881836,
+                -6.138906478881836,
+                6.251700401306152,
+                6.251700401306152
+              ]
+            }
+          }
+        ],
+        "id" : 13,
+        "linearVelocity" : 0,
+        "name" : "wall",
+        "position" : 
+        {
+          "x" : 102.7564620971680,
+          "y" : -12.85750007629395
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 14,
+        "linearVelocity" : 0,
+        "massData-mass" : 1,
+        "name" : "balloon",
+        "position" : 
+        {
+          "x" : 110.3328399658203,
+          "y" : -8.291129112243652
+        },
+        "type" : "dynamic"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 15,
+        "linearVelocity" : 0,
+        "massData-mass" : 1,
+        "name" : "balloon",
+        "position" : 
+        {
+          "x" : 97.38807678222656,
+          "y" : -7.691243171691895
+        },
+        "type" : "dynamic"
+      }
+    ],
+    "positionIterations" : 3,
+    "stepsPerSecond" : 60.0,
+    "subStepping" : false,
+    "velocityIterations" : 8,
+    "warmStarting" : true
+  }
+}
