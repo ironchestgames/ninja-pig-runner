@@ -125,6 +125,7 @@ BalloonHandler.prototype.postStep = function () {
   var minBalloonY = -1.5
   var sprite
 
+  // remove balloons that have flown away
   for(i = this.balloonBodies.length - 1; i >= 0; i--) {
     balloonBody = this.balloonBodies[i]
     if (balloonBody.position[1] < minBalloonY) {
@@ -145,6 +146,7 @@ BalloonHandler.prototype.postStep = function () {
     }
   }
 
+  // wake the closest ballon
   closestBalloon = this.balloonBodies[0]
 
   for (i = 0; i < this.balloonBodies.length; i++) {
@@ -153,11 +155,12 @@ BalloonHandler.prototype.postStep = function () {
     }
   }
 
-  this.closestBalloon = closestBalloon
-
   if (closestBalloon && closestBalloon.sleepState === p2.Body.SLEEPING) {
     closestBalloon.wakeUp()
   }
+
+  // set the closest balloon
+  this.closestBalloon = closestBalloon
 }
 
 BalloonHandler.prototype.getClosestBalloon = function () {

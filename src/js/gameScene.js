@@ -663,6 +663,8 @@ var gameScene = {
     indicatorContainer.addChild(indicatorArrowSprite)
     indicatorContainer.addChild(indicatorDistanceText)
 
+    indicatorContainer.pivot.y = indicatorContainer.width / 2
+
     // set up input buttons
     leftButton = buttonAreaFactory({
       width: global.renderer.view.width / 2,
@@ -893,8 +895,8 @@ var gameScene = {
 
       if (indicatorContainer.y < 0) {
         indicatorContainer.y = 0
-      } else if (indicatorContainer.y > global.renderer.view.height - indicatorContainer.height) {
-        indicatorContainer.y = global.renderer.view.height - indicatorContainer.height
+      } else if (indicatorContainer.y > global.renderer.view.height - indicatorContainer.height / 4) {
+        indicatorContainer.y = global.renderer.view.height - indicatorContainer.height / 4
       }
     } else {
       indicatorContainer.visible = false
