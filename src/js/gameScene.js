@@ -25,6 +25,7 @@ var sceneParams
 var pixelsPerMeter = 50
 var heightInMeters = 10
 var widthInPixels
+var stageToNinjaOffsetX
 
 var world
 var bodiesToRemove = []
@@ -581,6 +582,7 @@ var gameScene = {
 
     widthInPixels = global.renderer.view.width
     pixelsPerMeter = global.renderer.view.height / heightInMeters
+    stageToNinjaOffsetX = widthInPixels / 4
 
     sceneParams = _sceneParams
     resourceLoader = sceneParams.resourceLoader
@@ -873,7 +875,7 @@ var gameScene = {
     }
 
     if (ninjaGraphics.x > global.renderer.view.width / 4) {
-      this.stage.x = -ninjaGraphics.x + global.renderer.view.width / 4
+      this.stage.x = -ninjaGraphics.x + stageToNinjaOffsetX
       backgroundSprite.tilePosition.x = this.stage.x * 0.1
     }
 
