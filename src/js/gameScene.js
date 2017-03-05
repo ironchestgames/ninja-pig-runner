@@ -80,7 +80,8 @@ var backgroundSprite
 var skySprite
 var dynamicSprites = {} // TODO: make sure these are destroyed properly
 var mapLayer
-var indicatorSprite
+var indicatorContainer
+var indicatorArrowSprite
 
 var ninjaBottomSensor
 var ninjaLeftSensor
@@ -636,8 +637,12 @@ var gameScene = {
     this.backgroundLayer.addChild(skySprite)
     this.backgroundLayer.addChild(backgroundSprite)
 
-    indicatorSprite = new PIXI.Sprite(resourceLoader.resources['indicator'].texture)
-    indicatorSprite.x = global.renderer.view.width - 128
+    indicatorContainer = new PIXI.Container()
+    indicatorContainer.x = global.renderer.view.width - 128
+
+    indicatorArrowSprite = new PIXI.Sprite(resourceLoader.resources['indicator'].texture)
+
+    indicatorContainer.addChild(indicatorArrowSprite)
 
     // set up input buttons
     leftButton = buttonAreaFactory({
@@ -655,7 +660,7 @@ var gameScene = {
       touchEnd: onRightUp,
     })
 
-    guiLayer.addChild(indicatorSprite)
+    guiLayer.addChild(indicatorContainer)
     guiLayer.addChild(leftButton)
     guiLayer.addChild(rightButton)
 
@@ -861,16 +866,16 @@ var gameScene = {
 
     if (closestBalloon &&
         (closestBalloon.position[0] * pixelsPerMeter) + this.stage.x > global.renderer.view.width) {
-      indicatorSprite.y = closestBalloon.position[1] * pixelsPerMeter
-      indicatorSprite.visible = true
+      indicatorContainer.y = closestBalloon.position[1] * pixelsPerMeter
+      indicatorContainer.visible = true
 
-      if (indicatorSprite.y < 0) {
-        indicatorSprite.y = 0
-      } else if (indicatorSprite.y > global.renderer.view.height - indicatorSprite.height) {
-        indicatorSprite.y = global.renderer.view.height - indicatorSprite.height
+      if (indicatorContainer.y < 0) {
+        indicatorContainer.y = 0
+      } else if (indicatorContainer.y > global.renderer.view.height - indicatorContainer.height) {
+        indicatorContainer.y = global.renderer.view.height - indicatorContainer.height
       }
     } else {
-      indicatorSprite.visible = false
+      indicatorContainer.visible = false
     }
 
     if (global.DEBUG_DRAW) {
