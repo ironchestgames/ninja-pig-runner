@@ -9,6 +9,8 @@ var BalloonHandler = function (config) {
   this.world = config.world
   this.stringTexture = config.stringTexture
   this.pixelsPerMeter = config.pixelsPerMeter
+  this.ninjaBody = config.ninjaBody
+  this.wakeUpDistance = config.wakeUpDistance
   this.container = new PIXI.Container()
 
   config.container.addChild(this.container)
@@ -29,6 +31,10 @@ var BalloonHandler = function (config) {
     }
   }
 
+}
+
+BalloonHandler.prototype.destroy = function () {
+  this.ninjaBody = null
 }
 
 BalloonHandler.prototype.captureBalloon = function (balloonBody, balloonHolderBody) {
@@ -127,6 +133,15 @@ BalloonHandler.prototype.postStep = function () {
 
       // TODO: remove balloon sprite from dynamicSprites (gameScene)
       // TODO: lost balloon count
+    }
+  }
+
+  // wake the balloons within the wakup distance
+  for (i = 0; i < this.balloonBodies.length; i++) {
+    balloonBody = this.balloonBodies[i]
+    if (balloonBody.sleepState === p2.Body.SLEEPING &&
+        p2.vec2.distance(this.ninjaBody.position, balloonBody.position) < this.wakeUpDistance) {
+      balloonBody.wakeUp()
     }
   }
 

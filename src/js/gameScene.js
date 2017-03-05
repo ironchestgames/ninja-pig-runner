@@ -523,9 +523,11 @@ var postStep = function () {
   balloonHandler.postStep()
 
   var closestBalloon = balloonHandler.getClosestBalloon()
-  var distance = Math.round(p2.vec2.distance(ninjaBody.position, closestBalloon.position))
 
-  indicatorDistanceText.text = distance + 'm'
+  if (closestBalloon) {
+    var distance = Math.round(p2.vec2.distance(ninjaBody.position, closestBalloon.position))
+    indicatorDistanceText.text = distance + 'm'
+  }
 
 }
 
@@ -703,6 +705,8 @@ var gameScene = {
       container: balloonStringLayer,
       stringTexture: resourceLoader.resources['balloonstring'].texture,
       pixelsPerMeter: pixelsPerMeter,
+      wakeUpDistance: 30,
+      ninjaBody: ninjaBody,
     })
 
     // set up ninja and hook graphics
@@ -745,6 +749,7 @@ var gameScene = {
     this.container.destroy()
     keyRight.destroy()
     keyUp.destroy()
+    balloonHandler.destroy()
   },
   update: function (stepInMilliseconds) {
 
