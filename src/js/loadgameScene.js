@@ -28,6 +28,7 @@ var loadGameScene = {
     .add('balloon8', 'assets/images/balloon8.png')
     .add('balloonstring', 'assets/images/balloonstring.png')
     .add('indicator', 'assets/images/indicator.png')
+    .add('spikes', 'assets/images/spikes.png')
     .add('level' + sceneParams.level, 'assets/json/level' + sceneParams.level + '.json') // TODO: bake this into bundle.js instead
     .load(function () {
       this.changeScene('game', {

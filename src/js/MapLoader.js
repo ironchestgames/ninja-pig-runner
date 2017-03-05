@@ -244,6 +244,66 @@ MapLoader.prototype.loadMap = function (config) {
 
       config.dynamicSprites[body.id] = sprite
 
+    } else if (bodyData.name === 'spikes') {
+
+      // will assume the spike fixture is a rectangle and
+      // body position is within the fixture vertices
+
+      fixtureData = bodyData.fixture[0]
+
+      var topLeftX = 0
+      var topLeftY = 0
+      var bottomRightX = 0
+      var bottomRightY = 0
+
+      for (k = 0; k < fixtureData.polygon.vertices.x.length; k++) {
+        if (fixtureData.polygon.vertices.x[k] < 0) {
+          topLeftX = fixtureData.polygon.vertices.x[k]
+        } else if (fixtureData.polygon.vertices.x[k] > 0) {
+          bottomRightX = fixtureData.polygon.vertices.x[k]
+        }
+      }
+
+      for (k = 0; k < fixtureData.polygon.vertices.y.length; k++) {
+        if (fixtureData.polygon.vertices.y[k] < 0) {
+          topLeftY = fixtureData.polygon.vertices.y[k]
+        } else if (fixtureData.polygon.vertices.y[k] > 0) {
+          bottomRightY = fixtureData.polygon.vertices.y[k]
+        }
+      }
+
+      body = new p2.Body({
+        position: [bodyData.position.x, -bodyData.position.y],
+        angle: -bodyData.angle,
+        mass: 0,
+      })
+
+      body.type = bodyTypeMap[bodyData.type]
+      body.name = bodyData.name // NOTE: not in p2 spec, but a nice-to-have for debugging purposes
+
+      shape = new p2.Box({
+        width: Math.abs(topLeftX) + bottomRightX,
+        height: Math.abs(topLeftY) + bottomRightY,
+      })
+
+      body.addShape(shape)
+
+      world.addBody(body)
+
+      var sprite = new PIXI.extras.TilingSprite(
+        resourceLoader.resources['spikes'].texture,
+        64,
+        64)
+
+      sprite.height = shape.height * pixelsPerMeter
+      sprite.width = shape.width * pixelsPerMeter
+      sprite.tileScale.y = sprite.height / 64
+      sprite.tileScale.x = sprite.tileScale.y
+      sprite.x = (bodyData.position.x + topLeftX) * pixelsPerMeter
+      sprite.y = (-bodyData.position.y + topLeftY) * pixelsPerMeter
+
+      mapLayer.addChild(sprite)
+
     }
 
   }
