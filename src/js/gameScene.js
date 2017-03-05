@@ -81,9 +81,9 @@ var backgroundSprite
 var skySprite
 var dynamicSprites = {} // TODO: make sure these are destroyed properly
 var mapLayer
-var indicatorContainer
-var indicatorArrowSprite
-var indicatorDistanceText
+var forwardIndicatorContainer
+var forwardIndicatorArrowSprite
+var forwardIndicatorDistanceText
 
 var ninjaBottomSensor
 var ninjaLeftSensor
@@ -526,7 +526,7 @@ var postStep = function () {
 
   if (closestBalloon) {
     var distance = Math.round(p2.vec2.distance(ninjaBody.position, closestBalloon.position))
-    indicatorDistanceText.text = distance + 'm'
+    forwardIndicatorDistanceText.text = distance + 'm'
   }
 
 }
@@ -647,23 +647,27 @@ var gameScene = {
     this.backgroundLayer.addChild(skySprite)
     this.backgroundLayer.addChild(backgroundSprite)
 
-    indicatorContainer = new PIXI.Container()
-    indicatorContainer.x = global.renderer.view.width - 128
+    forwardIndicatorContainer = new PIXI.Container()
+    forwardIndicatorContainer.x = global.renderer.view.width - 128
 
-    indicatorArrowSprite = new PIXI.Sprite(resourceLoader.resources['indicator'].texture)
+    forwardIndicatorArrowSprite = new PIXI.Sprite(resourceLoader.resources['indicator'].texture)
+    forwardIndicatorArrowSprite.anchor.x = 0.5
+    forwardIndicatorArrowSprite.anchor.y = 0.5
+    forwardIndicatorArrowSprite.x = forwardIndicatorArrowSprite.width / 2
+    forwardIndicatorArrowSprite.y = forwardIndicatorArrowSprite.height / 2
 
-    indicatorDistanceText = new PIXI.Text({
+    forwardIndicatorDistanceText = new PIXI.Text({
       fill: 0x000000,
     })
-    indicatorDistanceText.y = 50
-    indicatorDistanceText.x = 40
+    forwardIndicatorDistanceText.y = 50
+    forwardIndicatorDistanceText.x = 40
 
-    indicatorDistanceText.text = '100 m'
+    forwardIndicatorDistanceText.text = '100 m'
 
-    indicatorContainer.addChild(indicatorArrowSprite)
-    indicatorContainer.addChild(indicatorDistanceText)
+    forwardIndicatorContainer.addChild(forwardIndicatorArrowSprite)
+    forwardIndicatorContainer.addChild(forwardIndicatorDistanceText)
 
-    indicatorContainer.pivot.y = indicatorContainer.width / 2
+    forwardIndicatorContainer.pivot.y = forwardIndicatorContainer.width / 2
 
     // set up input buttons
     leftButton = buttonAreaFactory({
@@ -681,7 +685,7 @@ var gameScene = {
       touchEnd: onRightUp,
     })
 
-    guiLayer.addChild(indicatorContainer)
+    guiLayer.addChild(forwardIndicatorContainer)
     guiLayer.addChild(leftButton)
     guiLayer.addChild(rightButton)
 
@@ -890,16 +894,21 @@ var gameScene = {
 
     if (closestBalloon &&
         (closestBalloon.position[0] * pixelsPerMeter) + this.stage.x > global.renderer.view.width) {
-      indicatorContainer.y = closestBalloon.position[1] * pixelsPerMeter
-      indicatorContainer.visible = true
+      forwardIndicatorContainer.y = closestBalloon.position[1] * pixelsPerMeter
+      forwardIndicatorArrowSprite.rotation = gameUtils.getAngleBetweenPoints(
+          ninjaBody.position[0],
+          ninjaBody.position[1],
+          closestBalloon.position[0],
+          closestBalloon.position[1])
+      forwardIndicatorContainer.visible = true
 
-      if (indicatorContainer.y < 0) {
-        indicatorContainer.y = 0
-      } else if (indicatorContainer.y > global.renderer.view.height - indicatorContainer.height / 4) {
-        indicatorContainer.y = global.renderer.view.height - indicatorContainer.height / 4
+      if (forwardIndicatorContainer.y < 0) {
+        forwardIndicatorContainer.y = 0
+      } else if (forwardIndicatorContainer.y > global.renderer.view.height - forwardIndicatorContainer.height / 4) {
+        forwardIndicatorContainer.y = global.renderer.view.height - forwardIndicatorContainer.height / 4
       }
     } else {
-      indicatorContainer.visible = false
+      forwardIndicatorContainer.visible = false
     }
 
     if (global.DEBUG_DRAW) {
