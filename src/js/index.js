@@ -3,7 +3,7 @@ console.log(require('./version'))
 var PIXI = require('pixi.js')
 var browserGameLoop = require('browser-game-loop')
 var gameScene = require('./gameScene.js')
-var loadGameScene = require('./loadGameScene.js')
+var loadScene = require('./loadScene.js')
 var levelWonScene = require('./levelWonScene.js')
 var levelFailScene = require('./levelFailScene.js')
 var splashScene = require('./splashScene.js')
@@ -36,7 +36,7 @@ windowLoad(function () {
 
   sceneManager.setScenes([
     splashScene,
-    loadGameScene,
+    loadScene,
     gameScene,
     levelWonScene,
     levelFailScene,
@@ -117,7 +117,7 @@ windowLoad(function () {
       // start it!
       clearInterval(intervalId)
 
-      sceneManager.changeScene('splash')
+      sceneManager.changeScene('load')
 
       loop.start()
     }

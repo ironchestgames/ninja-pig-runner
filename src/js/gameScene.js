@@ -19,7 +19,6 @@ var isPaused = false
 
 var spriteUtilities
 var mapLoader
-var resourceLoader
 var sceneParams
 
 var pixelsPerMeter = 50
@@ -308,7 +307,7 @@ var createCeiling = function () {
 }
 
 var createHookSprite = function (layer) {
-  ropeSprite = new PIXI.Sprite(resourceLoader.resources['rope'].texture)
+  ropeSprite = new PIXI.Sprite(PIXI.loader.resources['rope'].texture)
   ropeSprite.anchor.y = 0.5
 
   layer.addChild(ropeSprite)
@@ -601,7 +600,6 @@ var gameScene = {
     stageToNinjaOffsetX = widthInPixels / 4
 
     sceneParams = _sceneParams
-    resourceLoader = sceneParams.resourceLoader
     spriteUtilities = new SpriteUtilities(PIXI, global.renderer)
     mapLoader = new MapLoader()
 
@@ -642,7 +640,7 @@ var gameScene = {
 
     // set up background layer contents
     // NOTE: bc of the nature of the image it has to be this exact square (suns/moons are round)
-    skySprite = new PIXI.Sprite(resourceLoader.resources['backgroundsky1'].texture)
+    skySprite = new PIXI.Sprite(PIXI.loader.resources['backgroundsky1'].texture)
     skySprite.anchor.x = 0.5
     skySprite.anchor.y = 0.5
     skySprite.position.x = global.renderer.view.width / 2
@@ -652,7 +650,7 @@ var gameScene = {
 
     // NOTE: bc of the nature of the image it doesn't matter that much to stretch it
     backgroundSprite = new PIXI.extras.TilingSprite(
-        resourceLoader.resources['background1'].texture,
+        PIXI.loader.resources['background1'].texture,
         512,
         512)
     backgroundSprite.tileScale.x = global.renderer.view.height / 512
@@ -666,7 +664,7 @@ var gameScene = {
     forwardIndicatorContainer = new PIXI.Container()
     forwardIndicatorContainer.x = global.renderer.view.width - 128
 
-    forwardIndicatorArrowSprite = new PIXI.Sprite(resourceLoader.resources['indicator'].texture)
+    forwardIndicatorArrowSprite = new PIXI.Sprite(PIXI.loader.resources['indicator'].texture)
     forwardIndicatorArrowSprite.anchor.x = 0.5
     forwardIndicatorArrowSprite.anchor.y = 0.5
     forwardIndicatorArrowSprite.x = forwardIndicatorArrowSprite.width / 2
@@ -709,7 +707,6 @@ var gameScene = {
     createNinja()
     createHooks() // depends on createNinja
     mapLoader.loadMap({ // depends on createNinja
-      resourceLoader: resourceLoader,
       name: 'level' + sceneParams.level,
       world: world,
       mapLayer: mapLayer,
@@ -725,7 +722,7 @@ var gameScene = {
     balloonManager = new BalloonManager({
       world: world,
       container: balloonStringLayer,
-      stringTexture: resourceLoader.resources['balloonstring'].texture,
+      stringTexture: PIXI.loader.resources['balloonstring'].texture,
       pixelsPerMeter: pixelsPerMeter,
       wakeUpDistance: 30,
       balloonHolderBody: ninjaBalloonHolderBody,
@@ -734,7 +731,6 @@ var gameScene = {
     // set up ninja and hook graphics
     createHookSprite(this.stage)
     ninjaGraphics = new NinjaGraphics({
-      resourceLoader: resourceLoader,
       container: this.stage,
       ninjaHeight: 1.5,
       pixelsPerMeter: pixelsPerMeter,

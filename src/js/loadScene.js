@@ -1,9 +1,14 @@
-var loadGameScene = {
-  name: 'loadGame',
+var loadScene = {
+  name: 'load',
   create: function (sceneParams) {
-    this.loader = new PIXI.loaders.Loader()
 
-    this.loader
+    PIXI.loader
+
+    // splash scene
+    .add('splash', 'assets/images/splash.png')
+    .add('button_start', 'assets/images/button_start.png')
+
+    // game scene
     .add('rope', 'assets/images/rope.png')
     .add('background1', 'assets/images/background1.png')
     .add('backgroundsky1', 'assets/images/backgroundsky1.png')
@@ -29,10 +34,23 @@ var loadGameScene = {
     .add('balloonstring', 'assets/images/balloonstring.png')
     .add('indicator', 'assets/images/indicator.png')
     .add('spikes', 'assets/images/spikes.png')
-    .add('level' + sceneParams.level, 'assets/json/level' + sceneParams.level + '.json') // TODO: bake this into bundle.js instead
+    .add('level1', 'assets/json/level1.json') // TODO: bake this into bundle.js instead
+    .add('level2', 'assets/json/level2.json') // TODO: bake this into bundle.js instead
+    .add('level3', 'assets/json/level3.json') // TODO: bake this into bundle.js instead
+    // .add('level' + sceneParams.level, 'assets/json/level' + sceneParams.level + '.json') // TODO: bake this into bundle.js instead
+
+    // level fail scene
+    .add('fail_level_1', 'assets/images/fail_level_1.png')
+    .add('button_menu', 'assets/images/button_menu.png')
+    .add('button_tryagain', 'assets/images/button_tryagain.png')
+
+    // level won scene
+    .add('finish_level_1', 'assets/images/finish_level_1.png')
+    .add('button_next', 'assets/images/button_next.png')
+    .add('button_playagain', 'assets/images/button_playagain.png')
+
     .load(function () {
-      this.changeScene('game', {
-        resourceLoader: this.loader,
+      this.changeScene('splash', {
         level: sceneParams.level,
       })
     }.bind(this))
@@ -48,4 +66,4 @@ var loadGameScene = {
   },
 }
 
-module.exports = loadGameScene
+module.exports = loadScene

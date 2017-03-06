@@ -33,7 +33,6 @@ MapLoader.prototype.loadMap = function (config) {
   var ninjaRadius
   var pixelsPerMeter
   var propLayer
-  var resourceLoader
   var shape
   var sprite
   var spriteX
@@ -52,10 +51,9 @@ MapLoader.prototype.loadMap = function (config) {
   pixelsPerMeter = config.pixelsPerMeter
   staticsColor = config.staticsColor
   levelName = config.name
-  resourceLoader = config.resourceLoader
 
   // props first (rendered below the level as of now)
-  imagesData = resourceLoader.resources[levelName].data.image || []
+  imagesData = PIXI.loader.resources[levelName].data.image || []
 
   for (i = 0; i < imagesData.length; i++) {
 
@@ -63,7 +61,7 @@ MapLoader.prototype.loadMap = function (config) {
     imageName = gameUtils.getFileNameFromUrl(imageData.file)
     imagePosition = [imageData.center.x, -imageData.center.y]
 
-    texture = resourceLoader.resources[imageName].texture
+    texture = PIXI.loader.resources[imageName].texture
 
     widthHeightRatio = texture.width / texture.height
 
@@ -92,7 +90,7 @@ MapLoader.prototype.loadMap = function (config) {
 
   worldPosition = [0, 0]
 
-  bodiesData = resourceLoader.resources[levelName].data.body
+  bodiesData = PIXI.loader.resources[levelName].data.body
 
   for (i = 0; i < bodiesData.length; i++) {
 
@@ -194,7 +192,7 @@ MapLoader.prototype.loadMap = function (config) {
         boxPositionY = -bodyData.position.y
 
         // create the sprite for this shape
-        var sprite = new PIXI.Sprite(resourceLoader.resources['prop_texture_8x8'].texture)
+        var sprite = new PIXI.Sprite(PIXI.loader.resources['prop_texture_8x8'].texture)
 
         sprite.anchor.x = 0.5
         sprite.anchor.y = 0.5
@@ -232,7 +230,7 @@ MapLoader.prototype.loadMap = function (config) {
       var balloonTextureNr = gameUtils.getRandomInt(1, 8)
 
       // create the sprite
-      var sprite = new PIXI.Sprite(resourceLoader.resources['balloon' + balloonTextureNr].texture)
+      var sprite = new PIXI.Sprite(PIXI.loader.resources['balloon' + balloonTextureNr].texture)
 
       sprite.anchor.x = 0.5
       sprite.anchor.y = 0.5
@@ -293,7 +291,7 @@ MapLoader.prototype.loadMap = function (config) {
       world.addBody(body)
 
       var sprite = new PIXI.extras.TilingSprite(
-        resourceLoader.resources['spikes'].texture,
+        PIXI.loader.resources['spikes'].texture,
         128,
         128)
 
