@@ -3,7 +3,7 @@ var eventLog = debug('NinjaGraphics:events')
 
 var NinjaGraphics = function (config) {
 
-  var spriteSizeFactor = 1.15 // to make up for the whitespace in the frames
+  var spriteSizeFactor = 1.18 // to make up for the whitespace in the frames
   var runningSpriteAnimationBaseSpeed = 0.20 // TODO: what is this in ms?
 
   var resourceLoader = config.resourceLoader
