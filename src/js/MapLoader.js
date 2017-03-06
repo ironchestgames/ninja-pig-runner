@@ -294,12 +294,12 @@ MapLoader.prototype.loadMap = function (config) {
 
       var sprite = new PIXI.extras.TilingSprite(
         resourceLoader.resources['spikes'].texture,
-        64,
-        64)
+        128,
+        128)
 
       sprite.height = shape.height * pixelsPerMeter
       sprite.width = shape.width * pixelsPerMeter
-      sprite.tileScale.y = sprite.height / 64
+      sprite.tileScale.y = sprite.height / 128
       sprite.tileScale.x = sprite.tileScale.y
       sprite.x = (bodyData.position.x + topLeftX) * pixelsPerMeter
       sprite.y = (-bodyData.position.y + topLeftY) * pixelsPerMeter
