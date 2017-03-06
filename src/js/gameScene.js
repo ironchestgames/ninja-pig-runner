@@ -10,7 +10,7 @@ var MapLoader = require('./MapLoader')
 var gameVars = require('./gameVars')
 var buttonAreaFactory = require('./buttonAreaFactory')
 var KeyButton = require('./KeyButton')
-var BalloonHandler = require('./BalloonHandler')
+var BalloonManager = require('./BalloonManager')
 
 var actionsLog = debug('gameScene:actions')
 var buttonsLog = debug('gameScene:buttons')
@@ -520,14 +520,14 @@ var postStep = function () {
     ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_FALLING)
   }
 
-  var closestBalloon = balloonHandler.getClosestBalloon()
+  var closestBalloon = balloonManager.getClosestBalloon()
 
   if (closestBalloon) {
     var distance = Math.round(p2.vec2.distance(ninjaBody.position, closestBalloon.position))
     forwardIndicatorDistanceText.text = distance + 'm'
   }
 
-  balloonHandler.postStep()
+  balloonManager.postStep()
 
 }
 
@@ -557,7 +557,7 @@ var beginContact = function (contactEvent) {
       balloonBody = contactEvent.bodyB
     }
 
-    balloonHandler.captureBalloon(balloonBody)
+    balloonManager.captureBalloon(balloonBody)
 
     // TODO: count the balloons, target next
   }
@@ -569,7 +569,7 @@ var beginContact = function (contactEvent) {
       balloonBody = contactEvent.bodyB
     }
 
-    balloonHandler.popBalloon(balloonBody)
+    balloonManager.popBalloon(balloonBody)
 
     dynamicSprites[balloonBody.id].destroy()
 
@@ -722,7 +722,7 @@ var gameScene = {
     })
     createCeiling()
 
-    balloonHandler = new BalloonHandler({
+    balloonManager = new BalloonManager({
       world: world,
       container: balloonStringLayer,
       stringTexture: resourceLoader.resources['balloonstring'].texture,
@@ -771,7 +771,7 @@ var gameScene = {
     this.container.destroy()
     keyRight.destroy()
     keyUp.destroy()
-    balloonHandler.destroy()
+    balloonManager.destroy()
   },
   update: function (stepInMilliseconds) {
 
@@ -870,7 +870,7 @@ var gameScene = {
       ropeSprite.visible = false
     }
 
-    balloonHandler.draw(ratio)
+    balloonManager.draw(ratio)
 
     for (var i = 0; i < world.bodies.length; i++) {
       var body = world.bodies[i]
@@ -906,7 +906,7 @@ var gameScene = {
       backgroundSprite.tilePosition.x = this.stage.x * 0.1
     }
 
-    var closestBalloon = balloonHandler.getClosestBalloon()
+    var closestBalloon = balloonManager.getClosestBalloon()
 
     if (closestBalloon &&
         (closestBalloon.position[0] * pixelsPerMeter) + this.stage.x > global.renderer.view.width) {

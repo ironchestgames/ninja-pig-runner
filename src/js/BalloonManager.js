@@ -4,7 +4,7 @@ var gameUtils = require('./gameUtils')
 
 var tempVector = [0, 0]
 
-var BalloonHandler = function (config) {
+var BalloonManager = function (config) {
 
   this.world = config.world
   this.stringTexture = config.stringTexture
@@ -34,23 +34,23 @@ var BalloonHandler = function (config) {
 
 }
 
-BalloonHandler.prototype.destroy = function () {
+BalloonManager.prototype.destroy = function () {
   // NOTE: can not set balloonHolderBody to null here, might be draw call after destroy
   // TODO: double check if the above note could actually be true
 }
 
-BalloonHandler.prototype.captureBalloon = function (balloonBody) {
+BalloonManager.prototype.captureBalloon = function (balloonBody) {
   balloonBody.isCaptured = true
 }
 
-BalloonHandler.prototype.popBalloon = function (balloonBody) {
+BalloonManager.prototype.popBalloon = function (balloonBody) {
   // TODO: make it nicer, change sprite fall down and shit
 
   balloonBody.popped = true
 
 }
 
-BalloonHandler.prototype.draw = function (ratio) {
+BalloonManager.prototype.draw = function (ratio) {
 
   for (var i = 0; i < this.constraints.length; i++) {
     var balloonBody = this.constraints[i].bodyB
@@ -90,7 +90,7 @@ BalloonHandler.prototype.draw = function (ratio) {
   }
 }
 
-BalloonHandler.prototype.postStep = function () {
+BalloonManager.prototype.postStep = function () {
 
   var balloonBody
   var closestBalloon
@@ -194,8 +194,8 @@ BalloonHandler.prototype.postStep = function () {
   this.closestBalloon = closestBalloon
 }
 
-BalloonHandler.prototype.getClosestBalloon = function () {
+BalloonManager.prototype.getClosestBalloon = function () {
   return this.closestBalloon
 }
 
-module.exports = BalloonHandler
+module.exports = BalloonManager
