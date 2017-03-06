@@ -221,7 +221,7 @@ MapLoader.prototype.loadMap = function (config) {
       shape = new p2.Circle({
         radius: ninjaRadius * 0.7,
         collisionGroup: gameVars.BALLOON,
-        collisionMask: gameVars.PLAYER | gameVars.WALL,
+        collisionMask: gameVars.PLAYER | gameVars.WALL | gameVars.SPIKES,
         // collisionResponse: false, // TODO: make it care about wall but not affect player
       })
 
@@ -284,6 +284,8 @@ MapLoader.prototype.loadMap = function (config) {
       shape = new p2.Box({
         width: Math.abs(topLeftX) + bottomRightX,
         height: Math.abs(topLeftY) + bottomRightY,
+        collisionGroup: gameVars.SPIKES,
+        collisionMask: gameVars.PLAYER | gameVars.BALLOON | gameVars.CAPTURED_BALLOON,
       })
 
       body.addShape(shape)

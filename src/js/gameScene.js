@@ -520,14 +520,14 @@ var postStep = function () {
     ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_FALLING)
   }
 
-  balloonHandler.postStep()
-
   var closestBalloon = balloonHandler.getClosestBalloon()
 
   if (closestBalloon) {
     var distance = Math.round(p2.vec2.distance(ninjaBody.position, closestBalloon.position))
     forwardIndicatorDistanceText.text = distance + 'm'
   }
+
+  balloonHandler.postStep()
 
 }
 
@@ -560,6 +560,20 @@ var beginContact = function (contactEvent) {
     balloonHandler.captureBalloon(balloonBody, ninjaBalloonHolderBody)
 
     // TODO: count the balloons, target next
+  }
+
+  if ((contactEvent.bodyA.name === 'balloon' || contactEvent.bodyB.name === 'balloon') &&
+    (contactEvent.bodyA.name === 'spikes' || contactEvent.bodyB.name === 'spikes')) {
+    var balloonBody = contactEvent.bodyA
+    if (contactEvent.bodyB.name === 'balloon') {
+      balloonBody = contactEvent.bodyB
+    }
+
+    balloonHandler.popBalloon(balloonBody)
+
+    dynamicSprites[balloonBody.id].destroy()
+
+    // TODO: replace with balloon corpse instead
   }
 }
 
@@ -598,6 +612,8 @@ var gameScene = {
     world = new p2.World({
       gravity: [0, 10]
     })
+
+    world.islandSplit = false // TODO: figure out why island splitting doesnt work
 
     window.world = world // TODO: remove before prod
 

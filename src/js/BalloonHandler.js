@@ -34,7 +34,7 @@ var BalloonHandler = function (config) {
 }
 
 BalloonHandler.prototype.destroy = function () {
-  this.ninjaBody = null
+
 }
 
 BalloonHandler.prototype.captureBalloon = function (balloonBody, balloonHolderBody) {
@@ -54,14 +54,14 @@ BalloonHandler.prototype.captureBalloon = function (balloonBody, balloonHolderBo
 
   for (var i = 0; i < balloonBody.shapes.length; i++) {
     var shape = balloonBody.shapes[i]
-    shape.collisionMask = gameVars.CAPTURED_BALLOON
+    shape.collisionMask = gameVars.CAPTURED_BALLOON | gameVars.SPIKES
     shape.collisionGroup = gameVars.CAPTURED_BALLOON
     shape.collisionResponse = true
   }
 
   // move balloon to captured collection
-  var balloonIndex = this.balloonBodies.indexOf(balloonBody)
-  this.balloonBodies.splice(balloonIndex, 1)
+  // var balloonIndex = this.balloonBodies.indexOf(balloonBody)
+  // this.balloonBodies.splice(balloonIndex, 1)
 
   // drawing the string needs previous position
   balloonBody.localAnchorBPreviousWorldPosition = [0, 0]
@@ -75,6 +75,13 @@ BalloonHandler.prototype.captureBalloon = function (balloonBody, balloonHolderBo
   this.container.addChild(sprite)
 
   this.balloonStringSprites[balloonBody.id] = sprite
+}
+
+BalloonHandler.prototype.popBalloon = function (balloonBody) {
+  // TODO: make it nicer, change sprite fall down and shit
+
+  balloonBody.popped = true
+
 }
 
 BalloonHandler.prototype.draw = function (ratio) {
@@ -122,17 +129,28 @@ BalloonHandler.prototype.postStep = function () {
   var balloonBody
   var closestBalloon
   var i
+  var j
   var minBalloonY = -1.5
   var sprite
 
   // remove balloons that have flown away
   for(i = this.balloonBodies.length - 1; i >= 0; i--) {
     balloonBody = this.balloonBodies[i]
-    if (balloonBody.position[1] < minBalloonY) {
-      this.balloonBodies.splice(i, 1)
-      world.removeBody(balloonBody)
 
-      // TODO: remove balloon sprite from dynamicSprites (gameScene)
+    if (balloonBody.position[1] < minBalloonY || balloonBody.popped === true) {
+
+      for(j = this.constraints.length - 1; j >= 0; j--) {
+        if (this.constraints[j].bodyB === balloonBody) {
+          this.constraints.splice(j, 1)
+          this.world.removeConstraint(this.constraints[j])
+
+          this.balloonStringSprites[balloonBody.id].destroy()
+        }
+      }
+
+      this.balloonBodies.splice(i, 1)
+      this.world.removeBody(balloonBody) // TODO: change gravityScale and mass instead
+
       // TODO: lost balloon count
     }
   }
