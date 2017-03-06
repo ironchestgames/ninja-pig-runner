@@ -557,7 +557,7 @@ var beginContact = function (contactEvent) {
       balloonBody = contactEvent.bodyB
     }
 
-    balloonHandler.captureBalloon(balloonBody, ninjaBalloonHolderBody)
+    balloonHandler.captureBalloon(balloonBody)
 
     // TODO: count the balloons, target next
   }
@@ -728,7 +728,7 @@ var gameScene = {
       stringTexture: resourceLoader.resources['balloonstring'].texture,
       pixelsPerMeter: pixelsPerMeter,
       wakeUpDistance: 30,
-      ninjaBody: ninjaBody,
+      balloonHolderBody: ninjaBalloonHolderBody,
     })
 
     // set up ninja and hook graphics

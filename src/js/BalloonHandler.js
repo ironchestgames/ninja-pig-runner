@@ -9,7 +9,7 @@ var BalloonHandler = function (config) {
   this.world = config.world
   this.stringTexture = config.stringTexture
   this.pixelsPerMeter = config.pixelsPerMeter
-  this.ninjaBody = config.ninjaBody
+  this.balloonHolderBody = config.balloonHolderBody
   this.wakeUpDistance = config.wakeUpDistance
   this.container = new PIXI.Container()
 
@@ -17,9 +17,9 @@ var BalloonHandler = function (config) {
 
   this.constraints = []
   this.balloonBodies = []
-  this.capturedBalloonIds = []
+  this.capturedBalloonIds = {}
   this.balloonStringSprites = {}
-  this.localAnchor = [0, 0.25]
+  this.localBalloonKnotAnchor = [0, 0.25]
 
   // populate balloonBodies from world
   for (var i = 0; i < world.bodies.length; i++) {
@@ -35,49 +35,12 @@ var BalloonHandler = function (config) {
 }
 
 BalloonHandler.prototype.destroy = function () {
-
+  // NOTE: can not set balloonHolderBody to null here, might be draw call after destroy
+  // TODO: double check if the above note could actually be true
 }
 
-BalloonHandler.prototype.captureBalloon = function (balloonBody, balloonHolderBody) {
-
-  // constrain balloon to balloon holder
-  var constraint = new p2.DistanceConstraint(balloonHolderBody, balloonBody, {
-    localAnchorB: this.localAnchor,
-  })
-  constraint.upperLimitEnabled = true
-  constraint.lowerLimitEnabled = true
-  constraint.lowerLimit = 0
-  constraint.upperLimit = 0.5
-  constraint.setStiffness(10)
-  constraint.setRelaxation(1)
-  this.world.addConstraint(constraint)
-  this.constraints.push(constraint)
-
-  for (var i = 0; i < balloonBody.shapes.length; i++) {
-    var shape = balloonBody.shapes[i]
-    shape.collisionMask = gameVars.CAPTURED_BALLOON | gameVars.SPIKES
-    shape.collisionGroup = gameVars.CAPTURED_BALLOON
-    shape.collisionResponse = true
-  }
-
-  // move balloon to captured collection
-  // var balloonIndex = this.balloonBodies.indexOf(balloonBody)
-  // this.balloonBodies.splice(balloonIndex, 1)
-
-  // drawing the string needs previous position
-  balloonBody.localAnchorBPreviousWorldPosition = [0, 0]
-  balloonBody.toWorldFrame(
-      balloonBody.localAnchorBPreviousWorldPosition,
-      this.localAnchor)
-
-  var sprite = new PIXI.Sprite(this.stringTexture)
-  sprite.anchor.y = 0.5
-
-  this.container.addChild(sprite)
-
-  this.balloonStringSprites[balloonBody.id] = sprite
-
-  this.capturedBalloonIds.push(balloonBody.id)
+BalloonHandler.prototype.captureBalloon = function (balloonBody) {
+  balloonBody.isCaptured = true
 }
 
 BalloonHandler.prototype.popBalloon = function (balloonBody) {
@@ -94,7 +57,7 @@ BalloonHandler.prototype.draw = function (ratio) {
     var capturerBody = this.constraints[i].bodyA
     var sprite = this.balloonStringSprites[balloonBody.id]
 
-    balloonBody.toWorldFrame(tempVector, this.localAnchor)
+    balloonBody.toWorldFrame(tempVector, this.localBalloonKnotAnchor)
 
     var balloonX = gameUtils.calcInterpolatedValue(
         tempVector[0],
@@ -134,30 +97,72 @@ BalloonHandler.prototype.postStep = function () {
   var i
   var j
   var minBalloonY = -1.5
+  var shape
   var sprite
 
-  // remove balloons that have flown away
+  // capture all isCaptured flagged balloons
+  for (i = 0; i < this.balloonBodies.length; i++) {
+
+    balloonBody = this.balloonBodies[i]
+
+    if (!this.capturedBalloonIds[balloonBody.id] && balloonBody.isCaptured) {
+
+      // constrain balloon to balloon holder
+      var constraint = new p2.DistanceConstraint(this.balloonHolderBody, balloonBody, {
+        localAnchorB: p2.vec2.clone(this.localBalloonKnotAnchor),
+      })
+      constraint.upperLimitEnabled = true
+      constraint.lowerLimitEnabled = true
+      constraint.lowerLimit = 0
+      constraint.upperLimit = 0.5
+      constraint.setStiffness(10)
+      constraint.setRelaxation(1)
+      this.world.addConstraint(constraint)
+      this.constraints.push(constraint)
+
+      for (j = 0; j < balloonBody.shapes.length; j++) {
+        shape = balloonBody.shapes[j]
+        shape.collisionMask = gameVars.CAPTURED_BALLOON | gameVars.SPIKES
+        shape.collisionGroup = gameVars.CAPTURED_BALLOON
+        shape.collisionResponse = true
+      }
+
+      // drawing the string needs previous position
+      balloonBody.localAnchorBPreviousWorldPosition = [0, 0]
+      balloonBody.toWorldFrame(
+          balloonBody.localAnchorBPreviousWorldPosition,
+          this.localBalloonKnotAnchor)
+
+      sprite = new PIXI.Sprite(this.stringTexture)
+      sprite.anchor.y = 0.5
+
+      this.container.addChild(sprite)
+
+      this.balloonStringSprites[balloonBody.id] = sprite
+
+      this.capturedBalloonIds[balloonBody.id] = true
+    }
+  }
+
+  // remove balloons that have flown away or popped
+  // TODO: separate in two loops instead
   for(i = this.balloonBodies.length - 1; i >= 0; i--) {
     balloonBody = this.balloonBodies[i]
 
-    var balloonBodyCapturedIndex = this.capturedBalloonIds.indexOf(balloonBody.id)
-
-    if ((balloonBody.position[1] < minBalloonY && balloonBodyCapturedIndex === -1) ||
+    if ((balloonBody.position[1] < minBalloonY && !this.capturedBalloonIds[balloonBody.id]) ||
         balloonBody.popped === true) {
 
       for(j = this.constraints.length - 1; j >= 0; j--) {
         if (this.constraints[j].bodyB === balloonBody) {
-          this.constraints.splice(j, 1)
           this.world.removeConstraint(this.constraints[j])
-
+          this.constraints.splice(j, 1)
           this.balloonStringSprites[balloonBody.id].destroy()
         }
       }
 
       this.balloonBodies.splice(i, 1)
       this.world.removeBody(balloonBody) // TODO: change gravityScale and mass instead
-
-      this.capturedBalloonIds.splice(balloonBodyCapturedIndex, 1)
+      this.capturedBalloonIds[balloonBody.id] = null
 
       // TODO: lost balloon count
     }
@@ -167,7 +172,7 @@ BalloonHandler.prototype.postStep = function () {
   for (i = 0; i < this.balloonBodies.length; i++) {
     balloonBody = this.balloonBodies[i]
     if (balloonBody.sleepState === p2.Body.SLEEPING &&
-        p2.vec2.distance(this.ninjaBody.position, balloonBody.position) < this.wakeUpDistance) {
+        p2.vec2.distance(this.balloonHolderBody.position, balloonBody.position) < this.wakeUpDistance) {
       balloonBody.wakeUp()
     }
   }
