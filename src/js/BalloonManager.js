@@ -178,11 +178,15 @@ BalloonManager.prototype.postStep = function () {
   }
 
   // wake the closest ballon
-  closestBalloon = this.balloonBodies[0]
-
   for (i = 0; i < this.balloonBodies.length; i++) {
-    if (this.balloonBodies[i].position[0] < closestBalloon.position[0]) {
-      closestBalloon = this.balloonBodies[i]
+    balloonBody = this.balloonBodies[i]
+
+    if (!closestBalloon && !balloonBody.isCaptured) {
+      closestBalloon = balloonBody
+
+    } else if (closestBalloon && balloonBody.position[0] < closestBalloon.position[0] &&
+        !balloonBody.isCaptured) {
+      closestBalloon = balloonBody
     }
   }
 
