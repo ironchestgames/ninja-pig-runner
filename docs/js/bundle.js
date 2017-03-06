@@ -51799,12 +51799,12 @@ var gameUtils = require('./gameUtils')
 
 var tempVector = [0, 0]
 
-var BalloonHandler = function (config) {
+var BalloonManager = function (config) {
 
   this.world = config.world
   this.stringTexture = config.stringTexture
   this.pixelsPerMeter = config.pixelsPerMeter
-  this.ninjaBody = config.ninjaBody
+  this.balloonHolderBody = config.balloonHolderBody
   this.wakeUpDistance = config.wakeUpDistance
   this.container = new PIXI.Container()
 
@@ -51812,8 +51812,9 @@ var BalloonHandler = function (config) {
 
   this.constraints = []
   this.balloonBodies = []
+  this.capturedBalloonIds = {}
   this.balloonStringSprites = {}
-  this.localAnchor = [0, 0.25]
+  this.localBalloonKnotAnchor = [0, 0.25]
 
   // populate balloonBodies from world
   for (var i = 0; i < world.bodies.length; i++) {
@@ -51828,58 +51829,30 @@ var BalloonHandler = function (config) {
 
 }
 
-BalloonHandler.prototype.destroy = function () {
-  this.ninjaBody = null
+BalloonManager.prototype.destroy = function () {
+  // NOTE: can not set balloonHolderBody to null here, might be draw call after destroy
+  // TODO: double check if the above note could actually be true
 }
 
-BalloonHandler.prototype.captureBalloon = function (balloonBody, balloonHolderBody) {
-
-  // constrain balloon to balloon holder
-  var constraint = new p2.DistanceConstraint(balloonHolderBody, balloonBody, {
-    localAnchorB: this.localAnchor,
-  })
-  constraint.upperLimitEnabled = true
-  constraint.lowerLimitEnabled = true
-  constraint.lowerLimit = 0
-  constraint.upperLimit = 0.5
-  constraint.setStiffness(10)
-  constraint.setRelaxation(1)
-  this.world.addConstraint(constraint)
-  this.constraints.push(constraint)
-
-  for (var i = 0; i < balloonBody.shapes.length; i++) {
-    var shape = balloonBody.shapes[i]
-    shape.collisionMask = gameVars.CAPTURED_BALLOON
-    shape.collisionGroup = gameVars.CAPTURED_BALLOON
-    shape.collisionResponse = true
-  }
-
-  // move balloon to captured collection
-  var balloonIndex = this.balloonBodies.indexOf(balloonBody)
-  this.balloonBodies.splice(balloonIndex, 1)
-
-  // drawing the string needs previous position
-  balloonBody.localAnchorBPreviousWorldPosition = [0, 0]
-  balloonBody.toWorldFrame(
-      balloonBody.localAnchorBPreviousWorldPosition,
-      this.localAnchor)
-
-  var sprite = new PIXI.Sprite(this.stringTexture)
-  sprite.anchor.y = 0.5
-
-  this.container.addChild(sprite)
-
-  this.balloonStringSprites[balloonBody.id] = sprite
+BalloonManager.prototype.captureBalloon = function (balloonBody) {
+  balloonBody.isCaptured = true
 }
 
-BalloonHandler.prototype.draw = function (ratio) {
+BalloonManager.prototype.popBalloon = function (balloonBody) {
+  // TODO: make it nicer, change sprite fall down and shit
+
+  balloonBody.popped = true
+
+}
+
+BalloonManager.prototype.draw = function (ratio) {
 
   for (var i = 0; i < this.constraints.length; i++) {
     var balloonBody = this.constraints[i].bodyB
     var capturerBody = this.constraints[i].bodyA
     var sprite = this.balloonStringSprites[balloonBody.id]
 
-    balloonBody.toWorldFrame(tempVector, this.localAnchor)
+    balloonBody.toWorldFrame(tempVector, this.localBalloonKnotAnchor)
 
     var balloonX = gameUtils.calcInterpolatedValue(
         tempVector[0],
@@ -51912,22 +51885,80 @@ BalloonHandler.prototype.draw = function (ratio) {
   }
 }
 
-BalloonHandler.prototype.postStep = function () {
+BalloonManager.prototype.postStep = function () {
 
   var balloonBody
   var closestBalloon
   var i
+  var j
   var minBalloonY = -1.5
+  var shape
   var sprite
 
-  // remove balloons that have flown away
+  // capture all isCaptured flagged balloons
+  for (i = 0; i < this.balloonBodies.length; i++) {
+
+    balloonBody = this.balloonBodies[i]
+
+    if (!this.capturedBalloonIds[balloonBody.id] && balloonBody.isCaptured) {
+
+      // constrain balloon to balloon holder
+      var constraint = new p2.DistanceConstraint(this.balloonHolderBody, balloonBody, {
+        localAnchorB: p2.vec2.clone(this.localBalloonKnotAnchor),
+      })
+      constraint.upperLimitEnabled = true
+      constraint.lowerLimitEnabled = true
+      constraint.lowerLimit = 0
+      constraint.upperLimit = 0.5
+      constraint.setStiffness(10)
+      constraint.setRelaxation(1)
+      this.world.addConstraint(constraint)
+      this.constraints.push(constraint)
+
+      for (j = 0; j < balloonBody.shapes.length; j++) {
+        shape = balloonBody.shapes[j]
+        shape.collisionMask = gameVars.CAPTURED_BALLOON | gameVars.SPIKES
+        shape.collisionGroup = gameVars.CAPTURED_BALLOON
+        shape.collisionResponse = true
+      }
+
+      // drawing the string needs previous position
+      balloonBody.localAnchorBPreviousWorldPosition = [0, 0]
+      balloonBody.toWorldFrame(
+          balloonBody.localAnchorBPreviousWorldPosition,
+          this.localBalloonKnotAnchor)
+
+      sprite = new PIXI.Sprite(this.stringTexture)
+      sprite.anchor.y = 0.5
+
+      this.container.addChild(sprite)
+
+      this.balloonStringSprites[balloonBody.id] = sprite
+
+      this.capturedBalloonIds[balloonBody.id] = true
+    }
+  }
+
+  // remove balloons that have flown away or popped
+  // TODO: separate in two loops instead
   for(i = this.balloonBodies.length - 1; i >= 0; i--) {
     balloonBody = this.balloonBodies[i]
-    if (balloonBody.position[1] < minBalloonY) {
-      this.balloonBodies.splice(i, 1)
-      world.removeBody(balloonBody)
 
-      // TODO: remove balloon sprite from dynamicSprites (gameScene)
+    if ((balloonBody.position[1] < minBalloonY && !this.capturedBalloonIds[balloonBody.id]) ||
+        balloonBody.popped === true) {
+
+      for(j = this.constraints.length - 1; j >= 0; j--) {
+        if (this.constraints[j].bodyB === balloonBody) {
+          this.world.removeConstraint(this.constraints[j])
+          this.constraints.splice(j, 1)
+          this.balloonStringSprites[balloonBody.id].destroy()
+        }
+      }
+
+      this.balloonBodies.splice(i, 1)
+      this.world.removeBody(balloonBody) // TODO: change gravityScale and mass instead
+      this.capturedBalloonIds[balloonBody.id] = null
+
       // TODO: lost balloon count
     }
   }
@@ -51936,17 +51967,21 @@ BalloonHandler.prototype.postStep = function () {
   for (i = 0; i < this.balloonBodies.length; i++) {
     balloonBody = this.balloonBodies[i]
     if (balloonBody.sleepState === p2.Body.SLEEPING &&
-        p2.vec2.distance(this.ninjaBody.position, balloonBody.position) < this.wakeUpDistance) {
+        p2.vec2.distance(this.balloonHolderBody.position, balloonBody.position) < this.wakeUpDistance) {
       balloonBody.wakeUp()
     }
   }
 
   // wake the closest ballon
-  closestBalloon = this.balloonBodies[0]
-
   for (i = 0; i < this.balloonBodies.length; i++) {
-    if (this.balloonBodies[i].position[0] < closestBalloon.position[0]) {
-      closestBalloon = this.balloonBodies[i]
+    balloonBody = this.balloonBodies[i]
+
+    if (!closestBalloon && !balloonBody.isCaptured) {
+      closestBalloon = balloonBody
+
+    } else if (closestBalloon && balloonBody.position[0] < closestBalloon.position[0] &&
+        !balloonBody.isCaptured) {
+      closestBalloon = balloonBody
     }
   }
 
@@ -51958,11 +51993,11 @@ BalloonHandler.prototype.postStep = function () {
   this.closestBalloon = closestBalloon
 }
 
-BalloonHandler.prototype.getClosestBalloon = function () {
+BalloonManager.prototype.getClosestBalloon = function () {
   return this.closestBalloon
 }
 
-module.exports = BalloonHandler
+module.exports = BalloonManager
 
 },{"./gameUtils":267,"./gameVars":268,"p2":51}],259:[function(require,module,exports){
 var p2 = require('p2')
@@ -52616,7 +52651,7 @@ MapLoader.prototype.loadMap = function (config) {
       shape = new p2.Circle({
         radius: ninjaRadius * 0.7,
         collisionGroup: gameVars.BALLOON,
-        collisionMask: gameVars.PLAYER | gameVars.WALL,
+        collisionMask: gameVars.PLAYER | gameVars.WALL | gameVars.SPIKES,
         // collisionResponse: false, // TODO: make it care about wall but not affect player
       })
 
@@ -52679,6 +52714,8 @@ MapLoader.prototype.loadMap = function (config) {
       shape = new p2.Box({
         width: Math.abs(topLeftX) + bottomRightX,
         height: Math.abs(topLeftY) + bottomRightY,
+        collisionGroup: gameVars.SPIKES,
+        collisionMask: gameVars.PLAYER | gameVars.BALLOON | gameVars.CAPTURED_BALLOON,
       })
 
       body.addShape(shape)
@@ -52708,6 +52745,7 @@ MapLoader.prototype.loadMap = function (config) {
 module.exports = MapLoader
 
 },{"./gameUtils":267,"./gameVars":268,"p2":51}],263:[function(require,module,exports){
+(function (global){
 var debug = require('debug')
 var eventLog = debug('NinjaGraphics:events')
 
@@ -52723,6 +52761,7 @@ var NinjaGraphics = function (config) {
 
   this.config = config
   this.currentState = null
+  this.fpsFactor = 60 / global.loop.getFps() // NOTE: developed on 60 fps
 
   this.container = new PIXI.Container()
   config.container.addChild(this.container)
@@ -52897,16 +52936,17 @@ NinjaGraphics.prototype.draw = function (x, y, rotation, ninjaBody) {
 
   for (var i = 0; i < this.headband1Points.length - 1; i++) {
     var point = this.headband1Points[i]
-    point.y = Math.sin(i * 0.6 + this.headbandCount / 1.6) * (headbandSpeed * (32 - i * 8) / 32) + 16
+    point.y = Math.sin((i * 0.6 + this.headbandCount / 1.6) * this.fpsFactor) * (headbandSpeed * (32 - i * 8) / 32) + 16
 
     point = this.headband2Points[i]
-    point.y = Math.cos(i * 0.6 + this.headbandCount / 1.6) * (headbandSpeed * (32 - i * 8) / 32) + 16
+    point.y = Math.cos((i * 0.6 + this.headbandCount / 1.6) * this.fpsFactor) * (headbandSpeed * (32 - i * 8) / 32) + 16
   }
 
 }
 
 module.exports = NinjaGraphics
 
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"debug":5}],264:[function(require,module,exports){
 var p2 = require('p2')
 
@@ -53011,7 +53051,7 @@ var MapLoader = require('./MapLoader')
 var gameVars = require('./gameVars')
 var buttonAreaFactory = require('./buttonAreaFactory')
 var KeyButton = require('./KeyButton')
-var BalloonHandler = require('./BalloonHandler')
+var BalloonManager = require('./BalloonManager')
 
 var actionsLog = debug('gameScene:actions')
 var buttonsLog = debug('gameScene:buttons')
@@ -53177,7 +53217,7 @@ var createNinja = function() {
     width: ninjaRadius * 2,
     height: ninjaRadius * 2,
     collisionGroup: gameVars.PLAYER,
-    collisionMask: gameVars.WALL,
+    collisionMask: gameVars.WALL | gameVars.BALLOON | gameVars.SPIKES,
   })
   ninjaBody.addShape(middleShape)
   middleShape.name = 'middleShape'
@@ -53185,7 +53225,7 @@ var createNinja = function() {
   bottomShape = new p2.Circle({
     radius: ninjaRadius * 1.1,
     collisionGroup: gameVars.PLAYER,
-    collisionMask: gameVars.WALL | gameVars.BALLOON,
+    collisionMask: gameVars.WALL | gameVars.BALLOON | gameVars.SPIKES,
   })
   ninjaBody.addShape(bottomShape)
   bottomShape.position[1] = ninjaRadius
@@ -53194,7 +53234,7 @@ var createNinja = function() {
   topShape = new p2.Circle({
     radius: ninjaRadius,
     collisionGroup: gameVars.PLAYER,
-    collisionMask: gameVars.WALL | gameVars.BALLOON,
+    collisionMask: gameVars.WALL | gameVars.BALLOON | gameVars.SPIKES,
   })
   ninjaBody.addShape(topShape)
   topShape.position[1] = -ninjaRadius
@@ -53521,14 +53561,14 @@ var postStep = function () {
     ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_FALLING)
   }
 
-  balloonHandler.postStep()
-
-  var closestBalloon = balloonHandler.getClosestBalloon()
+  var closestBalloon = balloonManager.getClosestBalloon()
 
   if (closestBalloon) {
     var distance = Math.round(p2.vec2.distance(ninjaBody.position, closestBalloon.position))
     forwardIndicatorDistanceText.text = distance + 'm'
   }
+
+  balloonManager.postStep()
 
 }
 
@@ -53558,9 +53598,23 @@ var beginContact = function (contactEvent) {
       balloonBody = contactEvent.bodyB
     }
 
-    balloonHandler.captureBalloon(balloonBody, ninjaBalloonHolderBody)
+    balloonManager.captureBalloon(balloonBody)
 
     // TODO: count the balloons, target next
+  }
+
+  if ((contactEvent.bodyA.name === 'balloon' || contactEvent.bodyB.name === 'balloon') &&
+    (contactEvent.bodyA.name === 'spikes' || contactEvent.bodyB.name === 'spikes')) {
+    var balloonBody = contactEvent.bodyA
+    if (contactEvent.bodyB.name === 'balloon') {
+      balloonBody = contactEvent.bodyB
+    }
+
+    balloonManager.popBalloon(balloonBody)
+
+    dynamicSprites[balloonBody.id].destroy()
+
+    // TODO: replace with balloon corpse instead
   }
 }
 
@@ -53599,6 +53653,8 @@ var gameScene = {
     world = new p2.World({
       gravity: [0, 10]
     })
+
+    world.islandSplit = false // TODO: figure out why island splitting doesnt work
 
     window.world = world // TODO: remove before prod
 
@@ -53707,13 +53763,13 @@ var gameScene = {
     })
     createCeiling()
 
-    balloonHandler = new BalloonHandler({
+    balloonManager = new BalloonManager({
       world: world,
       container: balloonStringLayer,
       stringTexture: resourceLoader.resources['balloonstring'].texture,
       pixelsPerMeter: pixelsPerMeter,
       wakeUpDistance: 30,
-      ninjaBody: ninjaBody,
+      balloonHolderBody: ninjaBalloonHolderBody,
     })
 
     // set up ninja and hook graphics
@@ -53756,7 +53812,7 @@ var gameScene = {
     this.container.destroy()
     keyRight.destroy()
     keyUp.destroy()
-    balloonHandler.destroy()
+    balloonManager.destroy()
   },
   update: function (stepInMilliseconds) {
 
@@ -53855,7 +53911,7 @@ var gameScene = {
       ropeSprite.visible = false
     }
 
-    balloonHandler.draw(ratio)
+    balloonManager.draw(ratio)
 
     for (var i = 0; i < world.bodies.length; i++) {
       var body = world.bodies[i]
@@ -53891,7 +53947,7 @@ var gameScene = {
       backgroundSprite.tilePosition.x = this.stage.x * 0.1
     }
 
-    var closestBalloon = balloonHandler.getClosestBalloon()
+    var closestBalloon = balloonManager.getClosestBalloon()
 
     if (closestBalloon &&
         (closestBalloon.position[0] * pixelsPerMeter) + this.stage.x > global.renderer.view.width) {
@@ -53923,7 +53979,7 @@ var gameScene = {
 module.exports = gameScene
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../lib/spriteUtilities":275,"./BalloonHandler":258,"./DebugDraw":259,"./Hook":260,"./KeyButton":261,"./MapLoader":262,"./NinjaGraphics":263,"./NinjaSensor":264,"./buttonAreaFactory":265,"./gameUtils":267,"./gameVars":268,"debug":5,"p2":51}],267:[function(require,module,exports){
+},{"../lib/spriteUtilities":275,"./BalloonManager":258,"./DebugDraw":259,"./Hook":260,"./KeyButton":261,"./MapLoader":262,"./NinjaGraphics":263,"./NinjaSensor":264,"./buttonAreaFactory":265,"./gameUtils":267,"./gameVars":268,"debug":5,"p2":51}],267:[function(require,module,exports){
 
 var gameUtils = {}
 
@@ -53956,6 +54012,7 @@ gameVars.SENSOR = Math.pow(2, 2)
 gameVars.CEILING = Math.pow(2, 3)
 gameVars.BALLOON = Math.pow(2, 4)
 gameVars.CAPTURED_BALLOON = Math.pow(2, 5)
+gameVars.SPIKES = Math.pow(2, 6)
 
 module.exports = gameVars
 
@@ -53974,7 +54031,7 @@ var ob = require('obscen')
 var windowLoad = require('window-load')
 var screenOrientation = require('screen-orientation')
 
-global.levelCount = 2 // TODO: move to some level manager when it exists
+global.levelCount = 3 // TODO: move to some level manager when it exists
 
 windowLoad(function () {
 
@@ -54482,7 +54539,7 @@ module.exports = splashScene
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./KeyButton":261,"./buttonAreaFactory":265}],274:[function(require,module,exports){
-module.exports = "1.0.0-14"
+module.exports = "1.0.0-15"
 
 },{}],275:[function(require,module,exports){
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
