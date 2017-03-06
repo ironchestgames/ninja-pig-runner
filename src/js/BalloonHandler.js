@@ -17,6 +17,7 @@ var BalloonHandler = function (config) {
 
   this.constraints = []
   this.balloonBodies = []
+  this.capturedBalloonIds = []
   this.balloonStringSprites = {}
   this.localAnchor = [0, 0.25]
 
@@ -75,6 +76,8 @@ BalloonHandler.prototype.captureBalloon = function (balloonBody, balloonHolderBo
   this.container.addChild(sprite)
 
   this.balloonStringSprites[balloonBody.id] = sprite
+
+  this.capturedBalloonIds.push(balloonBody.id)
 }
 
 BalloonHandler.prototype.popBalloon = function (balloonBody) {
@@ -137,7 +140,10 @@ BalloonHandler.prototype.postStep = function () {
   for(i = this.balloonBodies.length - 1; i >= 0; i--) {
     balloonBody = this.balloonBodies[i]
 
-    if (balloonBody.position[1] < minBalloonY || balloonBody.popped === true) {
+    var balloonBodyCapturedIndex = this.capturedBalloonIds.indexOf(balloonBody.id)
+
+    if ((balloonBody.position[1] < minBalloonY && balloonBodyCapturedIndex === -1) ||
+        balloonBody.popped === true) {
 
       for(j = this.constraints.length - 1; j >= 0; j--) {
         if (this.constraints[j].bodyB === balloonBody) {
@@ -150,6 +156,8 @@ BalloonHandler.prototype.postStep = function () {
 
       this.balloonBodies.splice(i, 1)
       this.world.removeBody(balloonBody) // TODO: change gravityScale and mass instead
+
+      this.capturedBalloonIds.splice(balloonBodyCapturedIndex, 1)
 
       // TODO: lost balloon count
     }
