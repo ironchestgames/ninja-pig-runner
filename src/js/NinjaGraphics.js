@@ -13,6 +13,7 @@ var NinjaGraphics = function (config) {
 
   this.config = config
   this.currentState = null
+  this.fpsFactor = 60 / global.loop.getFps() // NOTE: developed on 60 fps
 
   this.container = new PIXI.Container()
   config.container.addChild(this.container)
@@ -187,10 +188,10 @@ NinjaGraphics.prototype.draw = function (x, y, rotation, ninjaBody) {
 
   for (var i = 0; i < this.headband1Points.length - 1; i++) {
     var point = this.headband1Points[i]
-    point.y = Math.sin(i * 0.6 + this.headbandCount / 1.6) * (headbandSpeed * (32 - i * 8) / 32) + 16
+    point.y = Math.sin((i * 0.6 + this.headbandCount / 1.6) * this.fpsFactor) * (headbandSpeed * (32 - i * 8) / 32) + 16
 
     point = this.headband2Points[i]
-    point.y = Math.cos(i * 0.6 + this.headbandCount / 1.6) * (headbandSpeed * (32 - i * 8) / 32) + 16
+    point.y = Math.cos((i * 0.6 + this.headbandCount / 1.6) * this.fpsFactor) * (headbandSpeed * (32 - i * 8) / 32) + 16
   }
 
 }
