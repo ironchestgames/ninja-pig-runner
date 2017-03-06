@@ -176,7 +176,7 @@ var createNinja = function() {
     width: ninjaRadius * 2,
     height: ninjaRadius * 2,
     collisionGroup: gameVars.PLAYER,
-    collisionMask: gameVars.WALL,
+    collisionMask: gameVars.WALL | gameVars.BALLOON | gameVars.SPIKES,
   })
   ninjaBody.addShape(middleShape)
   middleShape.name = 'middleShape'
@@ -184,7 +184,7 @@ var createNinja = function() {
   bottomShape = new p2.Circle({
     radius: ninjaRadius * 1.1,
     collisionGroup: gameVars.PLAYER,
-    collisionMask: gameVars.WALL | gameVars.BALLOON,
+    collisionMask: gameVars.WALL | gameVars.BALLOON | gameVars.SPIKES,
   })
   ninjaBody.addShape(bottomShape)
   bottomShape.position[1] = ninjaRadius
@@ -193,7 +193,7 @@ var createNinja = function() {
   topShape = new p2.Circle({
     radius: ninjaRadius,
     collisionGroup: gameVars.PLAYER,
-    collisionMask: gameVars.WALL | gameVars.BALLOON,
+    collisionMask: gameVars.WALL | gameVars.BALLOON | gameVars.SPIKES,
   })
   ninjaBody.addShape(topShape)
   topShape.position[1] = -ninjaRadius
