@@ -17,7 +17,7 @@ var NinjaGraphics = function (config) {
   this.config = config
   this.currentState = null
   this.fpsFactor = 60 / global.loop.getFps() // NOTE: developed on 60 fps, TODO: move to update instead
-  this.helpLineCountDownFactor = 0.025
+  this.helpLineCountDownFactor = 0.05
 
   this.container = new PIXI.Container()
   config.container.addChild(this.container)
@@ -90,17 +90,17 @@ var NinjaGraphics = function (config) {
 
   // add help lines for tutorial mode
   this.helpLineUpwardSprite = new PIXI.Sprite(PIXI.loader.resources['helpline_upward'].texture)
+  this.helpLineUpwardSprite.anchor.y = 0.5
   this.helpLineUpwardSprite.x = hookOffsetX
   this.helpLineUpwardSprite.y = hookOffsetY
-  this.helpLineUpwardSprite.width = global.renderer.view.height * 1.3
   this.helpLineUpwardSprite.rotation = upwardHookAngle
   this.helpLineUpwardSprite.alpha = 0
   this.container.addChild(this.helpLineUpwardSprite)
 
   this.helpLineForwardSprite = new PIXI.Sprite(PIXI.loader.resources['helpline_forward'].texture)
+  this.helpLineForwardSprite.anchor.y = 0.5
   this.helpLineForwardSprite.x = hookOffsetX
   this.helpLineForwardSprite.y = hookOffsetY
-  this.helpLineForwardSprite.width = global.renderer.view.height * 1.9
   this.helpLineForwardSprite.rotation = forwardHookAngle
   this.helpLineForwardSprite.alpha = 0
   this.container.addChild(this.helpLineForwardSprite)
