@@ -7,6 +7,7 @@ var loadScene = require('./loadScene.js')
 var levelWonScene = require('./levelWonScene.js')
 var levelFailScene = require('./levelFailScene.js')
 var splashScene = require('./splashScene.js')
+var intro1Scene = require('./intro1Scene.js')
 var ob = require('obscen')
 var windowLoad = require('window-load')
 var screenOrientation = require('screen-orientation')
@@ -36,6 +37,7 @@ windowLoad(function () {
 
   sceneManager.setScenes([
     splashScene,
+    intro1Scene,
     loadScene,
     gameScene,
     levelWonScene,

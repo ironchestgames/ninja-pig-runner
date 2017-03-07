@@ -41,7 +41,7 @@ var splashScene = {
 
     // create button layer
     var startGame = function () {
-      global.sceneManager.changeScene('game', {
+      global.sceneManager.changeScene('intro1', {
         level: localStorage.level || 1, // TODO: remove before prod
       })
     }

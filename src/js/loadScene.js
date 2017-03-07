@@ -4,9 +4,16 @@ var loadScene = {
 
     PIXI.loader
 
+    // buttons
+    .add('button_start', 'assets/images/button_start.png')
+    .add('button_menu', 'assets/images/button_menu.png')
+    .add('button_tryagain', 'assets/images/button_tryagain.png')
+    .add('button_next', 'assets/images/button_next.png')
+    .add('button_back', 'assets/images/button_back.png')
+    .add('button_playagain', 'assets/images/button_playagain.png')
+
     // splash scene
     .add('splash', 'assets/images/splash.png')
-    .add('button_start', 'assets/images/button_start.png')
 
     // game scene
     .add('rope', 'assets/images/rope.png')
@@ -42,13 +49,16 @@ var loadScene = {
 
     // level fail scene
     .add('fail_level_1', 'assets/images/fail_level_1.png')
-    .add('button_menu', 'assets/images/button_menu.png')
-    .add('button_tryagain', 'assets/images/button_tryagain.png')
 
     // level won scene
     .add('finish_level_1', 'assets/images/finish_level_1.png')
-    .add('button_next', 'assets/images/button_next.png')
-    .add('button_playagain', 'assets/images/button_playagain.png')
+
+    // intro 1 scene
+    .add('intro1_bg_gradient', 'assets/images/intro1_bg_gradient.png')
+    .add('intro1_1', 'assets/images/intro1_1.png')
+    .add('intro1_2', 'assets/images/intro1_2.png')
+    .add('intro1_3', 'assets/images/intro1_3.png')
+    .add('intro1_4', 'assets/images/intro1_4.png')
 
     .load(function () {
       this.changeScene('splash', {
