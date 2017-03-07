@@ -16,7 +16,8 @@ var NinjaGraphics = function (config) {
 
   this.config = config
   this.currentState = null
-  this.fpsFactor = 60 / global.loop.getFps() // NOTE: developed on 60 fps
+  this.fpsFactor = 60 / global.loop.getFps() // NOTE: developed on 60 fps, TODO: move to update instead
+  this.helpLineCountDownFactor = 0.025
 
   this.container = new PIXI.Container()
   config.container.addChild(this.container)
@@ -88,21 +89,21 @@ var NinjaGraphics = function (config) {
   this.headbandCount = 0
 
   // add help lines for tutorial mode
-  var helpLineUpwardSprite = new PIXI.Sprite(PIXI.loader.resources['helpline'].texture)
-  helpLineUpwardSprite.x = hookOffsetX
-  helpLineUpwardSprite.y = hookOffsetY
-  helpLineUpwardSprite.width = global.renderer.view.height * 1.3
-  helpLineUpwardSprite.rotation = upwardHookAngle
-  helpLineUpwardSprite.alpha = 0.5
-  this.container.addChild(helpLineUpwardSprite)
+  this.helpLineUpwardSprite = new PIXI.Sprite(PIXI.loader.resources['helpline'].texture)
+  this.helpLineUpwardSprite.x = hookOffsetX
+  this.helpLineUpwardSprite.y = hookOffsetY
+  this.helpLineUpwardSprite.width = global.renderer.view.height * 1.3
+  this.helpLineUpwardSprite.rotation = upwardHookAngle
+  this.helpLineUpwardSprite.alpha = 0
+  this.container.addChild(this.helpLineUpwardSprite)
 
-  var helpLineForwardSprite = new PIXI.Sprite(PIXI.loader.resources['helpline'].texture)
-  helpLineForwardSprite.x = hookOffsetX
-  helpLineForwardSprite.y = hookOffsetY
-  helpLineForwardSprite.width = global.renderer.view.height * 1.9
-  helpLineForwardSprite.rotation = forwardHookAngle
-  helpLineForwardSprite.alpha = 0.5
-  this.container.addChild(helpLineForwardSprite)
+  this.helpLineForwardSprite = new PIXI.Sprite(PIXI.loader.resources['helpline'].texture)
+  this.helpLineForwardSprite.x = hookOffsetX
+  this.helpLineForwardSprite.y = hookOffsetY
+  this.helpLineForwardSprite.width = global.renderer.view.height * 1.9
+  this.helpLineForwardSprite.rotation = forwardHookAngle
+  this.helpLineForwardSprite.alpha = 0
+  this.container.addChild(this.helpLineForwardSprite)
 
 }
 
@@ -176,6 +177,24 @@ NinjaGraphics.prototype.changeState = function (newState) {
   }
 
   this.currentState = newState
+}
+
+NinjaGraphics.prototype.flashForwardHelpLine = function () {
+  this.helpLineForwardSprite.alpha = 1
+}
+
+NinjaGraphics.prototype.flashUpwardHelpLine = function () {
+  this.helpLineUpwardSprite.alpha = 1
+}
+
+NinjaGraphics.prototype.update = function () {
+  if (this.helpLineForwardSprite.alpha > 0) {
+    this.helpLineForwardSprite.alpha -= this.helpLineCountDownFactor
+  }
+
+  if (this.helpLineUpwardSprite.alpha > 0) {
+    this.helpLineUpwardSprite.alpha -= this.helpLineCountDownFactor
+  }
 }
 
 NinjaGraphics.prototype.draw = function (x, y, rotation, ninjaBody) {

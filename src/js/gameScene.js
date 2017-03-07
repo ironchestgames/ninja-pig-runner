@@ -331,6 +331,7 @@ var postStep = function () {
         } else {
           upwardHook.setHook()
           currentHook = upwardHook
+          ninjaGraphics.flashUpwardHelpLine()
         }
         break
 
@@ -345,6 +346,7 @@ var postStep = function () {
         } else {
           forwardHook.setHook()
           currentHook = forwardHook
+          ninjaGraphics.flashForwardHelpLine()
         }
         break
 
@@ -785,6 +787,8 @@ var gameScene = {
 
     var stepInSeconds = stepInMilliseconds / 1000
     world.step(stepInSeconds)
+
+    ninjaGraphics.update() // TODO: send in stepMs too (but YAGNI)
 
   },
   draw: function (renderer, ratio) {
