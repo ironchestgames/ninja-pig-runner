@@ -31,6 +31,7 @@ var loadScene = {
     .add('balloon6', 'assets/images/balloon6.png')
     .add('balloon7', 'assets/images/balloon7.png')
     .add('balloon8', 'assets/images/balloon8.png')
+    .add('balloon9', 'assets/images/balloon9.png')
     .add('balloonstring', 'assets/images/balloonstring.png')
     .add('indicator', 'assets/images/indicator.png')
     .add('spikes', 'assets/images/spikes.png')
