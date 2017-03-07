@@ -83,6 +83,8 @@ var mapLayer
 var forwardIndicatorContainer
 var forwardIndicatorArrowSprite
 var forwardIndicatorDistanceText
+var upwardButtonHelpAreaSprite
+var forwardButtonHelpAreaSprite
 
 var ninjaBottomSensor
 var ninjaLeftSensor
@@ -93,21 +95,25 @@ var tempVector = [0, 0]
 var onLeftDown = function (event) {
   buttonsLog('onLeftDown', event)
   buttonEventQueue.push(BUTTON_UPWARD_DOWN)
+  upwardButtonHelpAreaSprite.visible = true
 }
 
 var onLeftUp = function (event) {
   buttonsLog('onLeftUp', event)
   buttonEventQueue.push(BUTTON_UPWARD_UP)
+  upwardButtonHelpAreaSprite.visible = false
 }
 
 var onRightDown = function (event) {
   buttonsLog('onRightDown', event)
   buttonEventQueue.push(BUTTON_FORWARD_DOWN)
+  forwardButtonHelpAreaSprite.visible = true
 }
 
 var onRightUp = function (event) {
   buttonsLog('onRightUp', event)
   buttonEventQueue.push(BUTTON_FORWARD_UP)
+  forwardButtonHelpAreaSprite.visible = false
 }
 
 // TODO: remove, this is only for debug
@@ -628,12 +634,14 @@ var gameScene = {
     var propLayer = new PIXI.Container()
     var guiLayer = new PIXI.Container()
     this.debugDrawContainer = new PIXI.Container()
+    var buttonHelpAreaContainer = new PIXI.Container()
 
     global.baseStage.addChild(this.container)
 
     this.container.addChild(this.backgroundLayer)
     this.container.addChild(this.stage)
     this.container.addChild(guiLayer)
+    this.container.addChild(buttonHelpAreaContainer)
     this.container.addChild(this.debugDrawContainer)
 
     this.stage.addChild(propLayer)
@@ -762,6 +770,19 @@ var gameScene = {
       onKeyDown: onLeftDown,
       onKeyUp: onLeftUp,
     })
+
+    upwardButtonHelpAreaSprite = new PIXI.Sprite(PIXI.loader.resources['upward_button_fade'].texture)
+    upwardButtonHelpAreaSprite.width = global.renderer.view.width / 2
+    upwardButtonHelpAreaSprite.height = global.renderer.view.height
+    upwardButtonHelpAreaSprite.visible = false
+    buttonHelpAreaContainer.addChild(upwardButtonHelpAreaSprite)
+
+    forwardButtonHelpAreaSprite = new PIXI.Sprite(PIXI.loader.resources['forward_button_fade'].texture)
+    forwardButtonHelpAreaSprite.width = global.renderer.view.width / 2
+    forwardButtonHelpAreaSprite.height = global.renderer.view.height
+    forwardButtonHelpAreaSprite.x = global.renderer.view.width / 2
+    forwardButtonHelpAreaSprite.visible = false
+    buttonHelpAreaContainer.addChild(forwardButtonHelpAreaSprite)
 
     isPaused = false
 

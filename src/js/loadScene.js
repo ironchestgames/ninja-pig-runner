@@ -19,6 +19,8 @@ var loadScene = {
     .add('rope', 'assets/images/rope.png')
     .add('helpline_upward', 'assets/images/helpline_upward.png')
     .add('helpline_forward', 'assets/images/helpline_forward.png')
+    .add('forward_button_fade', 'assets/images/forward_button_fade.png')
+    .add('upward_button_fade', 'assets/images/upward_button_fade.png')
     .add('background1', 'assets/images/background1.png')
     .add('backgroundsky1', 'assets/images/backgroundsky1.png')
     .add('antenn001', 'assets/images/antenn001.png')
