@@ -17,8 +17,8 @@ var loadScene = {
 
     // game scene
     .add('rope', 'assets/images/rope.png')
-    .add('helpline_upward', 'assets/images/helpline_upward.png')
-    .add('helpline_forward', 'assets/images/helpline_forward.png')
+    .add('helparrow_upward', 'assets/images/helpline_upward.png')
+    .add('helparrow_forward', 'assets/images/helpline_forward.png')
     .add('forward_button_fade', 'assets/images/forward_button_fade.png')
     .add('upward_button_fade', 'assets/images/upward_button_fade.png')
     .add('background1', 'assets/images/background1.png')
