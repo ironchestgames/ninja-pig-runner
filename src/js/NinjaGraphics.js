@@ -6,6 +6,10 @@ var NinjaGraphics = function (config) {
   var spriteSizeFactor = 1.18 // to make up for the whitespace in the frames
   var runningSpriteAnimationBaseSpeed = 0.20 // TODO: what is this in ms?
 
+  var forwardHookAngle = config.forwardHookAngle
+  var upwardHookAngle = config.upwardHookAngle
+  var hookOffsetX = config.hookOffsetX
+  var hookOffsetY = config.hookOffsetY
   var ninjaHeight = config.ninjaHeight
   var pixelsPerMeter = config.pixelsPerMeter
   var scaleRatio = (ninjaHeight * pixelsPerMeter * spriteSizeFactor) / PIXI.loader.resources['inair_upwards'].texture.height
@@ -82,6 +86,23 @@ var NinjaGraphics = function (config) {
   this.scaleContainer.addChild(this.headband1)
 
   this.headbandCount = 0
+
+  // add help lines for tutorial mode
+  var helpLineUpwardSprite = new PIXI.Sprite(PIXI.loader.resources['helpline'].texture)
+  helpLineUpwardSprite.x = hookOffsetX
+  helpLineUpwardSprite.y = hookOffsetY
+  helpLineUpwardSprite.width = global.renderer.view.height * 1.3
+  helpLineUpwardSprite.rotation = upwardHookAngle
+  helpLineUpwardSprite.alpha = 0.5
+  this.container.addChild(helpLineUpwardSprite)
+
+  var helpLineForwardSprite = new PIXI.Sprite(PIXI.loader.resources['helpline'].texture)
+  helpLineForwardSprite.x = hookOffsetX
+  helpLineForwardSprite.y = hookOffsetY
+  helpLineForwardSprite.width = global.renderer.view.height * 1.9
+  helpLineForwardSprite.rotation = forwardHookAngle
+  helpLineForwardSprite.alpha = 0.5
+  this.container.addChild(helpLineForwardSprite)
 
 }
 

@@ -735,6 +735,10 @@ var gameScene = {
       ninjaHeight: 1.5,
       pixelsPerMeter: pixelsPerMeter,
       spriteUtilities: spriteUtilities,
+      forwardHookAngle: Math.atan2(forwardHookRelativeAimY, forwardHookRelativeAimX),
+      upwardHookAngle: Math.atan2(upwardHookRelativeAimY, upwardHookRelativeAimX),
+      hookOffsetX: ninjaHandBody.position[0] * pixelsPerMeter,
+      hookOffsetY: ninjaHandBody.position[1] * pixelsPerMeter,
     })
     ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_FALLING)
 
