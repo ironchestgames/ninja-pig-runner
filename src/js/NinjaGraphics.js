@@ -14,6 +14,8 @@ var NinjaGraphics = function (config) {
   var pixelsPerMeter = config.pixelsPerMeter
   var scaleRatio = (ninjaHeight * pixelsPerMeter * spriteSizeFactor) / PIXI.loader.resources['inair_upwards'].texture.height
 
+  this.tutorialMode = config.tutorialMode
+
   this.config = config
   this.currentState = null
   this.fpsFactor = 60 / global.loop.getFps() // NOTE: developed on 60 fps, TODO: move to update instead
@@ -89,21 +91,23 @@ var NinjaGraphics = function (config) {
   this.headbandCount = 0
 
   // add help lines for tutorial mode
-  this.helpArrowUpwardSprite = new PIXI.Sprite(PIXI.loader.resources['helparrow_upward'].texture)
-  this.helpArrowUpwardSprite.anchor.y = 0.5
-  this.helpArrowUpwardSprite.x = hookOffsetX
-  this.helpArrowUpwardSprite.y = hookOffsetY
-  this.helpArrowUpwardSprite.rotation = upwardHookAngle
-  this.helpArrowUpwardSprite.alpha = 0
-  this.container.addChild(this.helpArrowUpwardSprite)
+  if (this.tutorialMode) {
+    this.helpArrowUpwardSprite = new PIXI.Sprite(PIXI.loader.resources['helparrow_upward'].texture)
+    this.helpArrowUpwardSprite.anchor.y = 0.5
+    this.helpArrowUpwardSprite.x = hookOffsetX
+    this.helpArrowUpwardSprite.y = hookOffsetY
+    this.helpArrowUpwardSprite.rotation = upwardHookAngle
+    this.helpArrowUpwardSprite.alpha = 0
+    this.container.addChild(this.helpArrowUpwardSprite)
 
-  this.helpArrowForwardSprite = new PIXI.Sprite(PIXI.loader.resources['helparrow_forward'].texture)
-  this.helpArrowForwardSprite.anchor.y = 0.5
-  this.helpArrowForwardSprite.x = hookOffsetX
-  this.helpArrowForwardSprite.y = hookOffsetY
-  this.helpArrowForwardSprite.rotation = forwardHookAngle
-  this.helpArrowForwardSprite.alpha = 0
-  this.container.addChild(this.helpArrowForwardSprite)
+    this.helpArrowForwardSprite = new PIXI.Sprite(PIXI.loader.resources['helparrow_forward'].texture)
+    this.helpArrowForwardSprite.anchor.y = 0.5
+    this.helpArrowForwardSprite.x = hookOffsetX
+    this.helpArrowForwardSprite.y = hookOffsetY
+    this.helpArrowForwardSprite.rotation = forwardHookAngle
+    this.helpArrowForwardSprite.alpha = 0
+    this.container.addChild(this.helpArrowForwardSprite)
+  }
 
 }
 
@@ -180,20 +184,26 @@ NinjaGraphics.prototype.changeState = function (newState) {
 }
 
 NinjaGraphics.prototype.flashForwardHelpLine = function () {
-  this.helpArrowForwardSprite.alpha = 1
+  if (this.tutorialMode) {
+    this.helpArrowForwardSprite.alpha = 1
+  }
 }
 
 NinjaGraphics.prototype.flashUpwardHelpLine = function () {
-  this.helpArrowUpwardSprite.alpha = 1
+  if (this.tutorialMode) {
+    this.helpArrowUpwardSprite.alpha = 1
+  }
 }
 
 NinjaGraphics.prototype.update = function () {
-  if (this.helpArrowForwardSprite.alpha > 0) {
-    this.helpArrowForwardSprite.alpha -= this.helpArrowCountDownFactor
-  }
+  if (this.tutorialMode) {
+    if (this.helpArrowForwardSprite.alpha > 0) {
+      this.helpArrowForwardSprite.alpha -= this.helpArrowCountDownFactor
+    }
 
-  if (this.helpArrowUpwardSprite.alpha > 0) {
-    this.helpArrowUpwardSprite.alpha -= this.helpArrowCountDownFactor
+    if (this.helpArrowUpwardSprite.alpha > 0) {
+      this.helpArrowUpwardSprite.alpha -= this.helpArrowCountDownFactor
+    }
   }
 }
 

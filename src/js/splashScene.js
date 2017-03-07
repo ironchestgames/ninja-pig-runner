@@ -3,7 +3,7 @@ var KeyButton = require('./KeyButton')
 
 var splashScene = {
   name: 'splash',
-  create: function () {
+  create: function (sceneParams) {
 
     // set up layers etc
     this.container = new PIXI.Container()
@@ -41,9 +41,7 @@ var splashScene = {
 
     // create button layer
     var startGame = function () {
-      global.sceneManager.changeScene('intro1', {
-        level: localStorage.level || 1, // TODO: remove before prod
-      })
+      global.sceneManager.changeScene('intro1', sceneParams)
     }
 
     var buttonStart = buttonAreaFactory({

@@ -95,25 +95,33 @@ var tempVector = [0, 0]
 var onLeftDown = function (event) {
   buttonsLog('onLeftDown', event)
   buttonEventQueue.push(BUTTON_UPWARD_DOWN)
-  leftButtonOverlaySprite.visible = true
+  if (sceneParams.tutorialMode) {
+    leftButtonOverlaySprite.visible = true
+  }
 }
 
 var onLeftUp = function (event) {
   buttonsLog('onLeftUp', event)
   buttonEventQueue.push(BUTTON_UPWARD_UP)
-  leftButtonOverlaySprite.visible = false
+  if (sceneParams.tutorialMode) {
+    leftButtonOverlaySprite.visible = false
+  }
 }
 
 var onRightDown = function (event) {
   buttonsLog('onRightDown', event)
   buttonEventQueue.push(BUTTON_FORWARD_DOWN)
-  rightButtonOverlaySprite.visible = true
+  if (sceneParams.tutorialMode) {
+    rightButtonOverlaySprite.visible = true
+  }
 }
 
 var onRightUp = function (event) {
   buttonsLog('onRightUp', event)
   buttonEventQueue.push(BUTTON_FORWARD_UP)
-  rightButtonOverlaySprite.visible = false
+  if (sceneParams.tutorialMode) {
+    rightButtonOverlaySprite.visible = false
+  }
 }
 
 // TODO: remove, this is only for debug
@@ -611,6 +619,13 @@ var gameScene = {
     spriteUtilities = new SpriteUtilities(PIXI, global.renderer)
     mapLoader = new MapLoader()
 
+    // TODO: handle this in level manager
+    if (sceneParams.level === '1') {
+      sceneParams.tutorialMode = true
+    } else {
+      sceneParams.tutorialMode = false
+    }
+
     if (world) {
       world.clear()
     }
@@ -634,7 +649,7 @@ var gameScene = {
     var propLayer = new PIXI.Container()
     var guiLayer = new PIXI.Container()
     this.debugDrawContainer = new PIXI.Container()
-    var buttonOverlayContainer = new PIXI.Container()
+    var buttonOverlayContainer = new PIXI.Container() // NOTE: only used in tutorial mode
 
     global.baseStage.addChild(this.container)
 
@@ -749,6 +764,7 @@ var gameScene = {
       upwardHookAngle: Math.atan2(upwardHookRelativeAimY, upwardHookRelativeAimX),
       hookOffsetX: ninjaHandBody.position[0] * pixelsPerMeter,
       hookOffsetY: ninjaHandBody.position[1] * pixelsPerMeter,
+      tutorialMode: sceneParams.tutorialMode,
     })
     ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_FALLING)
 
@@ -771,18 +787,22 @@ var gameScene = {
       onKeyUp: onLeftUp,
     })
 
-    leftButtonOverlaySprite = new PIXI.Sprite(PIXI.loader.resources['upward_button_fade'].texture)
-    leftButtonOverlaySprite.width = global.renderer.view.width / 2
-    leftButtonOverlaySprite.height = global.renderer.view.height
-    leftButtonOverlaySprite.visible = false
-    buttonOverlayContainer.addChild(leftButtonOverlaySprite)
+    if (sceneParams.tutorialMode) {
+      leftButtonOverlaySprite = new PIXI.Sprite(
+          PIXI.loader.resources['upward_button_fade'].texture)
+      leftButtonOverlaySprite.width = global.renderer.view.width / 2
+      leftButtonOverlaySprite.height = global.renderer.view.height
+      leftButtonOverlaySprite.visible = false
+      buttonOverlayContainer.addChild(leftButtonOverlaySprite)
 
-    rightButtonOverlaySprite = new PIXI.Sprite(PIXI.loader.resources['forward_button_fade'].texture)
-    rightButtonOverlaySprite.width = global.renderer.view.width / 2
-    rightButtonOverlaySprite.height = global.renderer.view.height
-    rightButtonOverlaySprite.x = global.renderer.view.width / 2
-    rightButtonOverlaySprite.visible = false
-    buttonOverlayContainer.addChild(rightButtonOverlaySprite)
+      rightButtonOverlaySprite = new PIXI.Sprite(
+          PIXI.loader.resources['forward_button_fade'].texture)
+      rightButtonOverlaySprite.width = global.renderer.view.width / 2
+      rightButtonOverlaySprite.height = global.renderer.view.height
+      rightButtonOverlaySprite.x = global.renderer.view.width / 2
+      rightButtonOverlaySprite.visible = false
+      buttonOverlayContainer.addChild(rightButtonOverlaySprite)
+    }
 
     isPaused = false
 
