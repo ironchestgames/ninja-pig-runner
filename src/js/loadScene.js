@@ -17,7 +17,8 @@ var loadScene = {
 
     // game scene
     .add('rope', 'assets/images/rope.png')
-    .add('helpline', 'assets/images/helpline.png')
+    .add('helpline_upward', 'assets/images/helpline_upward.png')
+    .add('helpline_forward', 'assets/images/helpline_forward.png')
     .add('background1', 'assets/images/background1.png')
     .add('backgroundsky1', 'assets/images/backgroundsky1.png')
     .add('antenn001', 'assets/images/antenn001.png')

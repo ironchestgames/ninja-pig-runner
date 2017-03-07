@@ -89,7 +89,7 @@ var NinjaGraphics = function (config) {
   this.headbandCount = 0
 
   // add help lines for tutorial mode
-  this.helpLineUpwardSprite = new PIXI.Sprite(PIXI.loader.resources['helpline'].texture)
+  this.helpLineUpwardSprite = new PIXI.Sprite(PIXI.loader.resources['helpline_upward'].texture)
   this.helpLineUpwardSprite.x = hookOffsetX
   this.helpLineUpwardSprite.y = hookOffsetY
   this.helpLineUpwardSprite.width = global.renderer.view.height * 1.3
@@ -97,7 +97,7 @@ var NinjaGraphics = function (config) {
   this.helpLineUpwardSprite.alpha = 0
   this.container.addChild(this.helpLineUpwardSprite)
 
-  this.helpLineForwardSprite = new PIXI.Sprite(PIXI.loader.resources['helpline'].texture)
+  this.helpLineForwardSprite = new PIXI.Sprite(PIXI.loader.resources['helpline_forward'].texture)
   this.helpLineForwardSprite.x = hookOffsetX
   this.helpLineForwardSprite.y = hookOffsetY
   this.helpLineForwardSprite.width = global.renderer.view.height * 1.9
