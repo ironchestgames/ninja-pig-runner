@@ -5,12 +5,10 @@ var loadScene = {
     PIXI.loader
 
     // buttons
-    .add('button_start', 'assets/images/button_start.png')
     .add('button_menu', 'assets/images/button_menu.png')
-    .add('button_tryagain', 'assets/images/button_tryagain.png')
     .add('button_next', 'assets/images/button_next.png')
     .add('button_back', 'assets/images/button_back.png')
-    .add('button_playagain', 'assets/images/button_playagain.png')
+    .add('button_restart', 'assets/images/button_restart.png')
 
     // splash scene
     .add('splash', 'assets/images/splash.png')

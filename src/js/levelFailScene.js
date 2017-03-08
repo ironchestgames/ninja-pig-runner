@@ -26,7 +26,7 @@ var levelFailScene = {
     this.animationLayer.x = (global.renderer.view.width - this.animationLayer.width) / 2
 
     // create gui layer
-    var imageButtonTryAgain = new PIXI.Sprite(PIXI.loader.resources['button_tryagain'].texture)
+    var imageButtonTryAgain = new PIXI.Sprite(PIXI.loader.resources['button_restart'].texture)
     imageButtonTryAgain.anchor.x = 0.5
     imageButtonTryAgain.anchor.y = 0.5
     imageButtonTryAgain.x = global.renderer.view.width * 0.25

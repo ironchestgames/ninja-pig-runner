@@ -31,7 +31,7 @@ var splashScene = {
     this.animationLayer.x = (global.renderer.view.width - this.animationLayer.width) / 2
 
     // create gui layer
-    var imageButtonStart = new PIXI.Sprite(PIXI.loader.resources['button_start'].texture)
+    var imageButtonStart = new PIXI.Sprite(PIXI.loader.resources['button_next'].texture)
     imageButtonStart.anchor.x = 0.5
     imageButtonStart.anchor.y = 0.5
     imageButtonStart.x = global.renderer.view.width * 0.75

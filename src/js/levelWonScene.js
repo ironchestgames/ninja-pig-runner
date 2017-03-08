@@ -26,7 +26,7 @@ var levelWonScene = {
     this.animationLayer.x = (global.renderer.view.width - this.animationLayer.width) / 2
 
     // create gui layer
-    var imageButtonPlayAgain = new PIXI.Sprite(PIXI.loader.resources['button_playagain'].texture)
+    var imageButtonPlayAgain = new PIXI.Sprite(PIXI.loader.resources['button_restart'].texture)
     imageButtonPlayAgain.anchor.x = 0.5
     imageButtonPlayAgain.anchor.y = 0.5
     imageButtonPlayAgain.x = global.renderer.view.width * 0.25
