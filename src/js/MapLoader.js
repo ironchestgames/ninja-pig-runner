@@ -231,7 +231,7 @@ MapLoader.prototype.loadMap = function (config) {
 
       // create the sprite
       var sprite = new PIXI.Sprite(PIXI.loader.resources['balloon' + balloonTextureNr].texture)
-
+      sprite.balloonColor = balloonTextureNr
       sprite.anchor.x = 0.5
       sprite.anchor.y = 0.5
       sprite.x = bodyData.position.x * pixelsPerMeter

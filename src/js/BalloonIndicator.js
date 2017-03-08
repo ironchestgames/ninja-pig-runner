@@ -8,6 +8,10 @@ var BalloonIndicator = function (config) {
   this.indicatorContainer = new PIXI.Container()
 
   this.forwardIndicatorArrowSprite = new PIXI.Sprite(PIXI.loader.resources['indicator'].texture)
+  this.forwardIndicatorArrowSprite.anchor.x = 0.5
+  this.forwardIndicatorArrowSprite.anchor.y = 0.5
+  this.forwardIndicatorArrowSprite.x = PIXI.loader.resources['indicator'].texture.width / 2
+  this.forwardIndicatorArrowSprite.y = PIXI.loader.resources['indicator'].texture.height / 2
 
   this.indicatorContainer.addChild(this.forwardIndicatorArrowSprite)
 
@@ -15,6 +19,20 @@ var BalloonIndicator = function (config) {
   this.indicatorContainer.pivot.y = PIXI.loader.resources['indicator'].texture.height / 2
 
   container.addChild(this.indicatorContainer)
+
+  this.balloonSprites = {}
+
+  for (var i = 1; i <= 9; i++) { // TODO: move balloon color count to gameVars
+    var sprite = new PIXI.Sprite(PIXI.loader.resources['balloon' + i].texture)
+    sprite.anchor.x = 0.5
+    sprite.anchor.y = 0.5
+    sprite.x = PIXI.loader.resources['indicator'].texture.width / 2
+    sprite.y = PIXI.loader.resources['indicator'].texture.height / 2
+    sprite.visible = false
+    sprite.balloonColor = i
+    this.indicatorContainer.addChild(sprite)
+    this.balloonSprites[i] = sprite
+  }
 
   this.balloonToIndicate = null // NOTE: set this to have the indicator point at it
 }
@@ -32,8 +50,19 @@ BalloonIndicator.prototype.draw = function () {
 
   } else {
 
+    // show correct color
+    for (var i = 1; i <= 9; i++) {
+      if (i === this.balloonToIndicate.balloonColor) {
+        this.balloonSprites[i].visible = true
+      } else {
+        this.balloonSprites[i].visible = false
+      }
+    }
+
+    // make it visible
     this.indicatorContainer.visible = true
 
+    // screen position of the balloon sprite
     balloonSpriteX = this.balloonToIndicate.worldTransform.tx
     balloonSpriteY = this.balloonToIndicate.worldTransform.ty
 
@@ -64,7 +93,7 @@ BalloonIndicator.prototype.draw = function () {
         rotation = Math.PI * 0.5
       }
 
-      this.indicatorContainer.rotation = rotation
+      this.forwardIndicatorArrowSprite.rotation = rotation
 
       // constrain x
       if (this.indicatorContainer.x < this.offset) {
