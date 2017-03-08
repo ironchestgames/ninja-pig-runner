@@ -11,6 +11,7 @@ var gameVars = require('./gameVars')
 var buttonAreaFactory = require('./buttonAreaFactory')
 var KeyButton = require('./KeyButton')
 var BalloonManager = require('./BalloonManager')
+var BalloonIndicator = require('./BalloonIndicator')
 
 var actionsLog = debug('gameScene:actions')
 var buttonsLog = debug('gameScene:buttons')
@@ -81,10 +82,9 @@ var backgroundSprite
 var skySprite
 var dynamicSprites = {} // TODO: make sure these are destroyed properly
 var mapLayer
-var forwardIndicatorContainer
-var forwardIndicatorArrowSprite
 var leftButtonOverlaySprite
 var rightButtonOverlaySprite
+var indicator
 
 var ninjaBottomSensor
 var ninjaLeftSensor
@@ -696,9 +696,9 @@ var gameScene = {
       touchEnd: onRightUp,
     })
 
-    forwardIndicatorContainer = new PIXI.Container()
+    var indicatorContainer = new PIXI.Container()
 
-    guiLayer.addChild(forwardIndicatorContainer)
+    guiLayer.addChild(indicatorContainer)
     guiLayer.addChild(leftButton)
     guiLayer.addChild(rightButton)
 
@@ -747,13 +747,9 @@ var gameScene = {
     world.on('postStep', postStep.bind(this))
 
     // set up closest balloon indicator
-
-    forwardIndicatorArrowSprite = new PIXI.Sprite(PIXI.loader.resources['indicator'].texture)
-
-    forwardIndicatorContainer.addChild(forwardIndicatorArrowSprite)
-
-    forwardIndicatorContainer.pivot.x = PIXI.loader.resources['indicator'].texture.width / 2
-    forwardIndicatorContainer.pivot.y = PIXI.loader.resources['indicator'].texture.height / 2
+    indicator = new BalloonIndicator({
+      container: indicatorContainer,
+    })
 
     // set up inputs
     document.addEventListener('keypress', onKeyPress.bind(this))
@@ -819,9 +815,6 @@ var gameScene = {
 
     var a
     var b
-    var balloonSprite
-    var balloonSpriteX
-    var balloonSpriteY
     var currentHook
     var hookBodyX
     var hookBodyY
@@ -937,63 +930,20 @@ var gameScene = {
       backgroundSprite.tilePosition.x = this.stage.x * 0.1
     }
 
+    // draw balloon indicator
     var closestBalloon = balloonManager.getClosestBalloon()
 
+    var closestBalloonSprite = null
+
     if (closestBalloon) {
-
-      balloonSprite = dynamicSprites[closestBalloon.id]
-      balloonSpriteX = balloonSprite.worldTransform.tx
-      balloonSpriteY = balloonSprite.worldTransform.ty
-      var offset = 64
-
-      // set to balloon sprite position, NOTE: constraining comes below
-      forwardIndicatorContainer.x = balloonSpriteX
-      forwardIndicatorContainer.y = balloonSpriteY
-
-      forwardIndicatorContainer.visible = true
-
-      // do not show indicator if the balloon is inside screen
-      if (balloonSpriteX > 0 &&
-          balloonSpriteX < global.renderer.view.width &&
-          balloonSpriteY > 0 &&
-          balloonSpriteY < global.renderer.view.height) {
-
-        forwardIndicatorContainer.visible = false
-      } else {
-
-        // set rotation
-        rotation = 0
-        if (balloonSpriteX > widthInPixels) {
-          rotation = 0
-        } else if (balloonSpriteX < 0) {
-          rotation = Math.PI
-        } else if (balloonSpriteY < 0) {
-          rotation = Math.PI * 1.5
-        } else if (balloonSpriteY > heightInPixels) {
-          rotation = Math.PI * 0.5
-        }
-
-        forwardIndicatorContainer.rotation = rotation
-
-        // constrain x
-        if (forwardIndicatorContainer.x < offset) {
-          forwardIndicatorContainer.x = offset
-        } else if (forwardIndicatorContainer.x > global.renderer.view.width - offset) {
-          forwardIndicatorContainer.x = global.renderer.view.width - offset
-        }
-
-        // constrain y
-        if (forwardIndicatorContainer.y < offset) {
-          forwardIndicatorContainer.y = offset
-        } else if (forwardIndicatorContainer.y > global.renderer.view.height - offset) {
-          forwardIndicatorContainer.y = global.renderer.view.height - offset
-        }
-      }
-
-    } else {
-      forwardIndicatorContainer.visible = false
+      closestBalloonSprite = dynamicSprites[closestBalloon.id]
     }
 
+    indicator.balloonToIndicate = closestBalloonSprite
+
+    indicator.draw()
+
+    // debug draw
     if (global.DEBUG_DRAW) {
       DebugDraw.draw(this.debugDrawContainer, world, pixelsPerMeter, ratio)
       this.debugDrawContainer.x = this.stage.x
