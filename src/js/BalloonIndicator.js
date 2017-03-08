@@ -41,6 +41,11 @@ BalloonIndicator.prototype.draw = function () {
 
   var balloonSpriteX
   var balloonSpriteY
+  // var distance
+  // var dx
+  // var dy
+  // var indicatorX
+  // var indicatorY
   var rotation
 
   if (!this.balloonToIndicate) {
@@ -49,18 +54,6 @@ BalloonIndicator.prototype.draw = function () {
     this.indicatorContainer.visible = false
 
   } else {
-
-    // show correct color
-    for (var i = 1; i <= 9; i++) {
-      if (i === this.balloonToIndicate.balloonColor) {
-        this.balloonSprites[i].visible = true
-      } else {
-        this.balloonSprites[i].visible = false
-      }
-    }
-
-    // make it visible
-    this.indicatorContainer.visible = true
 
     // screen position of the balloon sprite
     balloonSpriteX = this.balloonToIndicate.worldTransform.tx
@@ -79,6 +72,9 @@ BalloonIndicator.prototype.draw = function () {
       this.indicatorContainer.visible = false
 
     } else {
+
+      // make it visible
+      this.indicatorContainer.visible = true
 
       // set rotation
       rotation = 0
@@ -107,6 +103,22 @@ BalloonIndicator.prototype.draw = function () {
         this.indicatorContainer.y = this.offset
       } else if (this.indicatorContainer.y > global.renderer.view.height - this.offset) {
         this.indicatorContainer.y = global.renderer.view.height - this.offset
+      }
+
+      // show correct color
+      for (var i = 1; i <= 9; i++) {
+        if (i === this.balloonToIndicate.balloonColor) {
+          // indicatorX = this.indicatorContainer.worldTransform.tx
+          // indicatorY = this.indicatorContainer.worldTransform.ty
+          // dx = balloonSpriteX - indicatorX
+          // dy = balloonSpriteY - indicatorY
+          // distance = Math.sqrt(dx * dx + dy * dy)
+          // TODO: show the distance to the balloon (somehow)
+
+          this.balloonSprites[i].visible = true
+        } else {
+          this.balloonSprites[i].visible = false
+        }
       }
     }
   }
