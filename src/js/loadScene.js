@@ -56,7 +56,7 @@ var loadScene = {
     .add('finish_level_1', 'assets/images/finish_level_1.png')
 
     // intro 1 scene
-    .add('intro1_bg_gradient', 'assets/images/intro1_bg_gradient.png')
+    .add('intro1_bg', 'assets/images/intro1_bg.png')
     .add('intro1_1', 'assets/images/intro1_1.png')
     .add('intro1_2', 'assets/images/intro1_2.png')
     .add('intro1_3', 'assets/images/intro1_3.png')

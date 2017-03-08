@@ -23,7 +23,7 @@ var intro1Scene = {
     global.baseStage.addChild(this.container)
 
     // create animation layer
-    var bgGradient = new PIXI.Sprite(PIXI.loader.resources['intro1_bg_gradient'].texture)
+    var bgGradient = new PIXI.Sprite(PIXI.loader.resources['intro1_bg'].texture)
     bgGradient.width = global.renderer.view.width
     bgGradient.height = global.renderer.view.height
     this.animationLayer.addChild(bgGradient)
@@ -40,17 +40,19 @@ var intro1Scene = {
     }
     
     // create gui layer
+    var buttonY = frameSprites[1].y + frameSprites[1].height
+    var buttonWidthSpace = (global.renderer.view.width - frameSprites[1].width) / 2
     var imageButtonBack = new PIXI.Sprite(PIXI.loader.resources['button_back'].texture)
     imageButtonBack.anchor.x = 0.5
     imageButtonBack.anchor.y = 0.5
-    imageButtonBack.x = global.renderer.view.width * 0.25
-    imageButtonBack.y = global.renderer.view.height * 0.8
+    imageButtonBack.x = buttonWidthSpace / 2
+    imageButtonBack.y = buttonY
 
     var imageButtonForward = new PIXI.Sprite(PIXI.loader.resources['button_next'].texture)
     imageButtonForward.anchor.x = 0.5
     imageButtonForward.anchor.y = 0.5
-    imageButtonForward.x = global.renderer.view.width * 0.75
-    imageButtonForward.y = global.renderer.view.height * 0.8
+    imageButtonForward.x = global.renderer.view.width - buttonWidthSpace / 2
+    imageButtonForward.y = buttonY
 
     this.guiLayer.addChild(imageButtonBack)
     this.guiLayer.addChild(imageButtonForward)
