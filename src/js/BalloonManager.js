@@ -25,7 +25,7 @@ var BalloonManager = function (config) {
   for (var i = 0; i < world.bodies.length; i++) {
     var body = world.bodies[i]
     if (body.name === 'balloon') {
-      
+
       body.sleep()
 
       this.balloonBodies.push(body)
@@ -94,6 +94,8 @@ BalloonManager.prototype.postStep = function () {
 
   var balloonBody
   var closestBalloon
+  var closestBalloonDistance
+  var distance
   var i
   var j
   var minBalloonY = -1.5
@@ -181,11 +183,16 @@ BalloonManager.prototype.postStep = function () {
   for (i = 0; i < this.balloonBodies.length; i++) {
     balloonBody = this.balloonBodies[i]
 
+    distance = p2.vec2.distance(this.balloonHolderBody.position, balloonBody.position)
+
     if (!closestBalloon && !balloonBody.isCaptured) {
       closestBalloon = balloonBody
+      closestBalloonDistance = distance
 
-    } else if (closestBalloon && balloonBody.position[0] < closestBalloon.position[0] &&
-        !balloonBody.isCaptured) {
+    } else if (closestBalloon &&
+        !balloonBody.isCaptured &&
+        distance < closestBalloonDistance) {
+
       closestBalloon = balloonBody
     }
   }

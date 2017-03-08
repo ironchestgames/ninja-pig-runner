@@ -24,6 +24,7 @@ var sceneParams
 var pixelsPerMeter = 50
 var heightInMeters = 10
 var widthInPixels
+var heightInPixels
 var stageToNinjaOffsetX
 
 var world
@@ -82,7 +83,6 @@ var dynamicSprites = {} // TODO: make sure these are destroyed properly
 var mapLayer
 var forwardIndicatorContainer
 var forwardIndicatorArrowSprite
-var forwardIndicatorDistanceText
 var leftButtonOverlaySprite
 var rightButtonOverlaySprite
 
@@ -535,13 +535,6 @@ var postStep = function () {
     ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_FALLING)
   }
 
-  var closestBalloon = balloonManager.getClosestBalloon()
-
-  if (closestBalloon) {
-    var distance = Math.round(p2.vec2.distance(ninjaBody.position, closestBalloon.position))
-    forwardIndicatorDistanceText.text = distance + 'm'
-  }
-
   balloonManager.postStep()
 
 }
@@ -612,6 +605,7 @@ var gameScene = {
   create: function (_sceneParams) {
 
     widthInPixels = global.renderer.view.width
+    heightInPixels = global.renderer.view.height
     pixelsPerMeter = global.renderer.view.height / heightInMeters
     stageToNinjaOffsetX = widthInPixels / 4
 
@@ -686,28 +680,6 @@ var gameScene = {
     this.backgroundLayer.addChild(skySprite)
     this.backgroundLayer.addChild(backgroundSprite)
 
-    forwardIndicatorContainer = new PIXI.Container()
-    forwardIndicatorContainer.x = global.renderer.view.width - 128
-
-    forwardIndicatorArrowSprite = new PIXI.Sprite(PIXI.loader.resources['indicator'].texture)
-    forwardIndicatorArrowSprite.anchor.x = 0.5
-    forwardIndicatorArrowSprite.anchor.y = 0.5
-    forwardIndicatorArrowSprite.x = forwardIndicatorArrowSprite.width / 2
-    forwardIndicatorArrowSprite.y = forwardIndicatorArrowSprite.height / 2
-
-    forwardIndicatorDistanceText = new PIXI.Text({
-      fill: 0x000000,
-    })
-    forwardIndicatorDistanceText.y = 50
-    forwardIndicatorDistanceText.x = 40
-
-    forwardIndicatorDistanceText.text = '100 m'
-
-    forwardIndicatorContainer.addChild(forwardIndicatorArrowSprite)
-    forwardIndicatorContainer.addChild(forwardIndicatorDistanceText)
-
-    forwardIndicatorContainer.pivot.y = forwardIndicatorContainer.width / 2
-
     // set up input buttons
     leftButton = buttonAreaFactory({
       width: global.renderer.view.width / 2,
@@ -723,6 +695,8 @@ var gameScene = {
       touchStart: onRightDown,
       touchEnd: onRightUp,
     })
+
+    forwardIndicatorContainer = new PIXI.Container()
 
     guiLayer.addChild(forwardIndicatorContainer)
     guiLayer.addChild(leftButton)
@@ -771,6 +745,15 @@ var gameScene = {
     world.on('beginContact', beginContact)
     world.on('endContact', endContact)
     world.on('postStep', postStep.bind(this))
+
+    // set up closest balloon indicator
+
+    forwardIndicatorArrowSprite = new PIXI.Sprite(PIXI.loader.resources['indicator'].texture)
+
+    forwardIndicatorContainer.addChild(forwardIndicatorArrowSprite)
+
+    forwardIndicatorContainer.pivot.x = PIXI.loader.resources['indicator'].texture.width / 2
+    forwardIndicatorContainer.pivot.y = PIXI.loader.resources['indicator'].texture.height / 2
 
     // set up inputs
     document.addEventListener('keypress', onKeyPress.bind(this))
@@ -836,6 +819,9 @@ var gameScene = {
 
     var a
     var b
+    var balloonSprite
+    var balloonSpriteX
+    var balloonSpriteY
     var currentHook
     var hookBodyX
     var hookBodyY
@@ -953,21 +939,57 @@ var gameScene = {
 
     var closestBalloon = balloonManager.getClosestBalloon()
 
-    if (closestBalloon &&
-        (closestBalloon.position[0] * pixelsPerMeter) + this.stage.x > global.renderer.view.width) {
-      forwardIndicatorContainer.y = closestBalloon.position[1] * pixelsPerMeter
-      forwardIndicatorArrowSprite.rotation = gameUtils.getAngleBetweenPoints(
-          ninjaBody.position[0],
-          ninjaBody.position[1],
-          closestBalloon.position[0],
-          closestBalloon.position[1])
+    if (closestBalloon) {
+
+      balloonSprite = dynamicSprites[closestBalloon.id]
+      balloonSpriteX = balloonSprite.worldTransform.tx
+      balloonSpriteY = balloonSprite.worldTransform.ty
+      var offset = 64
+
+      // set to balloon sprite position, NOTE: constraining comes below
+      forwardIndicatorContainer.x = balloonSpriteX
+      forwardIndicatorContainer.y = balloonSpriteY
+
       forwardIndicatorContainer.visible = true
 
-      if (forwardIndicatorContainer.y < 0) {
-        forwardIndicatorContainer.y = 0
-      } else if (forwardIndicatorContainer.y > global.renderer.view.height - forwardIndicatorContainer.height / 4) {
-        forwardIndicatorContainer.y = global.renderer.view.height - forwardIndicatorContainer.height / 4
+      // do not show indicator if the balloon is inside screen
+      if (balloonSpriteX > 0 &&
+          balloonSpriteX < global.renderer.view.width &&
+          balloonSpriteY > 0 &&
+          balloonSpriteY < global.renderer.view.height) {
+
+        forwardIndicatorContainer.visible = false
+      } else {
+
+        // set rotation
+        rotation = 0
+        if (balloonSpriteX > widthInPixels) {
+          rotation = 0
+        } else if (balloonSpriteX < 0) {
+          rotation = Math.PI
+        } else if (balloonSpriteY < 0) {
+          rotation = Math.PI * 1.5
+        } else if (balloonSpriteY > heightInPixels) {
+          rotation = Math.PI * 0.5
+        }
+
+        forwardIndicatorContainer.rotation = rotation
+
+        // constrain x
+        if (forwardIndicatorContainer.x < offset) {
+          forwardIndicatorContainer.x = offset
+        } else if (forwardIndicatorContainer.x > global.renderer.view.width - offset) {
+          forwardIndicatorContainer.x = global.renderer.view.width - offset
+        }
+
+        // constrain y
+        if (forwardIndicatorContainer.y < offset) {
+          forwardIndicatorContainer.y = offset
+        } else if (forwardIndicatorContainer.y > global.renderer.view.height - offset) {
+          forwardIndicatorContainer.y = global.renderer.view.height - offset
+        }
       }
+
     } else {
       forwardIndicatorContainer.visible = false
     }
