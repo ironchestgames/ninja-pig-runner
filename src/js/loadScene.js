@@ -47,6 +47,7 @@ var loadScene = {
     .add('level1', 'assets/json/level1.json') // TODO: bake this into bundle.js instead
     .add('level2', 'assets/json/level2.json') // TODO: bake this into bundle.js instead
     .add('level3', 'assets/json/level3.json') // TODO: bake this into bundle.js instead
+    .add('level4', 'assets/json/level4.json') // TODO: bake this into bundle.js instead
     // .add('level' + sceneParams.level, 'assets/json/level' + sceneParams.level + '.json') // TODO: bake this into bundle.js instead
 
     // level fail scene

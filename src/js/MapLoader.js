@@ -246,6 +246,7 @@ MapLoader.prototype.loadMap = function (config) {
 
       // will assume the spike fixture is a rectangle and
       // body position is within the fixture vertices
+      // and that it is horizontal
 
       fixtureData = bodyData.fixture[0]
 

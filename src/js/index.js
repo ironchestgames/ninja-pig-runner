@@ -12,7 +12,7 @@ var ob = require('obscen')
 var windowLoad = require('window-load')
 var screenOrientation = require('screen-orientation')
 
-global.levelCount = 3 // TODO: move to some level manager when it exists
+global.levelCount = 4 // TODO: move to some level manager when it exists
 
 windowLoad(function () {
 
