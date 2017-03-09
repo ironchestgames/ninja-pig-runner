@@ -551,12 +551,13 @@ var beginContact = function (contactEvent) {
 
   if (contactEvent.shapeA === ninjaRightSensor.shape || contactEvent.shapeB === ninjaRightSensor.shape) {
     ninjaRightSensor.contactCount++
+  }
 
-    // end of level check
-    if (contactEvent.bodyA.name === 'goal' || contactEvent.bodyB.name === 'goal') {
+  // end of level check
+    if ((contactEvent.bodyA.name === 'goal' || contactEvent.bodyB.name === 'goal') &&
+        (contactEvent.bodyA.name === 'ninjaBody' || contactEvent.bodyB.name === 'ninjaBody')) {
       levelWon(sceneParams)
     }
-  }
 
   if ((contactEvent.bodyA.name === 'balloon' || contactEvent.bodyB.name === 'balloon') &&
     (contactEvent.bodyA.name === 'ninjaBody' || contactEvent.bodyB.name === 'ninjaBody')) {
