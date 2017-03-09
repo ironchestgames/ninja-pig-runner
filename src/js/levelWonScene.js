@@ -12,6 +12,8 @@ var levelWonScene = {
     this.guiLayer = new PIXI.Container()
     this.inputLayer = new PIXI.Container()
 
+    var imageButtonOffset = PIXI.loader.resources['button_restart'].texture.width / 10
+
     this.container.addChild(this.animationLayer)
     this.container.addChild(this.inputLayer)
     this.container.addChild(this.guiLayer)
@@ -29,13 +31,16 @@ var levelWonScene = {
     var imageButtonPlayAgain = new PIXI.Sprite(PIXI.loader.resources['button_restart'].texture)
     imageButtonPlayAgain.anchor.x = 0.5
     imageButtonPlayAgain.anchor.y = 0.5
-    imageButtonPlayAgain.x = global.renderer.view.width * 0.25
+    imageButtonPlayAgain.x = 
+        PIXI.loader.resources['button_restart'].texture.width / 2 + imageButtonOffset
     imageButtonPlayAgain.y = global.renderer.view.height * 0.75
 
     var imageButtonNext = new PIXI.Sprite(PIXI.loader.resources['button_next'].texture)
     imageButtonNext.anchor.x = 0.5
     imageButtonNext.anchor.y = 0.5
-    imageButtonNext.x = global.renderer.view.width * 0.75
+    imageButtonNext.x = 
+        global.renderer.view.width -
+        (PIXI.loader.resources['button_next'].texture.width / 2 + imageButtonOffset)
     imageButtonNext.y = global.renderer.view.height * 0.75
 
     this.guiLayer.addChild(imageButtonPlayAgain)

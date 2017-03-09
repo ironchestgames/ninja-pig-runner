@@ -12,6 +12,8 @@ var levelFailScene = {
     this.guiLayer = new PIXI.Container()
     this.inputLayer = new PIXI.Container()
 
+    var imageButtonOffset = PIXI.loader.resources['button_restart'].texture.width / 10
+
     this.container.addChild(this.animationLayer)
     this.container.addChild(this.inputLayer)
     this.container.addChild(this.guiLayer)
@@ -29,13 +31,16 @@ var levelFailScene = {
     var imageButtonTryAgain = new PIXI.Sprite(PIXI.loader.resources['button_restart'].texture)
     imageButtonTryAgain.anchor.x = 0.5
     imageButtonTryAgain.anchor.y = 0.5
-    imageButtonTryAgain.x = global.renderer.view.width * 0.25
+    imageButtonTryAgain.x = 
+        PIXI.loader.resources['button_restart'].texture.width / 2 + imageButtonOffset
     imageButtonTryAgain.y = global.renderer.view.height * 0.75
 
     var imageButtonMenu = new PIXI.Sprite(PIXI.loader.resources['button_menu'].texture)
     imageButtonMenu.anchor.x = 0.5
     imageButtonMenu.anchor.y = 0.5
-    imageButtonMenu.x = global.renderer.view.width * 0.75
+    imageButtonMenu.x = 
+        global.renderer.view.width -
+        (PIXI.loader.resources['button_menu'].texture.width / 2 + imageButtonOffset)
     imageButtonMenu.y = global.renderer.view.height * 0.75
 
     this.guiLayer.addChild(imageButtonTryAgain)
