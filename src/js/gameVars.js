@@ -9,5 +9,6 @@ gameVars.CEILING = Math.pow(2, 3)
 gameVars.BALLOON = Math.pow(2, 4)
 gameVars.CAPTURED_BALLOON = Math.pow(2, 5)
 gameVars.SPIKES = Math.pow(2, 6)
+gameVars.COIN = Math.pow(2, 7)
 
 module.exports = gameVars

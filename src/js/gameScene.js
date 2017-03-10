@@ -180,7 +180,7 @@ var createNinja = function() {
     width: ninjaRadius * 2,
     height: ninjaRadius * 2,
     collisionGroup: gameVars.PLAYER,
-    collisionMask: gameVars.WALL | gameVars.BALLOON | gameVars.SPIKES,
+    collisionMask: gameVars.WALL | gameVars.BALLOON | gameVars.SPIKES | gameVars.COIN,
   })
   ninjaBody.addShape(middleShape)
   middleShape.name = 'middleShape'
@@ -188,7 +188,7 @@ var createNinja = function() {
   bottomShape = new p2.Circle({
     radius: ninjaRadius * 1.1,
     collisionGroup: gameVars.PLAYER,
-    collisionMask: gameVars.WALL | gameVars.BALLOON | gameVars.SPIKES,
+    collisionMask: gameVars.WALL | gameVars.BALLOON | gameVars.SPIKES | gameVars.COIN,
   })
   ninjaBody.addShape(bottomShape)
   bottomShape.position[1] = ninjaRadius
@@ -197,7 +197,7 @@ var createNinja = function() {
   topShape = new p2.Circle({
     radius: ninjaRadius,
     collisionGroup: gameVars.PLAYER,
-    collisionMask: gameVars.WALL | gameVars.BALLOON | gameVars.SPIKES,
+    collisionMask: gameVars.WALL | gameVars.BALLOON | gameVars.SPIKES | gameVars.COIN,
   })
   ninjaBody.addShape(topShape)
   topShape.position[1] = -ninjaRadius
@@ -559,10 +559,10 @@ var beginContact = function (contactEvent) {
   }
 
   // end of level check
-    if ((contactEvent.bodyA.name === 'goal' || contactEvent.bodyB.name === 'goal') &&
-        (contactEvent.bodyA.name === 'ninjaBody' || contactEvent.bodyB.name === 'ninjaBody')) {
-      levelWon(sceneParams)
-    }
+  if ((contactEvent.bodyA.name === 'goal' || contactEvent.bodyB.name === 'goal') &&
+      (contactEvent.bodyA.name === 'ninjaBody' || contactEvent.bodyB.name === 'ninjaBody')) {
+    levelWon(sceneParams)
+  }
 
   if ((contactEvent.bodyA.name === 'balloon' || contactEvent.bodyB.name === 'balloon') &&
     (contactEvent.bodyA.name === 'ninjaBody' || contactEvent.bodyB.name === 'ninjaBody')) {
@@ -588,6 +588,20 @@ var beginContact = function (contactEvent) {
     dynamicSprites[balloonBody.id].destroy()
 
     // TODO: replace with balloon corpse instead
+  }
+
+  if (sceneParams.tutorialMode &&
+      (contactEvent.bodyA.name === 'ninjaBody' || contactEvent.bodyB.name === 'ninjaBody') &&
+      ((contactEvent.bodyA.name === 'nothing_coin' || contactEvent.bodyB.name === 'nothing_coin') ||
+      (contactEvent.bodyA.name === 'jump_coin' || contactEvent.bodyB.name === 'jump_coin') ||
+      (contactEvent.bodyA.name === 'upward_coin' || contactEvent.bodyB.name === 'upward_coin') ||
+      (contactEvent.bodyA.name === 'forward_coin' || contactEvent.bodyB.name === 'forward_coin'))) {
+    var coinBody = contactEvent.bodyA
+    if (contactEvent.bodyA.name === 'ninjaBody') {
+      coinBody = contactEvent.bodyB
+    }
+    world.removeBody(coinBody)
+    dynamicSprites[coinBody.id].destroy()
   }
 }
 

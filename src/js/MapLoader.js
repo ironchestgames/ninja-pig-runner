@@ -305,6 +305,43 @@ MapLoader.prototype.loadMap = function (config) {
 
       mapLayer.addChild(sprite)
 
+    } else if (bodyData.name === 'nothing_coin' ||
+          bodyData.name === 'jump_coin' || 
+          bodyData.name === 'upward_coin' ||
+          bodyData.name === 'forward_coin') {
+
+      body = new p2.Body({
+        position: [bodyData.position.x, -bodyData.position.y],
+        angle: -bodyData.angle,
+        mass: 0,
+      })
+      body.type = p2.Body.STATIC
+
+      body.name = bodyData.name // NOTE: not in p2 spec, but a nice-to-have for debugging purposes
+
+      shape = new p2.Circle({
+        radius: ninjaRadius * 0.7,
+        collisionGroup: gameVars.COIN,
+        collisionMask: gameVars.PLAYER,
+        collisionResponse: false,
+      })
+
+      body.addShape(shape)
+
+      world.addBody(body)
+
+      // create the sprite
+      var sprite = new PIXI.Sprite(PIXI.loader.resources[bodyData.name].texture)
+      sprite.anchor.x = 0.5
+      sprite.anchor.y = 0.5
+      sprite.x = bodyData.position.x * pixelsPerMeter
+      sprite.y = -bodyData.position.y * pixelsPerMeter
+      sprite.width = ninjaRadius * 2 * pixelsPerMeter
+      sprite.height = ninjaRadius * 2 * pixelsPerMeter
+      mapLayer.addChild(sprite)
+
+      config.dynamicSprites[body.id] = sprite
+
     }
 
   }

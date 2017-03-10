@@ -33,6 +33,10 @@ var loadScene = {
     .add('inair_falling', 'assets/images/gris_in_air_falling.png')
     .add('headband1', 'assets/images/headband1.png')
     .add('headband2', 'assets/images/headband2.png')
+    .add('nothing_coin', 'assets/images/nothing_coin.png')
+    .add('jump_coin', 'assets/images/jump_coin.png')
+    .add('upward_coin', 'assets/images/upward_coin.png')
+    .add('forward_coin', 'assets/images/forward_coin.png')
     .add('balloon1', 'assets/images/balloon1.png')
     .add('balloon2', 'assets/images/balloon2.png')
     .add('balloon3', 'assets/images/balloon3.png')
@@ -49,6 +53,7 @@ var loadScene = {
     .add('level2', 'assets/json/level2.json') // TODO: bake this into bundle.js instead
     .add('level3', 'assets/json/level3.json') // TODO: bake this into bundle.js instead
     .add('level4', 'assets/json/level4.json') // TODO: bake this into bundle.js instead
+    .add('level5', 'assets/json/level5.json') // TODO: bake this into bundle.js instead
     // .add('level' + sceneParams.level, 'assets/json/level' + sceneParams.level + '.json') // TODO: bake this into bundle.js instead
 
     // level fail scene
