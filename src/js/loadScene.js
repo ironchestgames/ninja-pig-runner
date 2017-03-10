@@ -1,7 +1,25 @@
+var LevelManager = require('./LevelManager')
+
 var loadScene = {
   name: 'load',
   create: function (sceneParams) {
 
+    // load progress TODO: from local storage
+    global.levelManager = new LevelManager()
+
+    global.levelManager
+    .addLevel({
+      name: 'level5',
+      gameMode: global.levelManager.GAME_MODES.TUTORIAL_JUMP,
+      staticsColor: 0x261d05, // TODO: work with themes instead (move this to MapLoader)
+    })
+    .addLevel({
+      name: 'level1',
+      gameMode: null,
+      staticsColor: 0x261d05, // TODO: work with themes instead (move this to MapLoader)
+    })
+
+    // fetch assets
     PIXI.loader
 
     // buttons

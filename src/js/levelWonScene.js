@@ -48,12 +48,8 @@ var levelWonScene = {
 
     // create button layer
     var goToNext = function () {
-      sceneParams.level++
-      if (sceneParams.level <= global.levelCount) {
-        global.sceneManager.changeScene('game', sceneParams)
-      } else {
-        sceneParams.level--
-      }
+      global.levelManager.incCurrentLevel()
+      global.sceneManager.changeScene('game', sceneParams)
     }
     var playAgain = function () {
       global.sceneManager.changeScene('game', sceneParams)

@@ -120,7 +120,7 @@ windowLoad(function () {
       clearInterval(intervalId)
 
       sceneManager.changeScene('load', {
-        level: localStorage.level || '1', // TODO: remove in prod
+        level: localStorage.level || 'level1', // TODO: remove in prod
       })
 
       loop.start()

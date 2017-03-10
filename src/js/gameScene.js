@@ -21,6 +21,7 @@ var isPaused = false
 
 var spriteUtilities
 var mapLoader
+var currentLevel
 var sceneParams
 
 var pixelsPerMeter = 50
@@ -146,6 +147,7 @@ var levelFail = function (sceneParams) {
 
 var levelWon = function (sceneParams) {
   isPaused = true
+  global.levelManager.currentLevelDone()
   global.sceneManager.changeScene('levelWon', sceneParams)
 }
 
@@ -326,7 +328,7 @@ var postStep = function () {
 
     switch (buttonEvent) {
       case BUTTON_UPWARD_DOWN:
-        sceneParams.tutorialMode && leftTutorialButton.onDown()
+        leftTutorialButton && leftTutorialButton.onDown()
         if (currentHook) {
           buttonsLog('unset current on UPWARD')
           currentHook.unsetHook()
@@ -342,7 +344,7 @@ var postStep = function () {
         break
 
       case BUTTON_FORWARD_DOWN:
-        sceneParams.tutorialMode && rightTutorialButton.onDown()
+        rightTutorialButton && rightTutorialButton.onDown()
         if (currentHook) {
           buttonsLog('unset current on FORWARD')
           currentHook.unsetHook()
@@ -358,7 +360,7 @@ var postStep = function () {
         break
 
       case BUTTON_UPWARD_UP:
-        sceneParams.tutorialMode && leftTutorialButton.onUp()
+        leftTutorialButton && leftTutorialButton.onUp()
         if (currentHook === upwardHook) {
           buttonsLog('unset upwardHook')
           currentHook.unsetHook()
@@ -367,7 +369,7 @@ var postStep = function () {
         break
 
       case BUTTON_FORWARD_UP:
-        sceneParams.tutorialMode && rightTutorialButton.onUp()
+        rightTutorialButton && rightTutorialButton.onUp()
         if (currentHook === forwardHook) {
           buttonsLog('unset forwardHook')
           currentHook.unsetHook()
@@ -458,17 +460,15 @@ var postStep = function () {
     actionsLog('RUNNING')
     ninjaGraphics.changeState(NinjaGraphics.STATE_RUNNING)
 
-    if (sceneParams.tutorialMode) {
-      leftTutorialButton.changeState(TUTORIAL_BUTTON_RUNNING)
-      rightTutorialButton.changeState(TUTORIAL_BUTTON_RUNNING)
-    }
+    leftTutorialButton && leftTutorialButton.changeState(TUTORIAL_BUTTON_RUNNING)
+    rightTutorialButton && rightTutorialButton.changeState(TUTORIAL_BUTTON_RUNNING)
+
   } else {
     isRunning = false
 
-    if (sceneParams.tutorialMode) {
-      leftTutorialButton.changeState(TUTORIAL_BUTTON_IN_AIR)
-      rightTutorialButton.changeState(TUTORIAL_BUTTON_IN_AIR)
-    }
+    leftTutorialButton && leftTutorialButton.changeState(TUTORIAL_BUTTON_IN_AIR)
+    rightTutorialButton && rightTutorialButton.changeState(TUTORIAL_BUTTON_IN_AIR)
+
     if (ninjaGraphics.currentState !== NinjaGraphics.STATE_BOUNCED_RIGHT &&
       ninjaBody.velocity[1] > 0) {
       ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_FALLING)
@@ -590,7 +590,7 @@ var beginContact = function (contactEvent) {
     // TODO: replace with balloon corpse instead
   }
 
-  if (sceneParams.tutorialMode &&
+  if (currentLevel.gameMode === global.levelManager.GAME_MODES.TUTORIAL_JUMP &&
       (contactEvent.bodyA.name === 'ninjaBody' || contactEvent.bodyB.name === 'ninjaBody') &&
       ((contactEvent.bodyA.name === 'nothing_coin' || contactEvent.bodyB.name === 'nothing_coin') ||
       (contactEvent.bodyA.name === 'jump_coin' || contactEvent.bodyB.name === 'jump_coin') ||
@@ -632,13 +632,7 @@ var gameScene = {
     sceneParams = _sceneParams
     spriteUtilities = new SpriteUtilities(PIXI, global.renderer)
     mapLoader = new MapLoader()
-
-    // TODO: handle this in level manager
-    if (sceneParams.level === '1') {
-      sceneParams.tutorialMode = true
-    } else {
-      sceneParams.tutorialMode = false
-    }
+    currentLevel = global.levelManager.getCurrentLevel()
 
     if (world) {
       world.clear()
@@ -726,14 +720,14 @@ var gameScene = {
     createNinja()
     createHooks() // depends on createNinja
     mapLoader.loadMap({ // depends on createNinja
-      name: 'level' + sceneParams.level,
+      name: currentLevel.name,
       world: world,
       mapLayer: mapLayer,
       propLayer: propLayer,
       ninjaBody: ninjaBody,
       ninjaRadius: ninjaRadius,
       pixelsPerMeter: pixelsPerMeter,
-      staticsColor: 0x261d05,
+      staticsColor: currentLevel.staticsColor,
       dynamicSprites: dynamicSprites,
     })
     createCeiling()
@@ -758,7 +752,7 @@ var gameScene = {
       upwardHookAngle: Math.atan2(upwardHookRelativeAimY, upwardHookRelativeAimX),
       hookOffsetX: ninjaHandBody.position[0] * pixelsPerMeter,
       hookOffsetY: ninjaHandBody.position[1] * pixelsPerMeter,
-      tutorialMode: sceneParams.tutorialMode,
+      gameMode: currentLevel.gameMode,
     })
     ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_FALLING)
 
@@ -786,7 +780,7 @@ var gameScene = {
       onKeyUp: onLeftUp,
     })
 
-    if (sceneParams.tutorialMode) {
+    if (currentLevel.gameMode === global.levelManager.GAME_MODES.TUTORIAL_JUMP) {
 
       // left buttons
       jumpLeftTutorialButtonSprite = new PIXI.Sprite(

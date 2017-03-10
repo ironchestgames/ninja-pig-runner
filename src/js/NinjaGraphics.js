@@ -14,7 +14,7 @@ var NinjaGraphics = function (config) {
   var pixelsPerMeter = config.pixelsPerMeter
   var scaleRatio = (ninjaHeight * pixelsPerMeter * spriteSizeFactor) / PIXI.loader.resources['inair_upwards'].texture.height
 
-  this.tutorialMode = config.tutorialMode
+  this.gameMode = config.gameMode
 
   this.config = config
   this.currentState = null
@@ -91,7 +91,7 @@ var NinjaGraphics = function (config) {
   this.headbandCount = 0
 
   // add help lines for tutorial mode
-  if (this.tutorialMode) {
+  if (this.gameMode === global.levelManager.GAME_MODES.TUTORIAL_JUMP) { // TODO: not only this mode
     this.helpArrowUpwardSprite = new PIXI.Sprite(PIXI.loader.resources['helparrow_upward'].texture)
     this.helpArrowUpwardSprite.anchor.y = 0.5
     this.helpArrowUpwardSprite.x = hookOffsetX
@@ -184,19 +184,19 @@ NinjaGraphics.prototype.changeState = function (newState) {
 }
 
 NinjaGraphics.prototype.flashForwardHelpLine = function () {
-  if (this.tutorialMode) {
+  if (this.gameMode === global.levelManager.GAME_MODES.TUTORIAL_JUMP) {
     this.helpArrowForwardSprite.alpha = 1
   }
 }
 
 NinjaGraphics.prototype.flashUpwardHelpLine = function () {
-  if (this.tutorialMode) {
+  if (this.gameMode === global.levelManager.GAME_MODES.TUTORIAL_JUMP) {
     this.helpArrowUpwardSprite.alpha = 1
   }
 }
 
 NinjaGraphics.prototype.update = function () {
-  if (this.tutorialMode) {
+  if (this.gameMode === global.levelManager.GAME_MODES.TUTORIAL_JUMP) {
     if (this.helpArrowForwardSprite.alpha > 0) {
       this.helpArrowForwardSprite.alpha -= this.helpArrowCountDownFactor
     }
