@@ -82,8 +82,8 @@ var backgroundSprite
 var skySprite
 var dynamicSprites = {} // TODO: make sure these are destroyed properly
 var mapLayer
-var leftButtonOverlaySprite
-var rightButtonOverlaySprite
+var leftTutorialButtonSprite
+var rightTutorialButtonSprite
 var indicator
 
 var ninjaBottomSensor
@@ -96,7 +96,8 @@ var onLeftDown = function (event) {
   buttonsLog('onLeftDown', event)
   buttonEventQueue.push(BUTTON_UPWARD_DOWN)
   if (sceneParams.tutorialMode) {
-    leftButtonOverlaySprite.visible = true
+    leftTutorialButtonSprite.scale.x = 2
+    leftTutorialButtonSprite.scale.y = 2
   }
 }
 
@@ -104,7 +105,8 @@ var onLeftUp = function (event) {
   buttonsLog('onLeftUp', event)
   buttonEventQueue.push(BUTTON_UPWARD_UP)
   if (sceneParams.tutorialMode) {
-    leftButtonOverlaySprite.visible = false
+    leftTutorialButtonSprite.scale.x = 1
+    leftTutorialButtonSprite.scale.y = 1
   }
 }
 
@@ -112,7 +114,8 @@ var onRightDown = function (event) {
   buttonsLog('onRightDown', event)
   buttonEventQueue.push(BUTTON_FORWARD_DOWN)
   if (sceneParams.tutorialMode) {
-    rightButtonOverlaySprite.visible = true
+    rightTutorialButtonSprite.scale.x = 2
+    rightTutorialButtonSprite.scale.y = 2
   }
 }
 
@@ -120,7 +123,8 @@ var onRightUp = function (event) {
   buttonsLog('onRightUp', event)
   buttonEventQueue.push(BUTTON_FORWARD_UP)
   if (sceneParams.tutorialMode) {
-    rightButtonOverlaySprite.visible = false
+    rightTutorialButtonSprite.scale.x = 1
+    rightTutorialButtonSprite.scale.y = 1
   }
 }
 
@@ -768,20 +772,21 @@ var gameScene = {
     })
 
     if (sceneParams.tutorialMode) {
-      leftButtonOverlaySprite = new PIXI.Sprite(
-          PIXI.loader.resources['upward_button_fade'].texture)
-      leftButtonOverlaySprite.width = global.renderer.view.width / 2
-      leftButtonOverlaySprite.height = global.renderer.view.height
-      leftButtonOverlaySprite.visible = false
-      buttonOverlayContainer.addChild(leftButtonOverlaySprite)
+      leftTutorialButtonSprite = new PIXI.Sprite(
+          PIXI.loader.resources['upward_button'].texture)
+      leftTutorialButtonSprite.anchor.x = 0.5
+      leftTutorialButtonSprite.anchor.y = 0.5
+      leftTutorialButtonSprite.x = leftTutorialButtonSprite.width / 2
+      leftTutorialButtonSprite.y = heightInPixels - leftTutorialButtonSprite.height / 2
+      buttonOverlayContainer.addChild(leftTutorialButtonSprite)
 
-      rightButtonOverlaySprite = new PIXI.Sprite(
-          PIXI.loader.resources['forward_button_fade'].texture)
-      rightButtonOverlaySprite.width = global.renderer.view.width / 2
-      rightButtonOverlaySprite.height = global.renderer.view.height
-      rightButtonOverlaySprite.x = global.renderer.view.width / 2
-      rightButtonOverlaySprite.visible = false
-      buttonOverlayContainer.addChild(rightButtonOverlaySprite)
+      rightTutorialButtonSprite = new PIXI.Sprite(
+          PIXI.loader.resources['forward_button'].texture)
+      rightTutorialButtonSprite.anchor.x = 0.5
+      rightTutorialButtonSprite.anchor.y = 0.5
+      rightTutorialButtonSprite.x = global.renderer.view.width - rightTutorialButtonSprite.width / 2
+      rightTutorialButtonSprite.y = heightInPixels - rightTutorialButtonSprite.height / 2
+      buttonOverlayContainer.addChild(rightTutorialButtonSprite)
     }
 
     isPaused = false
