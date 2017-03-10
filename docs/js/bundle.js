@@ -51793,6 +51793,138 @@ function onWindowLoad (callback) {
 function noop () {}
 
 },{"global/document":9,"global/window":10,"next-tick":14}],258:[function(require,module,exports){
+(function (global){
+
+var BalloonIndicator = function (config) {
+
+  var container = config.container
+
+  this.offset = PIXI.loader.resources['indicator'].texture.width / 2
+
+  this.indicatorContainer = new PIXI.Container()
+
+  this.forwardIndicatorArrowSprite = new PIXI.Sprite(PIXI.loader.resources['indicator'].texture)
+  this.forwardIndicatorArrowSprite.anchor.x = 0.5
+  this.forwardIndicatorArrowSprite.anchor.y = 0.5
+  this.forwardIndicatorArrowSprite.x = PIXI.loader.resources['indicator'].texture.width / 2
+  this.forwardIndicatorArrowSprite.y = PIXI.loader.resources['indicator'].texture.height / 2
+
+  this.indicatorContainer.addChild(this.forwardIndicatorArrowSprite)
+
+  this.indicatorContainer.pivot.x = PIXI.loader.resources['indicator'].texture.width / 2
+  this.indicatorContainer.pivot.y = PIXI.loader.resources['indicator'].texture.height / 2
+
+  container.addChild(this.indicatorContainer)
+
+  this.balloonSprites = {}
+
+  for (var i = 1; i <= 9; i++) { // TODO: move balloon color count to gameVars
+    var sprite = new PIXI.Sprite(PIXI.loader.resources['balloon' + i].texture)
+    sprite.anchor.x = 0.5
+    sprite.anchor.y = 0.5
+    sprite.x = PIXI.loader.resources['indicator'].texture.width / 2
+    sprite.y = PIXI.loader.resources['indicator'].texture.height / 2
+    sprite.visible = false
+    sprite.balloonColor = i
+    this.indicatorContainer.addChild(sprite)
+    this.balloonSprites[i] = sprite
+  }
+
+  this.balloonToIndicate = null // NOTE: set this to have the indicator point at it
+}
+
+BalloonIndicator.prototype.draw = function () {
+
+  var balloonSpriteX
+  var balloonSpriteY
+  // var distance
+  // var dx
+  // var dy
+  // var indicatorX
+  // var indicatorY
+  var rotation
+
+  if (!this.balloonToIndicate) {
+    
+    // hide it if there are no balloon to indicate
+    this.indicatorContainer.visible = false
+
+  } else {
+
+    // screen position of the balloon sprite
+    balloonSpriteX = this.balloonToIndicate.worldTransform.tx
+    balloonSpriteY = this.balloonToIndicate.worldTransform.ty
+
+    // set to balloon sprite position
+    this.indicatorContainer.x = balloonSpriteX
+    this.indicatorContainer.y = balloonSpriteY
+
+    // do not show indicator if the balloon is inside screen
+    if (balloonSpriteX > 0 &&
+        balloonSpriteX < global.renderer.view.width &&
+        balloonSpriteY > 0 &&
+        balloonSpriteY < global.renderer.view.height) {
+
+      this.indicatorContainer.visible = false
+
+    } else {
+
+      // make it visible
+      this.indicatorContainer.visible = true
+
+      // set rotation
+      rotation = 0
+
+      if (balloonSpriteX > global.renderer.view.width) {
+        rotation = 0
+      } else if (balloonSpriteX < 0) {
+        rotation = Math.PI
+      } else if (balloonSpriteY < 0) {
+        rotation = Math.PI * 1.5
+      } else if (balloonSpriteY > global.renderer.view.height) {
+        rotation = Math.PI * 0.5
+      }
+
+      this.forwardIndicatorArrowSprite.rotation = rotation
+
+      // constrain x
+      if (this.indicatorContainer.x < this.offset) {
+        this.indicatorContainer.x = this.offset
+      } else if (this.indicatorContainer.x > global.renderer.view.width - this.offset) {
+        this.indicatorContainer.x = global.renderer.view.width - this.offset
+      }
+
+      // constrain y
+      if (this.indicatorContainer.y < this.offset) {
+        this.indicatorContainer.y = this.offset
+      } else if (this.indicatorContainer.y > global.renderer.view.height - this.offset) {
+        this.indicatorContainer.y = global.renderer.view.height - this.offset
+      }
+
+      // show correct color
+      for (var i = 1; i <= 9; i++) {
+        if (i === this.balloonToIndicate.balloonColor) {
+          // indicatorX = this.indicatorContainer.worldTransform.tx
+          // indicatorY = this.indicatorContainer.worldTransform.ty
+          // dx = balloonSpriteX - indicatorX
+          // dy = balloonSpriteY - indicatorY
+          // distance = Math.sqrt(dx * dx + dy * dy)
+          // TODO: show the distance to the balloon (somehow)
+
+          this.balloonSprites[i].visible = true
+        } else {
+          this.balloonSprites[i].visible = false
+        }
+      }
+    }
+  }
+
+}
+
+module.exports = BalloonIndicator
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],259:[function(require,module,exports){
 var p2 = require('p2')
 var gameVars = require('./gameVars')
 var gameUtils = require('./gameUtils')
@@ -51820,7 +51952,7 @@ var BalloonManager = function (config) {
   for (var i = 0; i < world.bodies.length; i++) {
     var body = world.bodies[i]
     if (body.name === 'balloon') {
-      
+
       body.sleep()
 
       this.balloonBodies.push(body)
@@ -51889,6 +52021,8 @@ BalloonManager.prototype.postStep = function () {
 
   var balloonBody
   var closestBalloon
+  var closestBalloonDistance
+  var distance
   var i
   var j
   var minBalloonY = -1.5
@@ -51976,11 +52110,16 @@ BalloonManager.prototype.postStep = function () {
   for (i = 0; i < this.balloonBodies.length; i++) {
     balloonBody = this.balloonBodies[i]
 
+    distance = p2.vec2.distance(this.balloonHolderBody.position, balloonBody.position)
+
     if (!closestBalloon && !balloonBody.isCaptured) {
       closestBalloon = balloonBody
+      closestBalloonDistance = distance
 
-    } else if (closestBalloon && balloonBody.position[0] < closestBalloon.position[0] &&
-        !balloonBody.isCaptured) {
+    } else if (closestBalloon &&
+        !balloonBody.isCaptured &&
+        distance < closestBalloonDistance) {
+
       closestBalloon = balloonBody
     }
   }
@@ -51999,7 +52138,7 @@ BalloonManager.prototype.getClosestBalloon = function () {
 
 module.exports = BalloonManager
 
-},{"./gameUtils":267,"./gameVars":268,"p2":51}],259:[function(require,module,exports){
+},{"./gameUtils":270,"./gameVars":271,"p2":51}],260:[function(require,module,exports){
 var p2 = require('p2')
 
 var fillColorStatic = 0x333333
@@ -52311,7 +52450,7 @@ module.exports = {
   draw: draw,
 }
 
-},{"p2":51}],260:[function(require,module,exports){
+},{"p2":51}],261:[function(require,module,exports){
 var p2 = require('p2')
 
 var Hook = function (config) {
@@ -52389,7 +52528,7 @@ Hook.prototype.shorten = function () {
 
 module.exports = Hook
 
-},{"p2":51}],261:[function(require,module,exports){
+},{"p2":51}],262:[function(require,module,exports){
 
 var KeyButton = function (config) {
   this._onKeyDown = config.onKeyDown || function () {}
@@ -52427,7 +52566,54 @@ KeyButton.prototype.destroy = function () {
 
 module.exports = KeyButton
 
-},{}],262:[function(require,module,exports){
+},{}],263:[function(require,module,exports){
+
+var LevelManager = function () {
+  this.levelProgression = []
+  this.currentLevelIndex = 0
+}
+
+LevelManager.prototype.currentLevelDone = function () {
+  this.levelProgression[this.currentLevelIndex].isDone = true
+}
+
+LevelManager.prototype.setCurrentLevel = function (newCurrentLevel) {
+  this.currentLevelIndex = newCurrentLevel
+
+  // cap it
+  if (this.currentLevelIndex > this.levelProgression.length - 1) {
+    this.currentLevelIndex = this.levelProgression.length - 1
+  } else if (this.currentLevelIndex < 0) {
+    this.currentLevelIndex = 0
+  }
+}
+
+LevelManager.prototype.incCurrentLevel = function () {
+  this.setCurrentLevel(this.currentLevelIndex + 1)
+}
+
+LevelManager.prototype.getCurrentLevel = function () {
+  return this.levelProgression[this.currentLevelIndex]
+}
+
+LevelManager.prototype.addLevel = function (config) {
+  var level = {}
+  level.name = config.name
+  level.theme = config.theme
+  level.gameMode = config.gameMode
+  level.isDone = config.isDone || false
+  this.levelProgression.push(level)
+
+  return this
+}
+
+LevelManager.prototype.GAME_MODES = {
+  TUTORIAL_JUMP: 'TUTORIAL_JUMP',
+}
+
+module.exports = LevelManager
+
+},{}],264:[function(require,module,exports){
 var gameUtils = require('./gameUtils')
 var gameVars = require('./gameVars')
 var p2 = require('p2')
@@ -52463,7 +52649,6 @@ MapLoader.prototype.loadMap = function (config) {
   var ninjaRadius
   var pixelsPerMeter
   var propLayer
-  var resourceLoader
   var shape
   var sprite
   var spriteX
@@ -52480,12 +52665,11 @@ MapLoader.prototype.loadMap = function (config) {
   ninjaBody = config.ninjaBody
   ninjaRadius = config.ninjaRadius
   pixelsPerMeter = config.pixelsPerMeter
-  staticsColor = config.staticsColor
+  staticsColor = config.theme.staticsColor
   levelName = config.name
-  resourceLoader = config.resourceLoader
 
   // props first (rendered below the level as of now)
-  imagesData = resourceLoader.resources[levelName].data.image || []
+  imagesData = PIXI.loader.resources[levelName].data.image || []
 
   for (i = 0; i < imagesData.length; i++) {
 
@@ -52493,7 +52677,7 @@ MapLoader.prototype.loadMap = function (config) {
     imageName = gameUtils.getFileNameFromUrl(imageData.file)
     imagePosition = [imageData.center.x, -imageData.center.y]
 
-    texture = resourceLoader.resources[imageName].texture
+    texture = PIXI.loader.resources[imageName].texture
 
     widthHeightRatio = texture.width / texture.height
 
@@ -52522,7 +52706,7 @@ MapLoader.prototype.loadMap = function (config) {
 
   worldPosition = [0, 0]
 
-  bodiesData = resourceLoader.resources[levelName].data.body
+  bodiesData = PIXI.loader.resources[levelName].data.body
 
   for (i = 0; i < bodiesData.length; i++) {
 
@@ -52624,7 +52808,7 @@ MapLoader.prototype.loadMap = function (config) {
         boxPositionY = -bodyData.position.y
 
         // create the sprite for this shape
-        var sprite = new PIXI.Sprite(resourceLoader.resources['prop_texture_8x8'].texture)
+        var sprite = new PIXI.Sprite(PIXI.loader.resources['prop_texture_8x8'].texture)
 
         sprite.anchor.x = 0.5
         sprite.anchor.y = 0.5
@@ -52659,11 +52843,11 @@ MapLoader.prototype.loadMap = function (config) {
 
       world.addBody(body)
 
-      var balloonTextureNr = gameUtils.getRandomInt(1, 8)
+      var balloonTextureNr = gameUtils.getRandomInt(1, 9)
 
       // create the sprite
-      var sprite = new PIXI.Sprite(resourceLoader.resources['balloon' + balloonTextureNr].texture)
-
+      var sprite = new PIXI.Sprite(PIXI.loader.resources['balloon' + balloonTextureNr].texture)
+      sprite.balloonColor = balloonTextureNr
       sprite.anchor.x = 0.5
       sprite.anchor.y = 0.5
       sprite.x = bodyData.position.x * pixelsPerMeter
@@ -52678,6 +52862,7 @@ MapLoader.prototype.loadMap = function (config) {
 
       // will assume the spike fixture is a rectangle and
       // body position is within the fixture vertices
+      // and that it is horizontal
 
       fixtureData = bodyData.fixture[0]
 
@@ -52723,18 +52908,55 @@ MapLoader.prototype.loadMap = function (config) {
       world.addBody(body)
 
       var sprite = new PIXI.extras.TilingSprite(
-        resourceLoader.resources['spikes'].texture,
-        64,
-        64)
+        PIXI.loader.resources['spikes'].texture,
+        128,
+        128)
 
       sprite.height = shape.height * pixelsPerMeter
       sprite.width = shape.width * pixelsPerMeter
-      sprite.tileScale.y = sprite.height / 64
+      sprite.tileScale.y = sprite.height / 128
       sprite.tileScale.x = sprite.tileScale.y
       sprite.x = (bodyData.position.x + topLeftX) * pixelsPerMeter
       sprite.y = (-bodyData.position.y + topLeftY) * pixelsPerMeter
 
       mapLayer.addChild(sprite)
+
+    } else if (bodyData.name === 'nothing_coin' ||
+          bodyData.name === 'jump_coin' || 
+          bodyData.name === 'upward_coin' ||
+          bodyData.name === 'forward_coin') {
+
+      body = new p2.Body({
+        position: [bodyData.position.x, -bodyData.position.y],
+        angle: -bodyData.angle,
+        mass: 0,
+      })
+      body.type = p2.Body.STATIC
+
+      body.name = bodyData.name // NOTE: not in p2 spec, but a nice-to-have for debugging purposes
+
+      shape = new p2.Circle({
+        radius: ninjaRadius * 0.7,
+        collisionGroup: gameVars.COIN,
+        collisionMask: gameVars.PLAYER,
+        collisionResponse: false,
+      })
+
+      body.addShape(shape)
+
+      world.addBody(body)
+
+      // create the sprite
+      var sprite = new PIXI.Sprite(PIXI.loader.resources[bodyData.name].texture)
+      sprite.anchor.x = 0.5
+      sprite.anchor.y = 0.5
+      sprite.x = bodyData.position.x * pixelsPerMeter
+      sprite.y = -bodyData.position.y * pixelsPerMeter
+      sprite.width = ninjaRadius * 2 * pixelsPerMeter
+      sprite.height = ninjaRadius * 2 * pixelsPerMeter
+      mapLayer.addChild(sprite)
+
+      config.dynamicSprites[body.id] = sprite
 
     }
 
@@ -52744,24 +52966,30 @@ MapLoader.prototype.loadMap = function (config) {
 
 module.exports = MapLoader
 
-},{"./gameUtils":267,"./gameVars":268,"p2":51}],263:[function(require,module,exports){
+},{"./gameUtils":270,"./gameVars":271,"p2":51}],265:[function(require,module,exports){
 (function (global){
 var debug = require('debug')
 var eventLog = debug('NinjaGraphics:events')
 
 var NinjaGraphics = function (config) {
 
-  var spriteSizeFactor = 1.15 // to make up for the whitespace in the frames
+  var spriteSizeFactor = 1.18 // to make up for the whitespace in the frames
   var runningSpriteAnimationBaseSpeed = 0.20 // TODO: what is this in ms?
 
-  var resourceLoader = config.resourceLoader
+  var forwardHookAngle = config.forwardHookAngle
+  var upwardHookAngle = config.upwardHookAngle
+  var hookOffsetX = config.hookOffsetX
+  var hookOffsetY = config.hookOffsetY
   var ninjaHeight = config.ninjaHeight
   var pixelsPerMeter = config.pixelsPerMeter
-  var scaleRatio = (ninjaHeight * pixelsPerMeter * spriteSizeFactor) / resourceLoader.resources['inair_upwards'].texture.height
+  var scaleRatio = (ninjaHeight * pixelsPerMeter * spriteSizeFactor) / PIXI.loader.resources['inair_upwards'].texture.height
+
+  this.gameMode = config.gameMode
 
   this.config = config
   this.currentState = null
-  this.fpsFactor = 60 / global.loop.getFps() // NOTE: developed on 60 fps
+  this.fpsFactor = 60 / global.loop.getFps() // NOTE: developed on 60 fps, TODO: move to update instead
+  this.helpArrowCountDownFactor = 0.05
 
   this.container = new PIXI.Container()
   config.container.addChild(this.container)
@@ -52773,17 +53001,17 @@ var NinjaGraphics = function (config) {
   this.scaleContainer.scale.y = scaleRatio
 
   // in-air upwards sprite
-  this.inAirUpwardsSprite = new PIXI.Sprite(resourceLoader.resources['inair_upwards'].texture)
+  this.inAirUpwardsSprite = new PIXI.Sprite(PIXI.loader.resources['inair_upwards'].texture)
   this.inAirUpwardsSprite.anchor.x = 0.5
   this.inAirUpwardsSprite.anchor.y = 0.5
 
   // in-air falling sprite
-  this.inAirFallingSprite = new PIXI.Sprite(resourceLoader.resources['inair_falling'].texture)
+  this.inAirFallingSprite = new PIXI.Sprite(PIXI.loader.resources['inair_falling'].texture)
   this.inAirFallingSprite.anchor.x = 0.5
   this.inAirFallingSprite.anchor.y = 0.5
 
   // running sprite
-  var runningTexture = resourceLoader.resources['runninganimation'].texture
+  var runningTexture = PIXI.loader.resources['runninganimation'].texture
   var frameWidth = runningTexture.width / 2
   var frameHeight = runningTexture.height / 2
 
@@ -52795,7 +53023,7 @@ var NinjaGraphics = function (config) {
   this.runningSprite.play()
 
   // headband
-  var texture = resourceLoader.resources['headband1'].texture
+  var texture = PIXI.loader.resources['headband1'].texture
   this.headband1Points = [
     new PIXI.Point(0, 16),
     new PIXI.Point(8, 16),
@@ -52809,7 +53037,7 @@ var NinjaGraphics = function (config) {
   this.headband1.pivot.x = texture.width
   this.headband1.pivot.y = texture.height / 2
 
-  texture = resourceLoader.resources['headband2'].texture
+  texture = PIXI.loader.resources['headband2'].texture
   this.headband2Points = [
     new PIXI.Point(0, 16),
     new PIXI.Point(8, 16),
@@ -52831,6 +53059,25 @@ var NinjaGraphics = function (config) {
   this.scaleContainer.addChild(this.headband1)
 
   this.headbandCount = 0
+
+  // add help lines for tutorial mode
+  if (this.gameMode === global.levelManager.GAME_MODES.TUTORIAL_JUMP) { // TODO: not only this mode
+    this.helpArrowUpwardSprite = new PIXI.Sprite(PIXI.loader.resources['helparrow_upward'].texture)
+    this.helpArrowUpwardSprite.anchor.y = 0.5
+    this.helpArrowUpwardSprite.x = hookOffsetX
+    this.helpArrowUpwardSprite.y = hookOffsetY
+    this.helpArrowUpwardSprite.rotation = upwardHookAngle
+    this.helpArrowUpwardSprite.alpha = 0
+    this.container.addChild(this.helpArrowUpwardSprite)
+
+    this.helpArrowForwardSprite = new PIXI.Sprite(PIXI.loader.resources['helparrow_forward'].texture)
+    this.helpArrowForwardSprite.anchor.y = 0.5
+    this.helpArrowForwardSprite.x = hookOffsetX
+    this.helpArrowForwardSprite.y = hookOffsetY
+    this.helpArrowForwardSprite.rotation = forwardHookAngle
+    this.helpArrowForwardSprite.alpha = 0
+    this.container.addChild(this.helpArrowForwardSprite)
+  }
 
 }
 
@@ -52906,6 +53153,30 @@ NinjaGraphics.prototype.changeState = function (newState) {
   this.currentState = newState
 }
 
+NinjaGraphics.prototype.flashForwardHelpLine = function () {
+  if (this.gameMode === global.levelManager.GAME_MODES.TUTORIAL_JUMP) {
+    this.helpArrowForwardSprite.alpha = 1
+  }
+}
+
+NinjaGraphics.prototype.flashUpwardHelpLine = function () {
+  if (this.gameMode === global.levelManager.GAME_MODES.TUTORIAL_JUMP) {
+    this.helpArrowUpwardSprite.alpha = 1
+  }
+}
+
+NinjaGraphics.prototype.update = function () {
+  if (this.gameMode === global.levelManager.GAME_MODES.TUTORIAL_JUMP) {
+    if (this.helpArrowForwardSprite.alpha > 0) {
+      this.helpArrowForwardSprite.alpha -= this.helpArrowCountDownFactor
+    }
+
+    if (this.helpArrowUpwardSprite.alpha > 0) {
+      this.helpArrowUpwardSprite.alpha -= this.helpArrowCountDownFactor
+    }
+  }
+}
+
 NinjaGraphics.prototype.draw = function (x, y, rotation, ninjaBody) {
 
   // set the values to be used easier from outside
@@ -52947,7 +53218,7 @@ NinjaGraphics.prototype.draw = function (x, y, rotation, ninjaBody) {
 module.exports = NinjaGraphics
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"debug":5}],264:[function(require,module,exports){
+},{"debug":5}],266:[function(require,module,exports){
 var p2 = require('p2')
 
 var NinjaSensor = function (config) {
@@ -53004,7 +53275,69 @@ NinjaSensor.prototype.postStep = function () {
 
 module.exports = NinjaSensor
 
-},{"p2":51}],265:[function(require,module,exports){
+},{"p2":51}],267:[function(require,module,exports){
+
+var TutorialButton = function (config) {
+
+  this.stateSprites = config.stateSprites // [{ state: 'running', sprite: PIXI.Sprite }, ...]
+  this.isDown = false
+
+  this.nextStates = []
+
+}
+
+TutorialButton.prototype.changeState = function (newState) {
+  var i
+  var nextState
+  var stateSprite
+
+  if (newState !== this.nextStates[0]) {
+    this.nextStates.push(newState)
+  }
+
+  if (!this.isDown) {
+    while (this.nextStates.length) {
+      nextState = this.nextStates.shift()
+
+      for (i = 0; i < this.stateSprites.length; i++) {
+        stateSprite = this.stateSprites[i]
+        if (stateSprite.state === nextState) {
+          stateSprite.sprite.visible = true
+        } else {
+          stateSprite.sprite.visible = false
+        }
+      }
+    }
+  }
+}
+
+TutorialButton.prototype.onDown = function () {
+  var stateSpriteScale
+
+  this.isDown = true
+
+  for (i = 0; i < this.stateSprites.length; i++) {
+    stateSpriteScale = this.stateSprites[i].sprite.scale
+    stateSpriteScale.x = 2
+    stateSpriteScale.y = 2
+  }
+}
+
+TutorialButton.prototype.onUp = function () {
+  var stateSpriteScale
+
+  this.isDown = false
+
+  for (i = 0; i < this.stateSprites.length; i++) {
+    stateSpriteScale = this.stateSprites[i].sprite.scale
+    stateSpriteScale.x = 1
+    stateSpriteScale.y = 1
+  }
+}
+
+module.exports = TutorialButton
+
+},{}],268:[function(require,module,exports){
 
 var buttonAreaFactory = function (config) {
 	var touchStart = config.touchStart
@@ -53037,7 +53370,7 @@ var buttonAreaFactory = function (config) {
 
 module.exports = buttonAreaFactory
 
-},{}],266:[function(require,module,exports){
+},{}],269:[function(require,module,exports){
 (function (global){
 var debug = require('debug')
 var p2 = require('p2')
@@ -53052,6 +53385,8 @@ var gameVars = require('./gameVars')
 var buttonAreaFactory = require('./buttonAreaFactory')
 var KeyButton = require('./KeyButton')
 var BalloonManager = require('./BalloonManager')
+var BalloonIndicator = require('./BalloonIndicator')
+var TutorialButton = require('./TutorialButton')
 
 var actionsLog = debug('gameScene:actions')
 var buttonsLog = debug('gameScene:buttons')
@@ -53060,12 +53395,13 @@ var isPaused = false
 
 var spriteUtilities
 var mapLoader
-var resourceLoader
+var currentLevel
 var sceneParams
 
 var pixelsPerMeter = 50
 var heightInMeters = 10
 var widthInPixels
+var heightInPixels
 var stageToNinjaOffsetX
 
 var world
@@ -53122,9 +53458,11 @@ var backgroundSprite
 var skySprite
 var dynamicSprites = {} // TODO: make sure these are destroyed properly
 var mapLayer
-var forwardIndicatorContainer
-var forwardIndicatorArrowSprite
-var forwardIndicatorDistanceText
+var leftTutorialButton
+var rightTutorialButton
+var indicator
+var TUTORIAL_BUTTON_RUNNING = 'TUTORIAL_BUTTON_RUNNING'
+var TUTORIAL_BUTTON_IN_AIR = 'TUTORIAL_BUTTON_IN_AIR'
 
 var ninjaBottomSensor
 var ninjaLeftSensor
@@ -53183,6 +53521,7 @@ var levelFail = function (sceneParams) {
 
 var levelWon = function (sceneParams) {
   isPaused = true
+  global.levelManager.currentLevelDone()
   global.sceneManager.changeScene('levelWon', sceneParams)
 }
 
@@ -53217,7 +53556,7 @@ var createNinja = function() {
     width: ninjaRadius * 2,
     height: ninjaRadius * 2,
     collisionGroup: gameVars.PLAYER,
-    collisionMask: gameVars.WALL | gameVars.BALLOON | gameVars.SPIKES,
+    collisionMask: gameVars.WALL | gameVars.BALLOON | gameVars.SPIKES | gameVars.COIN,
   })
   ninjaBody.addShape(middleShape)
   middleShape.name = 'middleShape'
@@ -53225,7 +53564,7 @@ var createNinja = function() {
   bottomShape = new p2.Circle({
     radius: ninjaRadius * 1.1,
     collisionGroup: gameVars.PLAYER,
-    collisionMask: gameVars.WALL | gameVars.BALLOON | gameVars.SPIKES,
+    collisionMask: gameVars.WALL | gameVars.BALLOON | gameVars.SPIKES | gameVars.COIN,
   })
   ninjaBody.addShape(bottomShape)
   bottomShape.position[1] = ninjaRadius
@@ -53234,7 +53573,7 @@ var createNinja = function() {
   topShape = new p2.Circle({
     radius: ninjaRadius,
     collisionGroup: gameVars.PLAYER,
-    collisionMask: gameVars.WALL | gameVars.BALLOON | gameVars.SPIKES,
+    collisionMask: gameVars.WALL | gameVars.BALLOON | gameVars.SPIKES | gameVars.COIN,
   })
   ninjaBody.addShape(topShape)
   topShape.position[1] = -ninjaRadius
@@ -53349,7 +53688,7 @@ var createCeiling = function () {
 }
 
 var createHookSprite = function (layer) {
-  ropeSprite = new PIXI.Sprite(resourceLoader.resources['rope'].texture)
+  ropeSprite = new PIXI.Sprite(PIXI.loader.resources['rope'].texture)
   ropeSprite.anchor.y = 0.5
 
   layer.addChild(ropeSprite)
@@ -53363,6 +53702,7 @@ var postStep = function () {
 
     switch (buttonEvent) {
       case BUTTON_UPWARD_DOWN:
+        leftTutorialButton && leftTutorialButton.onDown()
         if (currentHook) {
           buttonsLog('unset current on UPWARD')
           currentHook.unsetHook()
@@ -53373,10 +53713,12 @@ var postStep = function () {
         } else {
           upwardHook.setHook()
           currentHook = upwardHook
+          ninjaGraphics.flashUpwardHelpLine()
         }
         break
 
       case BUTTON_FORWARD_DOWN:
+        rightTutorialButton && rightTutorialButton.onDown()
         if (currentHook) {
           buttonsLog('unset current on FORWARD')
           currentHook.unsetHook()
@@ -53387,10 +53729,12 @@ var postStep = function () {
         } else {
           forwardHook.setHook()
           currentHook = forwardHook
+          ninjaGraphics.flashForwardHelpLine()
         }
         break
 
       case BUTTON_UPWARD_UP:
+        leftTutorialButton && leftTutorialButton.onUp()
         if (currentHook === upwardHook) {
           buttonsLog('unset upwardHook')
           currentHook.unsetHook()
@@ -53399,6 +53743,7 @@ var postStep = function () {
         break
 
       case BUTTON_FORWARD_UP:
+        rightTutorialButton && rightTutorialButton.onUp()
         if (currentHook === forwardHook) {
           buttonsLog('unset forwardHook')
           currentHook.unsetHook()
@@ -53488,8 +53833,16 @@ var postStep = function () {
     ninjaBody.velocity[0] = currentRunningSpeed // TODO: don't set velocity, check velocity and apply force instead
     actionsLog('RUNNING')
     ninjaGraphics.changeState(NinjaGraphics.STATE_RUNNING)
+
+    leftTutorialButton && leftTutorialButton.changeState(TUTORIAL_BUTTON_RUNNING)
+    rightTutorialButton && rightTutorialButton.changeState(TUTORIAL_BUTTON_RUNNING)
+
   } else {
     isRunning = false
+
+    leftTutorialButton && leftTutorialButton.changeState(TUTORIAL_BUTTON_IN_AIR)
+    rightTutorialButton && rightTutorialButton.changeState(TUTORIAL_BUTTON_IN_AIR)
+
     if (ninjaGraphics.currentState !== NinjaGraphics.STATE_BOUNCED_RIGHT &&
       ninjaBody.velocity[1] > 0) {
       ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_FALLING)
@@ -53561,13 +53914,6 @@ var postStep = function () {
     ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_FALLING)
   }
 
-  var closestBalloon = balloonManager.getClosestBalloon()
-
-  if (closestBalloon) {
-    var distance = Math.round(p2.vec2.distance(ninjaBody.position, closestBalloon.position))
-    forwardIndicatorDistanceText.text = distance + 'm'
-  }
-
   balloonManager.postStep()
 
 }
@@ -53584,11 +53930,12 @@ var beginContact = function (contactEvent) {
 
   if (contactEvent.shapeA === ninjaRightSensor.shape || contactEvent.shapeB === ninjaRightSensor.shape) {
     ninjaRightSensor.contactCount++
+  }
 
-    // end of level check
-    if (contactEvent.bodyA.name === 'goal' || contactEvent.bodyB.name === 'goal') {
-      levelWon(sceneParams)
-    }
+  // end of level check
+  if ((contactEvent.bodyA.name === 'goal' || contactEvent.bodyB.name === 'goal') &&
+      (contactEvent.bodyA.name === 'ninjaBody' || contactEvent.bodyB.name === 'ninjaBody')) {
+    levelWon(sceneParams)
   }
 
   if ((contactEvent.bodyA.name === 'balloon' || contactEvent.bodyB.name === 'balloon') &&
@@ -53616,6 +53963,20 @@ var beginContact = function (contactEvent) {
 
     // TODO: replace with balloon corpse instead
   }
+
+  if (currentLevel.gameMode === global.levelManager.GAME_MODES.TUTORIAL_JUMP &&
+      (contactEvent.bodyA.name === 'ninjaBody' || contactEvent.bodyB.name === 'ninjaBody') &&
+      ((contactEvent.bodyA.name === 'nothing_coin' || contactEvent.bodyB.name === 'nothing_coin') ||
+      (contactEvent.bodyA.name === 'jump_coin' || contactEvent.bodyB.name === 'jump_coin') ||
+      (contactEvent.bodyA.name === 'upward_coin' || contactEvent.bodyB.name === 'upward_coin') ||
+      (contactEvent.bodyA.name === 'forward_coin' || contactEvent.bodyB.name === 'forward_coin'))) {
+    var coinBody = contactEvent.bodyA
+    if (contactEvent.bodyA.name === 'ninjaBody') {
+      coinBody = contactEvent.bodyB
+    }
+    world.removeBody(coinBody)
+    dynamicSprites[coinBody.id].destroy()
+  }
 }
 
 var endContact = function (contactEvent) {
@@ -53638,13 +53999,14 @@ var gameScene = {
   create: function (_sceneParams) {
 
     widthInPixels = global.renderer.view.width
+    heightInPixels = global.renderer.view.height
     pixelsPerMeter = global.renderer.view.height / heightInMeters
     stageToNinjaOffsetX = widthInPixels / 4
 
     sceneParams = _sceneParams
-    resourceLoader = sceneParams.resourceLoader
     spriteUtilities = new SpriteUtilities(PIXI, global.renderer)
     mapLoader = new MapLoader()
+    currentLevel = global.levelManager.getCurrentLevel()
 
     if (world) {
       world.clear()
@@ -53669,11 +54031,13 @@ var gameScene = {
     var propLayer = new PIXI.Container()
     var guiLayer = new PIXI.Container()
     this.debugDrawContainer = new PIXI.Container()
+    var tutorialButtonLayer = new PIXI.Container()
 
     global.baseStage.addChild(this.container)
 
     this.container.addChild(this.backgroundLayer)
     this.container.addChild(this.stage)
+    this.container.addChild(tutorialButtonLayer)
     this.container.addChild(guiLayer)
     this.container.addChild(this.debugDrawContainer)
 
@@ -53683,7 +54047,7 @@ var gameScene = {
 
     // set up background layer contents
     // NOTE: bc of the nature of the image it has to be this exact square (suns/moons are round)
-    skySprite = new PIXI.Sprite(resourceLoader.resources['backgroundsky1'].texture)
+    skySprite = new PIXI.Sprite(PIXI.loader.resources['backgroundsky1'].texture)
     skySprite.anchor.x = 0.5
     skySprite.anchor.y = 0.5
     skySprite.position.x = global.renderer.view.width / 2
@@ -53693,7 +54057,7 @@ var gameScene = {
 
     // NOTE: bc of the nature of the image it doesn't matter that much to stretch it
     backgroundSprite = new PIXI.extras.TilingSprite(
-        resourceLoader.resources['background1'].texture,
+        PIXI.loader.resources['background1'].texture,
         512,
         512)
     backgroundSprite.tileScale.x = global.renderer.view.height / 512
@@ -53703,28 +54067,6 @@ var gameScene = {
 
     this.backgroundLayer.addChild(skySprite)
     this.backgroundLayer.addChild(backgroundSprite)
-
-    forwardIndicatorContainer = new PIXI.Container()
-    forwardIndicatorContainer.x = global.renderer.view.width - 128
-
-    forwardIndicatorArrowSprite = new PIXI.Sprite(resourceLoader.resources['indicator'].texture)
-    forwardIndicatorArrowSprite.anchor.x = 0.5
-    forwardIndicatorArrowSprite.anchor.y = 0.5
-    forwardIndicatorArrowSprite.x = forwardIndicatorArrowSprite.width / 2
-    forwardIndicatorArrowSprite.y = forwardIndicatorArrowSprite.height / 2
-
-    forwardIndicatorDistanceText = new PIXI.Text({
-      fill: 0x000000,
-    })
-    forwardIndicatorDistanceText.y = 50
-    forwardIndicatorDistanceText.x = 40
-
-    forwardIndicatorDistanceText.text = '100 m'
-
-    forwardIndicatorContainer.addChild(forwardIndicatorArrowSprite)
-    forwardIndicatorContainer.addChild(forwardIndicatorDistanceText)
-
-    forwardIndicatorContainer.pivot.y = forwardIndicatorContainer.width / 2
 
     // set up input buttons
     leftButton = buttonAreaFactory({
@@ -53742,7 +54084,9 @@ var gameScene = {
       touchEnd: onRightUp,
     })
 
-    guiLayer.addChild(forwardIndicatorContainer)
+    var indicatorContainer = new PIXI.Container()
+
+    guiLayer.addChild(indicatorContainer)
     guiLayer.addChild(leftButton)
     guiLayer.addChild(rightButton)
 
@@ -53750,15 +54094,14 @@ var gameScene = {
     createNinja()
     createHooks() // depends on createNinja
     mapLoader.loadMap({ // depends on createNinja
-      resourceLoader: resourceLoader,
-      name: 'level' + sceneParams.level,
+      name: currentLevel.name,
       world: world,
       mapLayer: mapLayer,
       propLayer: propLayer,
       ninjaBody: ninjaBody,
       ninjaRadius: ninjaRadius,
       pixelsPerMeter: pixelsPerMeter,
-      staticsColor: 0x261d05,
+      theme: currentLevel.theme,
       dynamicSprites: dynamicSprites,
     })
     createCeiling()
@@ -53766,7 +54109,7 @@ var gameScene = {
     balloonManager = new BalloonManager({
       world: world,
       container: balloonStringLayer,
-      stringTexture: resourceLoader.resources['balloonstring'].texture,
+      stringTexture: PIXI.loader.resources['balloonstring'].texture,
       pixelsPerMeter: pixelsPerMeter,
       wakeUpDistance: 30,
       balloonHolderBody: ninjaBalloonHolderBody,
@@ -53775,17 +54118,26 @@ var gameScene = {
     // set up ninja and hook graphics
     createHookSprite(this.stage)
     ninjaGraphics = new NinjaGraphics({
-      resourceLoader: resourceLoader,
       container: this.stage,
       ninjaHeight: 1.5,
       pixelsPerMeter: pixelsPerMeter,
       spriteUtilities: spriteUtilities,
+      forwardHookAngle: Math.atan2(forwardHookRelativeAimY, forwardHookRelativeAimX),
+      upwardHookAngle: Math.atan2(upwardHookRelativeAimY, upwardHookRelativeAimX),
+      hookOffsetX: ninjaHandBody.position[0] * pixelsPerMeter,
+      hookOffsetY: ninjaHandBody.position[1] * pixelsPerMeter,
+      gameMode: currentLevel.gameMode,
     })
     ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_FALLING)
 
     world.on('beginContact', beginContact)
     world.on('endContact', endContact)
     world.on('postStep', postStep.bind(this))
+
+    // set up closest balloon indicator
+    indicator = new BalloonIndicator({
+      container: indicatorContainer,
+    })
 
     // set up inputs
     document.addEventListener('keypress', onKeyPress.bind(this))
@@ -53801,6 +54153,70 @@ var gameScene = {
       onKeyDown: onLeftDown,
       onKeyUp: onLeftUp,
     })
+
+    if (currentLevel.gameMode === global.levelManager.GAME_MODES.TUTORIAL_JUMP) {
+
+      // left buttons
+      jumpLeftTutorialButtonSprite = new PIXI.Sprite(
+          PIXI.loader.resources['jump_button'].texture)
+      jumpLeftTutorialButtonSprite.anchor.x = 0.5
+      jumpLeftTutorialButtonSprite.anchor.y = 0.5
+      jumpLeftTutorialButtonSprite.x = jumpLeftTutorialButtonSprite.width / 2
+      jumpLeftTutorialButtonSprite.y = heightInPixels - jumpLeftTutorialButtonSprite.height / 2
+      tutorialButtonLayer.addChild(jumpLeftTutorialButtonSprite)
+
+      ropeLeftTutorialButtonSprite = new PIXI.Sprite(
+          PIXI.loader.resources['upward_button'].texture)
+      ropeLeftTutorialButtonSprite.anchor.x = 0.5
+      ropeLeftTutorialButtonSprite.anchor.y = 0.5
+      ropeLeftTutorialButtonSprite.x = ropeLeftTutorialButtonSprite.width / 2
+      ropeLeftTutorialButtonSprite.y = heightInPixels - ropeLeftTutorialButtonSprite.height / 2
+      tutorialButtonLayer.addChild(ropeLeftTutorialButtonSprite)
+
+      leftTutorialButton = new TutorialButton({
+        stateSprites: [
+          {
+            state: TUTORIAL_BUTTON_RUNNING,
+            sprite: jumpLeftTutorialButtonSprite
+          },
+          {
+            state: TUTORIAL_BUTTON_IN_AIR,
+            sprite: ropeLeftTutorialButtonSprite,
+          }
+        ]
+      })
+
+      // right buttons
+      jumpRightTutorialButtonSprite = new PIXI.Sprite(
+          PIXI.loader.resources['jump_button'].texture)
+      jumpRightTutorialButtonSprite.anchor.x = 0.5
+      jumpRightTutorialButtonSprite.anchor.y = 0.5
+      jumpRightTutorialButtonSprite.x = global.renderer.view.width - jumpRightTutorialButtonSprite.width / 2
+      jumpRightTutorialButtonSprite.y = heightInPixels - jumpRightTutorialButtonSprite.height / 2
+      tutorialButtonLayer.addChild(jumpRightTutorialButtonSprite)
+
+      ropeRightTutorialButtonSprite = new PIXI.Sprite(
+          PIXI.loader.resources['forward_button'].texture)
+      ropeRightTutorialButtonSprite.anchor.x = 0.5
+      ropeRightTutorialButtonSprite.anchor.y = 0.5
+      ropeRightTutorialButtonSprite.x = global.renderer.view.width - ropeRightTutorialButtonSprite.width / 2
+      ropeRightTutorialButtonSprite.y = heightInPixels - ropeRightTutorialButtonSprite.height / 2
+      tutorialButtonLayer.addChild(ropeRightTutorialButtonSprite)
+
+      rightTutorialButton = new TutorialButton({
+        stateSprites: [
+          {
+            state: TUTORIAL_BUTTON_RUNNING,
+            sprite: jumpRightTutorialButtonSprite
+          },
+          {
+            state: TUTORIAL_BUTTON_IN_AIR,
+            sprite: ropeRightTutorialButtonSprite,
+          }
+        ]
+      })
+
+    }
 
     isPaused = false
 
@@ -53826,6 +54242,8 @@ var gameScene = {
 
     var stepInSeconds = stepInMilliseconds / 1000
     world.step(stepInSeconds)
+
+    ninjaGraphics.update() // TODO: send in stepMs too (but YAGNI)
 
   },
   draw: function (renderer, ratio) {
@@ -53947,27 +54365,20 @@ var gameScene = {
       backgroundSprite.tilePosition.x = this.stage.x * 0.1
     }
 
+    // draw balloon indicator
     var closestBalloon = balloonManager.getClosestBalloon()
 
-    if (closestBalloon &&
-        (closestBalloon.position[0] * pixelsPerMeter) + this.stage.x > global.renderer.view.width) {
-      forwardIndicatorContainer.y = closestBalloon.position[1] * pixelsPerMeter
-      forwardIndicatorArrowSprite.rotation = gameUtils.getAngleBetweenPoints(
-          ninjaBody.position[0],
-          ninjaBody.position[1],
-          closestBalloon.position[0],
-          closestBalloon.position[1])
-      forwardIndicatorContainer.visible = true
+    var closestBalloonSprite = null
 
-      if (forwardIndicatorContainer.y < 0) {
-        forwardIndicatorContainer.y = 0
-      } else if (forwardIndicatorContainer.y > global.renderer.view.height - forwardIndicatorContainer.height / 4) {
-        forwardIndicatorContainer.y = global.renderer.view.height - forwardIndicatorContainer.height / 4
-      }
-    } else {
-      forwardIndicatorContainer.visible = false
+    if (closestBalloon) {
+      closestBalloonSprite = dynamicSprites[closestBalloon.id]
     }
 
+    indicator.balloonToIndicate = closestBalloonSprite
+
+    indicator.draw()
+
+    // debug draw
     if (global.DEBUG_DRAW) {
       DebugDraw.draw(this.debugDrawContainer, world, pixelsPerMeter, ratio)
       this.debugDrawContainer.x = this.stage.x
@@ -53979,7 +54390,7 @@ var gameScene = {
 module.exports = gameScene
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../lib/spriteUtilities":275,"./BalloonManager":258,"./DebugDraw":259,"./Hook":260,"./KeyButton":261,"./MapLoader":262,"./NinjaGraphics":263,"./NinjaSensor":264,"./buttonAreaFactory":265,"./gameUtils":267,"./gameVars":268,"debug":5,"p2":51}],267:[function(require,module,exports){
+},{"../lib/spriteUtilities":279,"./BalloonIndicator":258,"./BalloonManager":259,"./DebugDraw":260,"./Hook":261,"./KeyButton":262,"./MapLoader":264,"./NinjaGraphics":265,"./NinjaSensor":266,"./TutorialButton":267,"./buttonAreaFactory":268,"./gameUtils":270,"./gameVars":271,"debug":5,"p2":51}],270:[function(require,module,exports){
 
 var gameUtils = {}
 
@@ -54001,7 +54412,7 @@ gameUtils.getAngleBetweenPoints = function (x1, y1, x2, y2) {
 
 module.exports = gameUtils
 
-},{}],268:[function(require,module,exports){
+},{}],271:[function(require,module,exports){
 
 var gameVars = {}
 
@@ -54013,25 +54424,34 @@ gameVars.CEILING = Math.pow(2, 3)
 gameVars.BALLOON = Math.pow(2, 4)
 gameVars.CAPTURED_BALLOON = Math.pow(2, 5)
 gameVars.SPIKES = Math.pow(2, 6)
+gameVars.COIN = Math.pow(2, 7)
+
+// level themes
+gameVars.themes = {
+  sunsetCity: {
+    staticsColor: 0x261d05,
+  }
+}
 
 module.exports = gameVars
 
-},{}],269:[function(require,module,exports){
+},{}],272:[function(require,module,exports){
 (function (global){
 // var DebugConsole = require('./DebugConsole')
 console.log(require('./version'))
 var PIXI = require('pixi.js')
 var browserGameLoop = require('browser-game-loop')
 var gameScene = require('./gameScene.js')
-var loadGameScene = require('./loadGameScene.js')
+var loadScene = require('./loadScene.js')
 var levelWonScene = require('./levelWonScene.js')
 var levelFailScene = require('./levelFailScene.js')
 var splashScene = require('./splashScene.js')
+var intro1Scene = require('./intro1Scene.js')
 var ob = require('obscen')
 var windowLoad = require('window-load')
 var screenOrientation = require('screen-orientation')
 
-global.levelCount = 3 // TODO: move to some level manager when it exists
+global.levelCount = 4 // TODO: move to some level manager when it exists
 
 windowLoad(function () {
 
@@ -54056,7 +54476,8 @@ windowLoad(function () {
 
   sceneManager.setScenes([
     splashScene,
-    loadGameScene,
+    intro1Scene,
+    loadScene,
     gameScene,
     levelWonScene,
     levelFailScene,
@@ -54137,7 +54558,9 @@ windowLoad(function () {
       // start it!
       clearInterval(intervalId)
 
-      sceneManager.changeScene('splash')
+      sceneManager.changeScene('load', {
+        level: localStorage.level || 'level1', // TODO: remove in prod
+      })
 
       loop.start()
     }
@@ -54146,97 +54569,121 @@ windowLoad(function () {
 })
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./gameScene.js":266,"./levelFailScene.js":270,"./levelWonScene.js":271,"./loadGameScene.js":272,"./splashScene.js":273,"./version":274,"browser-game-loop":2,"obscen":16,"pixi.js":205,"screen-orientation":253,"window-load":257}],270:[function(require,module,exports){
+},{"./gameScene.js":269,"./intro1Scene.js":273,"./levelFailScene.js":274,"./levelWonScene.js":275,"./loadScene.js":276,"./splashScene.js":277,"./version":278,"browser-game-loop":2,"obscen":16,"pixi.js":205,"screen-orientation":253,"window-load":257}],273:[function(require,module,exports){
 (function (global){
 var buttonAreaFactory = require('./buttonAreaFactory')
 var KeyButton = require('./KeyButton')
 
-var levelFailScene = {
-  name: 'levelFail',
+var intro1Scene = {
+  name: 'intro1',
   create: function (sceneParams) {
 
-    this.isLoading = true
+    var frameCount = 4
+    var frameSprites = {}
+    var currentFrame = 1
 
-    this.loader = new PIXI.loaders.Loader()
+    // set up layers etc
+    this.container = new PIXI.Container()
 
-    this.loader
-    .add('fail_level_1', 'assets/images/fail_level_1.png')
-    .add('button_menu', 'assets/images/button_menu.png')
-    .add('button_tryagain', 'assets/images/button_tryagain.png')
-    .load(function () {
+    this.animationLayer = new PIXI.Container()
+    this.guiLayer = new PIXI.Container()
+    this.inputLayer = new PIXI.Container()
 
-      // set up layers etc
-      this.container = new PIXI.Container()
+    this.container.addChild(this.animationLayer)
+    this.container.addChild(this.inputLayer)
+    this.container.addChild(this.guiLayer)
 
-      this.animationLayer = new PIXI.Container()
-      this.guiLayer = new PIXI.Container()
-      this.inputLayer = new PIXI.Container()
+    global.baseStage.addChild(this.container)
 
-      this.container.addChild(this.animationLayer)
-      this.container.addChild(this.inputLayer)
-      this.container.addChild(this.guiLayer)
+    // create animation layer
+    var bgGradient = new PIXI.Sprite(PIXI.loader.resources['intro1_bg'].texture)
+    bgGradient.width = global.renderer.view.width
+    bgGradient.height = global.renderer.view.height
+    this.animationLayer.addChild(bgGradient)
 
-      global.baseStage.addChild(this.container)
+    for (var i = 1; i <= frameCount; i++) {
+      var frameSprite = new PIXI.Sprite(PIXI.loader.resources['intro1_' + i].texture)
+      frameSprite.anchor.x = 0.5
+      frameSprite.height = this.animationLayer.height * 0.75
+      frameSprite.scale.x = frameSprite.scale.y
+      frameSprite.x = this.animationLayer.width / 2
+      frameSprite.y = this.animationLayer.height * 0.05
+      this.animationLayer.addChild(frameSprite)
+      frameSprites[i] = frameSprite
+    }
+    
+    // create gui layer
+    var buttonY = frameSprites[1].y + frameSprites[1].height
+    var buttonWidthSpace = (global.renderer.view.width - frameSprites[1].width) / 2
+    var imageButtonBack = new PIXI.Sprite(PIXI.loader.resources['button_back'].texture)
+    imageButtonBack.anchor.x = 0.5
+    imageButtonBack.anchor.y = 0.5
+    imageButtonBack.x = buttonWidthSpace / 2
+    imageButtonBack.y = buttonY
 
-      // create animation layer
-      var image = new PIXI.Sprite(this.loader.resources['fail_level_1'].texture)
-      this.animationLayer.addChild(image)
-      this.animationLayer.scale.y = global.renderer.view.height / this.animationLayer.height
-      this.animationLayer.scale.x = this.animationLayer.scale.y
-      this.animationLayer.x = (global.renderer.view.width - this.animationLayer.width) / 2
+    var imageButtonForward = new PIXI.Sprite(PIXI.loader.resources['button_next'].texture)
+    imageButtonForward.anchor.x = 0.5
+    imageButtonForward.anchor.y = 0.5
+    imageButtonForward.x = global.renderer.view.width - buttonWidthSpace / 2
+    imageButtonForward.y = buttonY
 
-      // create gui layer
-      var imageButtonBack = new PIXI.Sprite(this.loader.resources['button_menu'].texture)
-      imageButtonBack.anchor.x = 0.5
-      imageButtonBack.anchor.y = 0.5
-      imageButtonBack.x = global.renderer.view.width * 0.25
-      imageButtonBack.y = global.renderer.view.height * 0.75
+    this.guiLayer.addChild(imageButtonBack)
+    this.guiLayer.addChild(imageButtonForward)
 
-      var imageButtonTryAgain = new PIXI.Sprite(this.loader.resources['button_tryagain'].texture)
-      imageButtonTryAgain.anchor.x = 0.5
-      imageButtonTryAgain.anchor.y = 0.5
-      imageButtonTryAgain.x = global.renderer.view.width * 0.75
-      imageButtonTryAgain.y = global.renderer.view.height * 0.75
-
-      this.guiLayer.addChild(imageButtonBack)
-      this.guiLayer.addChild(imageButtonTryAgain)
-
-      // create button layer
-      var goToMenu = function () {
-        console.log('go to menu')
+    var showFrame = function (frameId) {
+      for (var i = 1; i <= frameCount; i++) {
+        if (i === frameId) {
+          frameSprites[i].visible = true
+        } else {
+          frameSprites[i].visible = false
+        }
       }
-      var tryAgain = function () {
-        global.sceneManager.changeScene('loadGame', sceneParams)
+    }
+
+    // create button layer
+    var goToPrevious = function () {
+      if (currentFrame > 1) {
+        currentFrame--
+        showFrame(currentFrame)
+      } else {
+        global.sceneManager.changeScene('splash', sceneParams)
       }
-      var buttonBack = buttonAreaFactory({
-        width: global.renderer.view.width / 2,
-        height: global.renderer.view.height,
-        touchEnd: goToMenu,
-      })
+    }
+    var goToNext = function () {
+      if (currentFrame < frameCount) {
+        currentFrame++
+        showFrame(currentFrame)
+      } else {
+        global.sceneManager.changeScene('game', sceneParams)
+      }
+    }
+    var buttonBack = buttonAreaFactory({
+      width: global.renderer.view.width / 2,
+      height: global.renderer.view.height,
+      touchEnd: goToPrevious,
+    })
 
-      var buttonTryAgain = buttonAreaFactory({
-        width: global.renderer.view.width / 2,
-        height: global.renderer.view.height,
-        x: global.renderer.view.width / 2,
-        touchEnd: tryAgain,
-      })
+    var buttonTryAgain = buttonAreaFactory({
+      width: global.renderer.view.width / 2,
+      height: global.renderer.view.height,
+      x: global.renderer.view.width / 2,
+      touchEnd: goToNext,
+    })
 
-      this.keyUp = new KeyButton({
-        key: 'ArrowUp',
-        onKeyUp: goToMenu,
-      })
+    this.keyUp = new KeyButton({
+      key: 'ArrowUp',
+      onKeyUp: goToPrevious,
+    })
 
-      this.keyRight = new KeyButton({
-        key: 'ArrowRight',
-        onKeyUp: tryAgain,
-      })
+    this.keyRight = new KeyButton({
+      key: 'ArrowRight',
+      onKeyUp: goToNext,
+    })
 
-      this.inputLayer.addChild(buttonBack)
-      this.inputLayer.addChild(buttonTryAgain)
+    this.inputLayer.addChild(buttonBack)
+    this.inputLayer.addChild(buttonTryAgain)
 
-      this.isLoading = false
-
-    }.bind(this))
+    showFrame(1)
 
   },
   destroy: function () {
@@ -54249,9 +54696,108 @@ var levelFailScene = {
   },
   draw: function () {
 
-    if (this.isLoading === true) {
-      return
+    global.renderer.render(this.container)
+
+  },
+}
+
+module.exports = intro1Scene
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./KeyButton":262,"./buttonAreaFactory":268}],274:[function(require,module,exports){
+(function (global){
+var buttonAreaFactory = require('./buttonAreaFactory')
+var KeyButton = require('./KeyButton')
+
+var levelFailScene = {
+  name: 'levelFail',
+  create: function (sceneParams) {
+
+    // set up layers etc
+    this.container = new PIXI.Container()
+
+    this.animationLayer = new PIXI.Container()
+    this.guiLayer = new PIXI.Container()
+    this.inputLayer = new PIXI.Container()
+
+    var imageButtonOffset = PIXI.loader.resources['button_restart'].texture.width / 10
+
+    this.container.addChild(this.animationLayer)
+    this.container.addChild(this.inputLayer)
+    this.container.addChild(this.guiLayer)
+
+    global.baseStage.addChild(this.container)
+
+    // create animation layer
+    var image = new PIXI.Sprite(PIXI.loader.resources['fail_level_1'].texture)
+    this.animationLayer.addChild(image)
+    this.animationLayer.scale.y = global.renderer.view.height / this.animationLayer.height
+    this.animationLayer.scale.x = this.animationLayer.scale.y
+    this.animationLayer.x = (global.renderer.view.width - this.animationLayer.width) / 2
+
+    // create gui layer
+    var imageButtonTryAgain = new PIXI.Sprite(PIXI.loader.resources['button_restart'].texture)
+    imageButtonTryAgain.anchor.x = 0.5
+    imageButtonTryAgain.anchor.y = 0.5
+    imageButtonTryAgain.x = 
+        PIXI.loader.resources['button_restart'].texture.width / 2 + imageButtonOffset
+    imageButtonTryAgain.y = global.renderer.view.height * 0.75
+
+    var imageButtonMenu = new PIXI.Sprite(PIXI.loader.resources['button_menu'].texture)
+    imageButtonMenu.anchor.x = 0.5
+    imageButtonMenu.anchor.y = 0.5
+    imageButtonMenu.x = 
+        global.renderer.view.width -
+        (PIXI.loader.resources['button_menu'].texture.width / 2 + imageButtonOffset)
+    imageButtonMenu.y = global.renderer.view.height * 0.75
+
+    this.guiLayer.addChild(imageButtonTryAgain)
+    this.guiLayer.addChild(imageButtonMenu)
+
+    // create button layer
+    var tryAgain = function () {
+      global.sceneManager.changeScene('game', sceneParams)
     }
+    var goToMenu = function () {
+      global.sceneManager.changeScene('splash', sceneParams)
+    }
+
+    var buttonTryAgain = buttonAreaFactory({
+      width: global.renderer.view.width / 2,
+      height: global.renderer.view.height,
+      touchEnd: tryAgain,
+    })
+
+    var buttonMenu = buttonAreaFactory({
+      width: global.renderer.view.width / 2,
+      height: global.renderer.view.height,
+      x: global.renderer.view.width / 2,
+      touchEnd: goToMenu,
+    })
+
+    this.keyUp = new KeyButton({
+      key: 'ArrowUp',
+      onKeyUp: tryAgain,
+    })
+
+    this.keyRight = new KeyButton({
+      key: 'ArrowRight',
+      onKeyUp: goToMenu,
+    })
+
+    this.inputLayer.addChild(buttonTryAgain)
+    this.inputLayer.addChild(buttonMenu)
+
+  },
+  destroy: function () {
+    this.container.destroy()
+    this.keyRight.destroy()
+    this.keyUp.destroy()
+  },
+  update: function () {
+
+  },
+  draw: function () {
 
     global.renderer.render(this.container)
 
@@ -54261,7 +54807,7 @@ var levelFailScene = {
 module.exports = levelFailScene
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./KeyButton":261,"./buttonAreaFactory":265}],271:[function(require,module,exports){
+},{"./KeyButton":262,"./buttonAreaFactory":268}],275:[function(require,module,exports){
 (function (global){
 var buttonAreaFactory = require('./buttonAreaFactory')
 var KeyButton = require('./KeyButton')
@@ -54270,93 +54816,80 @@ var levelWonScene = {
   name: 'levelWon',
   create: function (sceneParams) {
 
-    this.isLoading = true
+    // set up layers etc
+    this.container = new PIXI.Container()
 
-    this.loader = new PIXI.loaders.Loader()
+    this.animationLayer = new PIXI.Container()
+    this.guiLayer = new PIXI.Container()
+    this.inputLayer = new PIXI.Container()
 
-    this.loader
-    .add('finish_level_1', 'assets/images/finish_level_1.png')
-    .add('button_next', 'assets/images/button_next.png')
-    .add('button_playagain', 'assets/images/button_playagain.png')
-    .load(function () {
+    var imageButtonOffset = PIXI.loader.resources['button_restart'].texture.width / 10
 
-      // set up layers etc
-      this.container = new PIXI.Container()
+    this.container.addChild(this.animationLayer)
+    this.container.addChild(this.inputLayer)
+    this.container.addChild(this.guiLayer)
 
-      this.animationLayer = new PIXI.Container()
-      this.guiLayer = new PIXI.Container()
-      this.inputLayer = new PIXI.Container()
+    global.baseStage.addChild(this.container)
 
-      this.container.addChild(this.animationLayer)
-      this.container.addChild(this.inputLayer)
-      this.container.addChild(this.guiLayer)
+    // create animation layer
+    var image = new PIXI.Sprite(PIXI.loader.resources['finish_level_1'].texture)
+    this.animationLayer.addChild(image)
+    this.animationLayer.scale.y = global.renderer.view.height / this.animationLayer.height
+    this.animationLayer.scale.x = this.animationLayer.scale.y
+    this.animationLayer.x = (global.renderer.view.width - this.animationLayer.width) / 2
 
-      global.baseStage.addChild(this.container)
+    // create gui layer
+    var imageButtonPlayAgain = new PIXI.Sprite(PIXI.loader.resources['button_restart'].texture)
+    imageButtonPlayAgain.anchor.x = 0.5
+    imageButtonPlayAgain.anchor.y = 0.5
+    imageButtonPlayAgain.x = 
+        PIXI.loader.resources['button_restart'].texture.width / 2 + imageButtonOffset
+    imageButtonPlayAgain.y = global.renderer.view.height * 0.75
 
-      // create animation layer
-      var image = new PIXI.Sprite(this.loader.resources['finish_level_1'].texture)
-      this.animationLayer.addChild(image)
-      this.animationLayer.scale.y = global.renderer.view.height / this.animationLayer.height
-      this.animationLayer.scale.x = this.animationLayer.scale.y
-      this.animationLayer.x = (global.renderer.view.width - this.animationLayer.width) / 2
+    var imageButtonNext = new PIXI.Sprite(PIXI.loader.resources['button_next'].texture)
+    imageButtonNext.anchor.x = 0.5
+    imageButtonNext.anchor.y = 0.5
+    imageButtonNext.x = 
+        global.renderer.view.width -
+        (PIXI.loader.resources['button_next'].texture.width / 2 + imageButtonOffset)
+    imageButtonNext.y = global.renderer.view.height * 0.75
 
-      // create gui layer
-      var imageButtonPlayAgain = new PIXI.Sprite(this.loader.resources['button_playagain'].texture)
-      imageButtonPlayAgain.anchor.x = 0.5
-      imageButtonPlayAgain.anchor.y = 0.5
-      imageButtonPlayAgain.x = global.renderer.view.width * 0.25
-      imageButtonPlayAgain.y = global.renderer.view.height * 0.75
+    this.guiLayer.addChild(imageButtonPlayAgain)
+    this.guiLayer.addChild(imageButtonNext)
 
-      var imageButtonNext = new PIXI.Sprite(this.loader.resources['button_next'].texture)
-      imageButtonNext.anchor.x = 0.5
-      imageButtonNext.anchor.y = 0.5
-      imageButtonNext.x = global.renderer.view.width * 0.75
-      imageButtonNext.y = global.renderer.view.height * 0.75
+    // create button layer
+    var goToNext = function () {
+      global.levelManager.incCurrentLevel()
+      global.sceneManager.changeScene('game', sceneParams)
+    }
+    var playAgain = function () {
+      global.sceneManager.changeScene('game', sceneParams)
+    }
+    var buttonPlayAgain = buttonAreaFactory({
+      width: global.renderer.view.width / 2,
+      height: global.renderer.view.height,
+      touchEnd: playAgain,
+    })
 
-      this.guiLayer.addChild(imageButtonPlayAgain)
-      this.guiLayer.addChild(imageButtonNext)
+    var buttonNext = buttonAreaFactory({
+      width: global.renderer.view.width / 2,
+      height: global.renderer.view.height,
+      x: global.renderer.view.width / 2,
+      touchEnd: goToNext,
+    })
 
-      // create button layer
-      var goToNext = function () {
-        sceneParams.level++
-        if (sceneParams.level <= global.levelCount) {
-          global.sceneManager.changeScene('loadGame', sceneParams)
-        } else {
-          sceneParams.level--
-        }
-      }
-      var playAgain = function () {
-        global.sceneManager.changeScene('loadGame', sceneParams)
-      }
-      var buttonPlayAgain = buttonAreaFactory({
-        width: global.renderer.view.width / 2,
-        height: global.renderer.view.height,
-        touchEnd: playAgain,
-      })
+    this.keyUp = new KeyButton({
+      key: 'ArrowUp',
+      onKeyUp: playAgain,
+    })
 
-      var buttonNext = buttonAreaFactory({
-        width: global.renderer.view.width / 2,
-        height: global.renderer.view.height,
-        x: global.renderer.view.width / 2,
-        touchEnd: goToNext,
-      })
+    this.keyRight = new KeyButton({
+      key: 'ArrowRight',
+      onKeyUp: goToNext,
+    })
 
-      this.keyUp = new KeyButton({
-        key: 'ArrowUp',
-        onKeyUp: playAgain,
-      })
-
-      this.keyRight = new KeyButton({
-        key: 'ArrowRight',
-        onKeyUp: goToNext,
-      })
-
-      this.inputLayer.addChild(buttonPlayAgain)
-      this.inputLayer.addChild(buttonNext)
-
-      this.isLoading = false
-
-    }.bind(this))
+    this.inputLayer.addChild(buttonPlayAgain)
+    this.inputLayer.addChild(buttonNext)
 
   },
   destroy: function () {
@@ -54369,10 +54902,6 @@ var levelWonScene = {
   },
   draw: function () {
 
-    if (this.isLoading === true) {
-      return
-    }
-
     global.renderer.render(this.container)
 
   },
@@ -54381,14 +54910,49 @@ var levelWonScene = {
 module.exports = levelWonScene
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./KeyButton":261,"./buttonAreaFactory":265}],272:[function(require,module,exports){
-var loadGameScene = {
-  name: 'loadGame',
-  create: function (sceneParams) {
-    this.loader = new PIXI.loaders.Loader()
+},{"./KeyButton":262,"./buttonAreaFactory":268}],276:[function(require,module,exports){
+(function (global){
+var LevelManager = require('./LevelManager')
+var gameVars = require('./gameVars')
 
-    this.loader
+var loadScene = {
+  name: 'load',
+  create: function (sceneParams) {
+
+    // load progress TODO: from local storage
+    global.levelManager = new LevelManager()
+
+    global.levelManager
+    .addLevel({
+      name: 'level5',
+      gameMode: global.levelManager.GAME_MODES.TUTORIAL_JUMP,
+      theme: gameVars.themes.sunsetCity,
+    })
+    // .addLevel({
+    //   name: 'level1',
+    //   gameMode: null,
+    //   theme: gameVars.themes.sunsetCity,
+    // })
+
+    // fetch assets
+    PIXI.loader
+
+    // buttons
+    .add('button_menu', 'assets/images/button_menu.png')
+    .add('button_next', 'assets/images/button_next.png')
+    .add('button_back', 'assets/images/button_back.png')
+    .add('button_restart', 'assets/images/button_restart.png')
+
+    // splash scene
+    .add('splash', 'assets/images/splash.png')
+
+    // game scene
     .add('rope', 'assets/images/rope.png')
+    .add('helparrow_upward', 'assets/images/helpline_upward.png')
+    .add('helparrow_forward', 'assets/images/helpline_forward.png')
+    .add('forward_button', 'assets/images/forward_button.png')
+    .add('upward_button', 'assets/images/upward_button.png')
+    .add('jump_button', 'assets/images/jump_button.png')
     .add('background1', 'assets/images/background1.png')
     .add('backgroundsky1', 'assets/images/backgroundsky1.png')
     .add('antenn001', 'assets/images/antenn001.png')
@@ -54402,6 +54966,10 @@ var loadGameScene = {
     .add('inair_falling', 'assets/images/gris_in_air_falling.png')
     .add('headband1', 'assets/images/headband1.png')
     .add('headband2', 'assets/images/headband2.png')
+    .add('nothing_coin', 'assets/images/nothing_coin.png')
+    .add('jump_coin', 'assets/images/jump_coin.png')
+    .add('upward_coin', 'assets/images/upward_coin.png')
+    .add('forward_coin', 'assets/images/forward_coin.png')
     .add('balloon1', 'assets/images/balloon1.png')
     .add('balloon2', 'assets/images/balloon2.png')
     .add('balloon3', 'assets/images/balloon3.png')
@@ -54410,15 +54978,32 @@ var loadGameScene = {
     .add('balloon6', 'assets/images/balloon6.png')
     .add('balloon7', 'assets/images/balloon7.png')
     .add('balloon8', 'assets/images/balloon8.png')
+    .add('balloon9', 'assets/images/balloon9.png')
     .add('balloonstring', 'assets/images/balloonstring.png')
     .add('indicator', 'assets/images/indicator.png')
     .add('spikes', 'assets/images/spikes.png')
-    .add('level' + sceneParams.level, 'assets/json/level' + sceneParams.level + '.json') // TODO: bake this into bundle.js instead
+    .add('level1', 'assets/json/level1.json') // TODO: bake this into bundle.js instead
+    .add('level2', 'assets/json/level2.json') // TODO: bake this into bundle.js instead
+    .add('level3', 'assets/json/level3.json') // TODO: bake this into bundle.js instead
+    .add('level4', 'assets/json/level4.json') // TODO: bake this into bundle.js instead
+    .add('level5', 'assets/json/level5.json') // TODO: bake this into bundle.js instead
+    // .add('level' + sceneParams.level, 'assets/json/level' + sceneParams.level + '.json') // TODO: bake this into bundle.js instead
+
+    // level fail scene
+    .add('fail_level_1', 'assets/images/fail_level_1.png')
+
+    // level won scene
+    .add('finish_level_1', 'assets/images/finish_level_1.png')
+
+    // intro 1 scene
+    .add('intro1_bg', 'assets/images/intro1_bg.png')
+    .add('intro1_1', 'assets/images/intro1_1.png')
+    .add('intro1_2', 'assets/images/intro1_2.png')
+    .add('intro1_3', 'assets/images/intro1_3.png')
+    .add('intro1_4', 'assets/images/intro1_4.png')
+
     .load(function () {
-      this.changeScene('game', {
-        resourceLoader: this.loader,
-        level: sceneParams.level,
-      })
+      this.changeScene(localStorage.scene || 'splash', sceneParams)
     }.bind(this))
   },
   destroy: function () {
@@ -54432,88 +55017,74 @@ var loadGameScene = {
   },
 }
 
-module.exports = loadGameScene
+module.exports = loadScene
 
-},{}],273:[function(require,module,exports){
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./LevelManager":263,"./gameVars":271}],277:[function(require,module,exports){
 (function (global){
 var buttonAreaFactory = require('./buttonAreaFactory')
 var KeyButton = require('./KeyButton')
 
 var splashScene = {
   name: 'splash',
-  create: function () {
+  create: function (sceneParams) {
 
-    this.isLoading = true
+    // set up layers etc
+    this.container = new PIXI.Container()
 
-    this.loader = new PIXI.loaders.Loader()
+    this.animationLayer = new PIXI.Container()
+    this.guiLayer = new PIXI.Container()
+    this.inputLayer = new PIXI.Container()
 
-    this.loader
-    .add('splash', 'assets/images/splash.png')
-    .add('button_start', 'assets/images/button_start.png')
-    .load(function () {
+    this.container.addChild(this.animationLayer)
+    this.container.addChild(this.inputLayer)
+    this.container.addChild(this.guiLayer)
 
-      // set up layers etc
-      this.container = new PIXI.Container()
+    global.baseStage.addChild(this.container)
 
-      this.animationLayer = new PIXI.Container()
-      this.guiLayer = new PIXI.Container()
-      this.inputLayer = new PIXI.Container()
+    // create animation layer
+    var image = new PIXI.Sprite(PIXI.loader.resources['splash'].texture)
+    this.animationLayer.addChild(image)
+    this.animationLayer.scale.y = global.renderer.view.height / this.animationLayer.height
+    this.animationLayer.scale.x = this.animationLayer.scale.y
 
-      this.container.addChild(this.animationLayer)
-      this.container.addChild(this.inputLayer)
-      this.container.addChild(this.guiLayer)
+    if (this.animationLayer.width < global.renderer.view.width) {
+      this.animationLayer.width = global.renderer.view.width
+    }
 
-      global.baseStage.addChild(this.container)
+    this.animationLayer.x = (global.renderer.view.width - this.animationLayer.width) / 2
 
-      // create animation layer
-      var image = new PIXI.Sprite(this.loader.resources['splash'].texture)
-      this.animationLayer.addChild(image)
-      this.animationLayer.scale.y = global.renderer.view.height / this.animationLayer.height
-      this.animationLayer.scale.x = this.animationLayer.scale.y
+    // create gui layer
+    var imageButtonStart = new PIXI.Sprite(PIXI.loader.resources['button_next'].texture)
+    imageButtonStart.anchor.x = 0.5
+    imageButtonStart.anchor.y = 0.5
+    imageButtonStart.x = global.renderer.view.width * 0.75
+    imageButtonStart.y = global.renderer.view.height * 0.75
 
-      if (this.animationLayer.width < global.renderer.view.width) {
-        this.animationLayer.width = global.renderer.view.width
-      }
+    this.guiLayer.addChild(imageButtonStart)
 
-      this.animationLayer.x = (global.renderer.view.width - this.animationLayer.width) / 2
+    // create button layer
+    var startGame = function () {
+      global.sceneManager.changeScene('intro1', sceneParams)
+    }
 
-      // create gui layer
-      var imageButtonStart = new PIXI.Sprite(this.loader.resources['button_start'].texture)
-      imageButtonStart.anchor.x = 0.5
-      imageButtonStart.anchor.y = 0.5
-      imageButtonStart.x = global.renderer.view.width * 0.75
-      imageButtonStart.y = global.renderer.view.height * 0.75
+    var buttonStart = buttonAreaFactory({
+      width: global.renderer.view.width,
+      height: global.renderer.view.height,
+      touchEnd: startGame,
+    })
 
-      this.guiLayer.addChild(imageButtonStart)
+    this.keyUp = new KeyButton({
+      key: 'ArrowUp',
+      onKeyUp: startGame,
+    })
 
-      // create button layer
-      var startGame = function () {
-        global.sceneManager.changeScene('loadGame', {
-          level: localStorage.level || 1, // TODO: remove before prod
-        })
-      }
+    this.keyRight = new KeyButton({
+      key: 'ArrowRight',
+      onKeyUp: startGame,
+    })
 
-      var buttonStart = buttonAreaFactory({
-        width: global.renderer.view.width,
-        height: global.renderer.view.height,
-        touchEnd: startGame,
-      })
-
-      this.keyUp = new KeyButton({
-        key: 'ArrowUp',
-        onKeyUp: startGame,
-      })
-
-      this.keyRight = new KeyButton({
-        key: 'ArrowRight',
-        onKeyUp: startGame,
-      })
-
-      this.inputLayer.addChild(buttonStart)
-
-      this.isLoading = false
-
-    }.bind(this))
+    this.inputLayer.addChild(buttonStart)
 
   },
   destroy: function () {
@@ -54526,10 +55097,6 @@ var splashScene = {
   },
   draw: function () {
 
-    if (this.isLoading === true) {
-      return
-    }
-
     global.renderer.render(this.container)
 
   },
@@ -54538,10 +55105,10 @@ var splashScene = {
 module.exports = splashScene
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./KeyButton":261,"./buttonAreaFactory":265}],274:[function(require,module,exports){
-module.exports = "1.0.0-15"
+},{"./KeyButton":262,"./buttonAreaFactory":268}],278:[function(require,module,exports){
+module.exports = "1.0.0-16"
 
-},{}],275:[function(require,module,exports){
+},{}],279:[function(require,module,exports){
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -57401,4 +57968,4 @@ var SpriteUtilities = (function () {
 
 
 module.exports = SpriteUtilities
-},{}]},{},[269]);
+},{}]},{},[272]);
