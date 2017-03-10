@@ -1,4 +1,5 @@
 var LevelManager = require('./LevelManager')
+var gameVars = require('./gameVars')
 
 var loadScene = {
   name: 'load',
@@ -11,12 +12,12 @@ var loadScene = {
     .addLevel({
       name: 'level5',
       gameMode: global.levelManager.GAME_MODES.TUTORIAL_JUMP,
-      staticsColor: 0x261d05, // TODO: work with themes instead (move this to MapLoader)
+      theme: gameVars.themes.sunsetCity,
     })
     .addLevel({
       name: 'level1',
       gameMode: null,
-      staticsColor: 0x261d05, // TODO: work with themes instead (move this to MapLoader)
+      theme: gameVars.themes.sunsetCity,
     })
 
     // fetch assets

@@ -49,7 +49,7 @@ MapLoader.prototype.loadMap = function (config) {
   ninjaBody = config.ninjaBody
   ninjaRadius = config.ninjaRadius
   pixelsPerMeter = config.pixelsPerMeter
-  staticsColor = config.staticsColor
+  staticsColor = config.theme.staticsColor
   levelName = config.name
 
   // props first (rendered below the level as of now)

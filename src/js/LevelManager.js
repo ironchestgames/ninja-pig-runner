@@ -30,7 +30,7 @@ LevelManager.prototype.getCurrentLevel = function () {
 LevelManager.prototype.addLevel = function (config) {
   var level = {}
   level.name = config.name
-  level.staticsColor = config.staticsColor
+  level.theme = config.theme
   level.gameMode = config.gameMode
   level.isDone = config.isDone || false
   this.levelProgression.push(level)

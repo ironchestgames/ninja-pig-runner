@@ -727,7 +727,7 @@ var gameScene = {
       ninjaBody: ninjaBody,
       ninjaRadius: ninjaRadius,
       pixelsPerMeter: pixelsPerMeter,
-      staticsColor: currentLevel.staticsColor,
+      theme: currentLevel.theme,
       dynamicSprites: dynamicSprites,
     })
     createCeiling()

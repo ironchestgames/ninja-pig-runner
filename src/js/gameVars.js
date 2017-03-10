@@ -11,4 +11,11 @@ gameVars.CAPTURED_BALLOON = Math.pow(2, 5)
 gameVars.SPIKES = Math.pow(2, 6)
 gameVars.COIN = Math.pow(2, 7)
 
+// level themes
+gameVars.themes = {
+  sunsetCity: {
+    staticsColor: 0x261d05,
+  }
+}
+
 module.exports = gameVars
