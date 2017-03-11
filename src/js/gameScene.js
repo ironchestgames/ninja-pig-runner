@@ -146,9 +146,11 @@ var levelFail = function (sceneParams) {
 }
 
 var levelWon = function (sceneParams) {
-  isPaused = true
-  global.levelManager.currentLevelDone()
-  global.sceneManager.changeScene('levelWon', sceneParams)
+  if (!isPaused) {
+    isPaused = true
+    global.levelManager.currentLevelDone()
+    global.sceneManager.changeScene('levelWon', sceneParams)
+  }
 }
 
 var createNinja = function() {
@@ -588,13 +590,13 @@ var beginContact = function (contactEvent) {
   if (currentLevel.gameMode === global.levelManager.GAME_MODES.TUTORIAL_JUMP &&
       (contactEvent.bodyA.name === 'ninjaBody' || contactEvent.bodyB.name === 'ninjaBody') &&
       ((contactEvent.bodyA.name === 'nothing_coin' || contactEvent.bodyB.name === 'nothing_coin') ||
-      (contactEvent.bodyA.name === 'jump_coin' || contactEvent.bodyB.name === 'jump_coin') ||
-      (contactEvent.bodyA.name === 'upward_coin' || contactEvent.bodyB.name === 'upward_coin') ||
-      (contactEvent.bodyA.name === 'forward_coin' || contactEvent.bodyB.name === 'forward_coin'))) {
+      (contactEvent.bodyA.name === 'jump_coin' || contactEvent.bodyB.name === 'jump_coin'))) {
+
     var coinBody = contactEvent.bodyA
     if (contactEvent.bodyA.name === 'ninjaBody') {
       coinBody = contactEvent.bodyB
     }
+
     world.removeBody(coinBody)
     dynamicSprites[coinBody.id].destroy()
   }
