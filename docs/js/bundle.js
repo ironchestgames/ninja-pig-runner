@@ -52097,7 +52097,7 @@ BalloonManager.prototype.postStep = function () {
     }
   }
 
-  // wake the balloons within the wakup distance
+  // wake the balloons within the wakeup distance
   for (i = 0; i < this.balloonBodies.length; i++) {
     balloonBody = this.balloonBodies[i]
     if (balloonBody.sleepState === p2.Body.SLEEPING &&
@@ -52107,29 +52107,20 @@ BalloonManager.prototype.postStep = function () {
   }
 
   // wake the closest ballon
-  for (i = 0; i < this.balloonBodies.length; i++) {
-    balloonBody = this.balloonBodies[i]
+  var nonCapturedBalloons = this.balloonBodies.filter(function (balloonBody) {
+    return !balloonBody.isCaptured
+  })
 
-    distance = p2.vec2.distance(this.balloonHolderBody.position, balloonBody.position)
+  nonCapturedBalloons.sort(function (a, b) {
+    return a.position[0] > b.position[0]
+  })
 
-    if (!closestBalloon && !balloonBody.isCaptured) {
-      closestBalloon = balloonBody
-      closestBalloonDistance = distance
-
-    } else if (closestBalloon &&
-        !balloonBody.isCaptured &&
-        distance < closestBalloonDistance) {
-
-      closestBalloon = balloonBody
-    }
+  if (nonCapturedBalloons[0] && nonCapturedBalloons[0].sleepState === p2.Body.SLEEPING) {
+    nonCapturedBalloons[0].wakeUp()
   }
 
-  if (closestBalloon && closestBalloon.sleepState === p2.Body.SLEEPING) {
-    closestBalloon.wakeUp()
-  }
+  this.closestBalloon = nonCapturedBalloons[0]
 
-  // set the closest balloon
-  this.closestBalloon = closestBalloon
 }
 
 BalloonManager.prototype.getClosestBalloon = function () {
@@ -53433,10 +53424,10 @@ var shouldJump = false
 var isRunning = false
 
 var wallPushForce = 85
-var wallBounceForceX = 100
-var wallBounceForceY = -70
-var wallBounceThreshold = 1
-var jumpUpForce = 100
+var wallBounceVelocityX = 10
+var wallBounceVelocityY = 8.9
+var wallBounceUpVelocityThreshold = 1
+var jumpUpVelocity = 10
 var pressingForce = 12
 var minimumRunningSpeed = 10
 var currentRunningSpeed = 0
@@ -53520,9 +53511,11 @@ var levelFail = function (sceneParams) {
 }
 
 var levelWon = function (sceneParams) {
-  isPaused = true
-  global.levelManager.currentLevelDone()
-  global.sceneManager.changeScene('levelWon', sceneParams)
+  if (!isPaused) {
+    isPaused = true
+    global.levelManager.currentLevelDone()
+    global.sceneManager.changeScene('levelWon', sceneParams)
+  }
 }
 
 var createNinja = function() {
@@ -53855,17 +53848,15 @@ var postStep = function () {
       ninjaBody.velocity[0] > 0 &&
       ninjaLeftSensor.isContactUsable()) {
 
-    var y = 0
-    if (ninjaBody.velocity[1] <= wallBounceThreshold) {
-      y = wallBounceForceY
+    if (ninjaBody.velocity[1] <= wallBounceUpVelocityThreshold) {
+      ninjaBody.velocity[1] = -wallBounceVelocityY
     }
 
-    ninjaBody.velocity[0] = 0
+    ninjaBody.velocity[0] = wallBounceVelocityX
 
-    ninjaBody.applyForce([wallBounceForceX, y])
     ninjaLeftSensor.setContactUsed(true)
     ninjaGraphics.changeState(NinjaGraphics.STATE_BOUNCED_LEFT)
-    actionsLog('BOUNCE LEFT', y)
+    actionsLog('BOUNCE LEFT')
   }
 
   // jump away from wall on right side
@@ -53874,23 +53865,20 @@ var postStep = function () {
       ninjaBody.velocity[0] < 0 &&
       ninjaRightSensor.isContactUsable()) {
 
-    var y = 0
-    if (ninjaBody.velocity[1] <= wallBounceThreshold) {
-      y = wallBounceForceY
+    if (ninjaBody.velocity[1] <= wallBounceUpVelocityThreshold) {
+      ninjaBody.velocity[1] = -wallBounceVelocityY
     }
 
-    ninjaBody.velocity[0] = 0
+    ninjaBody.velocity[0] = -wallBounceVelocityX
 
-    ninjaBody.applyForce([-wallBounceForceX, y])
     ninjaRightSensor.setContactUsed(true)
     ninjaGraphics.changeState(NinjaGraphics.STATE_BOUNCED_RIGHT)
-    actionsLog('BOUNCE RIGHT', y)
+    actionsLog('BOUNCE RIGHT')
   }
 
   // jump up
   if (shouldJump) {
-    ninjaBody.velocity[1] = 0
-    ninjaBody.applyForce([0, -jumpUpForce])
+    ninjaBody.velocity[1] = -jumpUpVelocity
     ninjaBottomSensor.setContactUsed(true)
     shouldJump = false
     actionsLog('JUMP')
@@ -53967,13 +53955,13 @@ var beginContact = function (contactEvent) {
   if (currentLevel.gameMode === global.levelManager.GAME_MODES.TUTORIAL_JUMP &&
       (contactEvent.bodyA.name === 'ninjaBody' || contactEvent.bodyB.name === 'ninjaBody') &&
       ((contactEvent.bodyA.name === 'nothing_coin' || contactEvent.bodyB.name === 'nothing_coin') ||
-      (contactEvent.bodyA.name === 'jump_coin' || contactEvent.bodyB.name === 'jump_coin') ||
-      (contactEvent.bodyA.name === 'upward_coin' || contactEvent.bodyB.name === 'upward_coin') ||
-      (contactEvent.bodyA.name === 'forward_coin' || contactEvent.bodyB.name === 'forward_coin'))) {
+      (contactEvent.bodyA.name === 'jump_coin' || contactEvent.bodyB.name === 'jump_coin'))) {
+
     var coinBody = contactEvent.bodyA
     if (contactEvent.bodyA.name === 'ninjaBody') {
       coinBody = contactEvent.bodyB
     }
+
     world.removeBody(coinBody)
     dynamicSprites[coinBody.id].destroy()
   }
@@ -54928,11 +54916,26 @@ var loadScene = {
       gameMode: global.levelManager.GAME_MODES.TUTORIAL_JUMP,
       theme: gameVars.themes.sunsetCity,
     })
-    // .addLevel({
-    //   name: 'level1',
-    //   gameMode: null,
-    //   theme: gameVars.themes.sunsetCity,
-    // })
+    .addLevel({
+      name: 'level1',
+      gameMode: null,
+      theme: gameVars.themes.sunsetCity,
+    })
+    .addLevel({
+      name: 'level2',
+      gameMode: null,
+      theme: gameVars.themes.sunsetCity,
+    })
+    .addLevel({
+      name: 'level3',
+      gameMode: null,
+      theme: gameVars.themes.sunsetCity,
+    })
+    .addLevel({
+      name: 'level4',
+      gameMode: null,
+      theme: gameVars.themes.sunsetCity,
+    })
 
     // fetch assets
     PIXI.loader
@@ -55106,7 +55109,7 @@ module.exports = splashScene
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./KeyButton":262,"./buttonAreaFactory":268}],278:[function(require,module,exports){
-module.exports = "1.0.0-16"
+module.exports = "1.0.0-17"
 
 },{}],279:[function(require,module,exports){
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
