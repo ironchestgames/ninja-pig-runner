@@ -170,7 +170,7 @@ BalloonManager.prototype.postStep = function () {
     }
   }
 
-  // wake the balloons within the wakup distance
+  // wake the balloons within the wakeup distance
   for (i = 0; i < this.balloonBodies.length; i++) {
     balloonBody = this.balloonBodies[i]
     if (balloonBody.sleepState === p2.Body.SLEEPING &&
@@ -180,29 +180,20 @@ BalloonManager.prototype.postStep = function () {
   }
 
   // wake the closest ballon
-  for (i = 0; i < this.balloonBodies.length; i++) {
-    balloonBody = this.balloonBodies[i]
+  var nonCapturedBalloons = this.balloonBodies.filter(function (balloonBody) {
+    return !balloonBody.isCaptured
+  })
 
-    distance = p2.vec2.distance(this.balloonHolderBody.position, balloonBody.position)
+  nonCapturedBalloons.sort(function (a, b) {
+    return a.position[0] > b.position[0]
+  })
 
-    if (!closestBalloon && !balloonBody.isCaptured) {
-      closestBalloon = balloonBody
-      closestBalloonDistance = distance
-
-    } else if (closestBalloon &&
-        !balloonBody.isCaptured &&
-        distance < closestBalloonDistance) {
-
-      closestBalloon = balloonBody
-    }
+  if (nonCapturedBalloons[0] && nonCapturedBalloons[0].sleepState === p2.Body.SLEEPING) {
+    nonCapturedBalloons[0].wakeUp()
   }
 
-  if (closestBalloon && closestBalloon.sleepState === p2.Body.SLEEPING) {
-    closestBalloon.wakeUp()
-  }
+  this.closestBalloon = nonCapturedBalloons[0]
 
-  // set the closest balloon
-  this.closestBalloon = closestBalloon
 }
 
 BalloonManager.prototype.getClosestBalloon = function () {
