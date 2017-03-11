@@ -62,7 +62,7 @@ var wallPushForce = 85
 var wallBounceForceX = 100
 var wallBounceForceY = -70
 var wallBounceThreshold = 1
-var jumpUpForce = 100
+var jumpUpVelocity = 10
 var pressingForce = 12
 var minimumRunningSpeed = 10
 var currentRunningSpeed = 0
@@ -515,8 +515,7 @@ var postStep = function () {
 
   // jump up
   if (shouldJump) {
-    ninjaBody.velocity[1] = 0
-    ninjaBody.applyForce([0, -jumpUpForce])
+    ninjaBody.velocity[1] = -jumpUpVelocity
     ninjaBottomSensor.setContactUsed(true)
     shouldJump = false
     actionsLog('JUMP')
