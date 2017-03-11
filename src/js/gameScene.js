@@ -59,9 +59,9 @@ var shouldJump = false
 var isRunning = false
 
 var wallPushForce = 85
-var wallBounceForceX = 100
-var wallBounceForceY = -70
-var wallBounceThreshold = 1
+var wallBounceVelocityX = 10
+var wallBounceVelocityY = 8.9
+var wallBounceUpVelocityThreshold = 1
 var jumpUpVelocity = 10
 var pressingForce = 12
 var minimumRunningSpeed = 10
@@ -481,17 +481,15 @@ var postStep = function () {
       ninjaBody.velocity[0] > 0 &&
       ninjaLeftSensor.isContactUsable()) {
 
-    var y = 0
-    if (ninjaBody.velocity[1] <= wallBounceThreshold) {
-      y = wallBounceForceY
+    if (ninjaBody.velocity[1] <= wallBounceUpVelocityThreshold) {
+      ninjaBody.velocity[1] = -wallBounceVelocityY
     }
 
-    ninjaBody.velocity[0] = 0
+    ninjaBody.velocity[0] = wallBounceVelocityX
 
-    ninjaBody.applyForce([wallBounceForceX, y])
     ninjaLeftSensor.setContactUsed(true)
     ninjaGraphics.changeState(NinjaGraphics.STATE_BOUNCED_LEFT)
-    actionsLog('BOUNCE LEFT', y)
+    actionsLog('BOUNCE LEFT')
   }
 
   // jump away from wall on right side
@@ -500,17 +498,15 @@ var postStep = function () {
       ninjaBody.velocity[0] < 0 &&
       ninjaRightSensor.isContactUsable()) {
 
-    var y = 0
-    if (ninjaBody.velocity[1] <= wallBounceThreshold) {
-      y = wallBounceForceY
+    if (ninjaBody.velocity[1] <= wallBounceUpVelocityThreshold) {
+      ninjaBody.velocity[1] = -wallBounceVelocityY
     }
 
-    ninjaBody.velocity[0] = 0
+    ninjaBody.velocity[0] = -wallBounceVelocityX
 
-    ninjaBody.applyForce([-wallBounceForceX, y])
     ninjaRightSensor.setContactUsed(true)
     ninjaGraphics.changeState(NinjaGraphics.STATE_BOUNCED_RIGHT)
-    actionsLog('BOUNCE RIGHT', y)
+    actionsLog('BOUNCE RIGHT')
   }
 
   // jump up
