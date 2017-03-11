@@ -14,11 +14,26 @@ var loadScene = {
       gameMode: global.levelManager.GAME_MODES.TUTORIAL_JUMP,
       theme: gameVars.themes.sunsetCity,
     })
-    // .addLevel({
-    //   name: 'level1',
-    //   gameMode: null,
-    //   theme: gameVars.themes.sunsetCity,
-    // })
+    .addLevel({
+      name: 'level1',
+      gameMode: null,
+      theme: gameVars.themes.sunsetCity,
+    })
+    .addLevel({
+      name: 'level2',
+      gameMode: null,
+      theme: gameVars.themes.sunsetCity,
+    })
+    .addLevel({
+      name: 'level3',
+      gameMode: null,
+      theme: gameVars.themes.sunsetCity,
+    })
+    .addLevel({
+      name: 'level4',
+      gameMode: null,
+      theme: gameVars.themes.sunsetCity,
+    })
 
     // fetch assets
     PIXI.loader
