@@ -102,7 +102,6 @@ MapLoader.prototype.loadMap = function (config) {
       ninjaBody.position = [bodyData.position.x, -bodyData.position.y]
 
     } else if (bodyData.name === 'wall' ||
-        bodyData.name === 'invisible_wall' ||
         bodyData.name === 'goal') {
 
       body = new p2.Body({
@@ -166,9 +165,7 @@ MapLoader.prototype.loadMap = function (config) {
         container.y = body.position[1] * pixelsPerMeter
         container.rotation = body.angle
 
-        if (bodyData.name !== 'invisible_wall') {
-          mapLayer.addChild(container)
-        }
+        mapLayer.addChild(container)
 
         if (body.type === p2.Body.DYNAMIC) {
           // add it to the collection 
