@@ -9,29 +9,96 @@
 			"angle" : 0,
 			"angularVelocity" : 0,
 			"awake" : true,
-			"fixture" : 
-			[
-				
-				{
-					"density" : 1,
-					"friction" : 0.2,
-					"name" : "fixture1",
-					"polygon" : 
-					{
-						"vertices" : 
-						{
-							"x" : [ 10, 10, -10, -10 ],
-							"y" : [ -0.5, 0.5, 0.5, -0.5 ]
-						}
-					}
-				}
-			],
 			"linearVelocity" : 0,
-			"name" : "wall",
+			"name" : "coin",
 			"position" : 
 			{
-				"x" : 75.0,
-				"y" : -8.5
+				"x" : 47.0,
+				"y" : -8
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 41.0,
+				"y" : -2
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 37.0,
+				"y" : -3
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 39.0,
+				"y" : -2.5
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 41.0,
+				"y" : -8
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 43.0,
+				"y" : -8
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 45.0,
+				"y" : -8
 			},
 			"type" : 0
 		},
@@ -61,8 +128,132 @@
 			"name" : "wall",
 			"position" : 
 			{
-				"x" : 51.0,
-				"y" : -2.5
+				"x" : 38.0,
+				"y" : -9.5
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"fixture" : 
+			[
+				
+				{
+					"density" : 1,
+					"friction" : 0.2,
+					"name" : "fixture1",
+					"polygon" : 
+					{
+						"vertices" : 
+						{
+							"x" : [ 0.0, 0.0, -4 ],
+							"y" : [ -0.5, 0.5, -0.5 ]
+						}
+					}
+				}
+			],
+			"linearVelocity" : 0,
+			"name" : "wall",
+			"position" : 
+			{
+				"x" : 82.0,
+				"y" : -7.5
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"fixture" : 
+			[
+				
+				{
+					"density" : 1,
+					"friction" : 0.2,
+					"name" : "fixture1",
+					"polygon" : 
+					{
+						"vertices" : 
+						{
+							"x" : [ 0.0, 0.0, -4 ],
+							"y" : [ -0.5, 0.5, -0.5 ]
+						}
+					}
+				}
+			],
+			"linearVelocity" : 0,
+			"name" : "wall",
+			"position" : 
+			{
+				"x" : 41.0,
+				"y" : -3.5
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"fixture" : 
+			[
+				
+				{
+					"density" : 1,
+					"friction" : 0.2,
+					"name" : "fixture1",
+					"polygon" : 
+					{
+						"vertices" : 
+						{
+							"x" : [ 10, 10, -10, -10 ],
+							"y" : [ -0.5, 0.5, 0.5, -0.5 ]
+						}
+					}
+				}
+			],
+			"linearVelocity" : 0,
+			"name" : "wall",
+			"position" : 
+			{
+				"x" : 72.0,
+				"y" : -8.5
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"fixture" : 
+			[
+				
+				{
+					"density" : 1,
+					"friction" : 0.2,
+					"name" : "fixture1",
+					"polygon" : 
+					{
+						"vertices" : 
+						{
+							"x" : [ 5, 5, -7, -7 ],
+							"y" : [ -0.5, 0.5, 0.5, -0.5 ]
+						}
+					}
+				}
+			],
+			"linearVelocity" : 0,
+			"name" : "wall",
+			"position" : 
+			{
+				"x" : 48.0,
+				"y" : -3.5
 			},
 			"type" : 0
 		},
@@ -106,8 +297,8 @@
 			"name" : "coin",
 			"position" : 
 			{
-				"x" : 17.0,
-				"y" : -4
+				"x" : 13.0,
+				"y" : -6
 			},
 			"type" : 0
 		},
@@ -120,8 +311,8 @@
 			"name" : "coin",
 			"position" : 
 			{
-				"x" : 18.0,
-				"y" : -5
+				"x" : 11.0,
+				"y" : -6
 			},
 			"type" : 0
 		},
@@ -165,7 +356,7 @@
 			"name" : "coin",
 			"position" : 
 			{
-				"x" : 19.0,
+				"x" : 15.0,
 				"y" : -6
 			},
 			"type" : 0
@@ -208,8 +399,8 @@
 			"name" : "goal",
 			"position" : 
 			{
-				"x" : 114.1195831298828,
-				"y" : -1.134129524230957
+				"x" : 109.1195831298828,
+				"y" : 0.8658704757690430
 			},
 			"type" : 0
 		},
