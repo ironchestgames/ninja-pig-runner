@@ -305,10 +305,7 @@ MapLoader.prototype.loadMap = function (config) {
 
       mapLayer.addChild(sprite)
 
-    } else if (bodyData.name === 'nothing_coin' ||
-          bodyData.name === 'jump_coin' || 
-          bodyData.name === 'upward_coin' ||
-          bodyData.name === 'forward_coin') {
+    } else if (bodyData.name === 'coin') {
 
       body = new p2.Body({
         position: [bodyData.position.x, -bodyData.position.y],
