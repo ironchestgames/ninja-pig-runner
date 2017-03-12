@@ -160,6 +160,8 @@ MapLoader.prototype.loadMap = function (config) {
         var container = new PIXI.Container()
         container.addChild(graphics)
         container.cacheAsBitmap = true
+        container.width += 1
+        container.height += 1
 
         container.x = body.position[0] * pixelsPerMeter
         container.y = body.position[1] * pixelsPerMeter
