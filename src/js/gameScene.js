@@ -186,40 +186,6 @@ var createNinja = function() {
 
 }
 
-var createCeiling = function () {
-
-  var ceilingBody
-  var ceilingShape
-  var highestX
-  var i
-
-  highestX = 0
-
-  // NOTE: only getting the bodies position since we only need an approx. value
-  for (i = 0; i < world.bodies.length; i++) {
-    if (world.bodies[i].position[0] > highestX) {
-      highestX = world.bodies[i].position[0]
-    }
-  }
-
-  ceilingBody = new p2.Body({
-    position: [highestX / 2, -1],
-    type: p2.Body.STATIC,
-  })
-
-  ceilingShape = new p2.Box({
-    position: [0, 0],
-    width: highestX,
-    height: 2,
-    collisionGroup: gameVars.CEILING,
-  })
-
-  ceilingBody.addShape(ceilingShape)
-
-  world.addBody(ceilingBody)
-
-}
-
 var postStep = function () {
 
   actionsLog('STEP')
@@ -463,7 +429,6 @@ var gameScene = {
       theme: currentLevel.theme,
       dynamicSprites: dynamicSprites,
     })
-    createCeiling()
 
     // set up ninja
     ninjaGraphics = new NinjaGraphics({

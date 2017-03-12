@@ -5,8 +5,7 @@ var gameVars = {}
 gameVars.PLAYER = Math.pow(2, 0)
 gameVars.WALL = Math.pow(2, 1)
 gameVars.SENSOR = Math.pow(2, 2)
-gameVars.CEILING = Math.pow(2, 3)
-gameVars.COIN = Math.pow(2, 4)
+gameVars.COIN = Math.pow(2, 3)
 
 // level themes
 gameVars.themes = {
