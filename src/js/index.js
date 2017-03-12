@@ -81,28 +81,28 @@ windowLoad(function () {
 
   // init browserGameLoop
   var loop = browserGameLoop({
-      updateTimeStep: 1000 / 30,
-      fpsFilterStrength: 20,
-      slow: 1,
-      input: function() {},
-      update: function(step) {
-        if (screenOrientation().direction === 'portrait') {
-          turnDeviceContainer.visible = true
-        } else {
-          turnDeviceContainer.visible = false
-          sceneManager.update(step)
-        }
-      },
-      render: function(ratio) {
-        if (screenOrientation().direction === 'portrait') {
-          turnDeviceContainer.visible = true
-        } else {
-          turnDeviceContainer.visible = false
-          sceneManager.draw(renderer, ratio)
-        }
-        fpsText.text = 'fps: ' + Math.round(loop.getFps()) + '\nscreen orientation: ' + screenOrientation().direction
-        renderer.render(appContainer)
-      },
+    updateTimeStep: 1000 / 30,
+    fpsFilterStrength: 20,
+    slow: 1,
+    input: function() {},
+    update: function(step) {
+      if (screenOrientation().direction === 'portrait') {
+        turnDeviceContainer.visible = true
+      } else {
+        turnDeviceContainer.visible = false
+        sceneManager.update(step)
+      }
+    },
+    render: function(ratio) {
+      if (screenOrientation().direction === 'portrait') {
+        turnDeviceContainer.visible = true
+      } else {
+        turnDeviceContainer.visible = false
+        sceneManager.draw(renderer, ratio)
+      }
+      fpsText.text = 'fps: ' + Math.round(loop.getFps()) + '\nscreen orientation: ' + screenOrientation().direction
+      renderer.render(appContainer)
+    },
   })
   global.loop = loop
 
