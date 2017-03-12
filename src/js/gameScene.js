@@ -9,8 +9,6 @@ var MapLoader = require('./MapLoader')
 var gameVars = require('./gameVars')
 var buttonAreaFactory = require('./buttonAreaFactory')
 var KeyButton = require('./KeyButton')
-var BalloonManager = require('./BalloonManager')
-var BalloonIndicator = require('./BalloonIndicator')
 
 var actionsLog = debug('gameScene:actions')
 var buttonsLog = debug('gameScene:buttons')
@@ -47,16 +45,13 @@ var minimumRunningSpeed = 10
 var currentRunningSpeed = 0
 var dieOfFallY = 13
 var ninjaRadius = 0.375
-var balloonHolderLocalAnchor = [0, 0.25]
 
 var ninjaBody
-var ninjaBalloonHolderBody
 var ninjaGraphics
 var backgroundSprite
 var skySprite
 var dynamicSprites = {} // TODO: make sure these are destroyed properly
 var mapLayer
-var indicator
 
 var ninjaBottomSensor
 var ninjaLeftSensor
@@ -118,17 +113,12 @@ var createNinja = function() {
   })
   ninjaBody.fixedRotation = true
 
-  // balloon holder body
-  ninjaBalloonHolderBody = new p2.Body()
-  ninjaBalloonHolderBody.name = 'ninjaBalloonHolderBody'
-  ninjaBalloonHolderBody.type = p2.Body.KINEMATIC
-
   // shapes
   middleShape = new p2.Box({
     width: ninjaRadius * 2,
     height: ninjaRadius * 2,
     collisionGroup: gameVars.PLAYER,
-    collisionMask: gameVars.WALL | gameVars.BALLOON | gameVars.SPIKES | gameVars.COIN,
+    collisionMask: gameVars.WALL | gameVars.COIN,
   })
   ninjaBody.addShape(middleShape)
   middleShape.name = 'middleShape'
@@ -136,7 +126,7 @@ var createNinja = function() {
   bottomShape = new p2.Circle({
     radius: ninjaRadius * 1.1,
     collisionGroup: gameVars.PLAYER,
-    collisionMask: gameVars.WALL | gameVars.BALLOON | gameVars.SPIKES | gameVars.COIN,
+    collisionMask: gameVars.WALL | gameVars.COIN,
   })
   ninjaBody.addShape(bottomShape)
   bottomShape.position[1] = ninjaRadius
@@ -145,7 +135,7 @@ var createNinja = function() {
   topShape = new p2.Circle({
     radius: ninjaRadius,
     collisionGroup: gameVars.PLAYER,
-    collisionMask: gameVars.WALL | gameVars.BALLOON | gameVars.SPIKES | gameVars.COIN,
+    collisionMask: gameVars.WALL | gameVars.COIN,
   })
   ninjaBody.addShape(topShape)
   topShape.position[1] = -ninjaRadius
@@ -157,7 +147,7 @@ var createNinja = function() {
     width: 0.4,
     height: 0.2,
     collisionGroup: gameVars.SENSOR,
-    collisionMask: gameVars.WALL | gameVars.BALLOON,
+    collisionMask: gameVars.WALL,
     relativePosition: [0, ninjaRadius * 2],
   })
 
@@ -193,7 +183,6 @@ var createNinja = function() {
   ninjaBody.name = 'ninjaBody'
 
   world.addBody(ninjaBody)
-  world.addBody(ninjaBalloonHolderBody)
 
 }
 
@@ -242,10 +231,6 @@ var postStep = function () {
     mapLayer.removeChild(sprite)
     world.removeBody(body)
   }
-
-  // update balloon holder position
-  ninjaBalloonHolderBody.position[0] = ninjaBody.position[0]
-  ninjaBalloonHolderBody.position[1] = ninjaBody.position[1]
 
   // update the sensors' values
   ninjaLeftSensor.postStep()
@@ -336,8 +321,6 @@ var postStep = function () {
     ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_FALLING)
   }
 
-  balloonManager.postStep()
-
 }
 
 var beginContact = function (contactEvent) {
@@ -358,32 +341,6 @@ var beginContact = function (contactEvent) {
   if ((contactEvent.bodyA.name === 'goal' || contactEvent.bodyB.name === 'goal') &&
       (contactEvent.bodyA.name === 'ninjaBody' || contactEvent.bodyB.name === 'ninjaBody')) {
     levelWon(sceneParams)
-  }
-
-  if ((contactEvent.bodyA.name === 'balloon' || contactEvent.bodyB.name === 'balloon') &&
-    (contactEvent.bodyA.name === 'ninjaBody' || contactEvent.bodyB.name === 'ninjaBody')) {
-    var balloonBody = contactEvent.bodyA
-    if (contactEvent.bodyB.name === 'balloon') {
-      balloonBody = contactEvent.bodyB
-    }
-
-    balloonManager.captureBalloon(balloonBody)
-
-    // TODO: count the balloons, target next
-  }
-
-  if ((contactEvent.bodyA.name === 'balloon' || contactEvent.bodyB.name === 'balloon') &&
-    (contactEvent.bodyA.name === 'spikes' || contactEvent.bodyB.name === 'spikes')) {
-    var balloonBody = contactEvent.bodyA
-    if (contactEvent.bodyB.name === 'balloon') {
-      balloonBody = contactEvent.bodyB
-    }
-
-    balloonManager.popBalloon(balloonBody)
-
-    dynamicSprites[balloonBody.id].destroy()
-
-    // TODO: replace with balloon corpse instead
   }
 
   if ((contactEvent.bodyA.name === 'ninjaBody' || contactEvent.bodyB.name === 'ninjaBody') &&
@@ -447,7 +404,6 @@ var gameScene = {
     this.backgroundLayer = new PIXI.Container()
     this.stage = new PIXI.Container()
     mapLayer = new PIXI.Container()
-    var balloonStringLayer = new PIXI.Container()
     var propLayer = new PIXI.Container()
     var guiLayer = new PIXI.Container()
     this.debugDrawContainer = new PIXI.Container()
@@ -461,7 +417,6 @@ var gameScene = {
 
     this.stage.addChild(propLayer)
     this.stage.addChild(mapLayer)
-    this.stage.addChild(balloonStringLayer)
 
     // set up background layer contents
     // NOTE: bc of the nature of the image it has to be this exact square (suns/moons are round)
@@ -493,9 +448,6 @@ var gameScene = {
       touchStart: onJumpDown,
     })
 
-    var indicatorContainer = new PIXI.Container()
-
-    guiLayer.addChild(indicatorContainer)
     guiLayer.addChild(jumpButton)
 
     // set up physics
@@ -513,15 +465,6 @@ var gameScene = {
     })
     createCeiling()
 
-    balloonManager = new BalloonManager({
-      world: world,
-      container: balloonStringLayer,
-      stringTexture: PIXI.loader.resources['balloonstring'].texture,
-      pixelsPerMeter: pixelsPerMeter,
-      wakeUpDistance: 30,
-      balloonHolderBody: ninjaBalloonHolderBody,
-    })
-
     // set up ninja
     ninjaGraphics = new NinjaGraphics({
       container: this.stage,
@@ -534,11 +477,6 @@ var gameScene = {
     world.on('beginContact', beginContact)
     world.on('endContact', endContact)
     world.on('postStep', postStep.bind(this))
-
-    // set up closest balloon indicator
-    indicator = new BalloonIndicator({
-      container: indicatorContainer,
-    })
 
     // set up inputs
     document.addEventListener('keypress', onKeyPress.bind(this))
@@ -563,7 +501,6 @@ var gameScene = {
     this.container.destroy()
     keyUp.destroy()
     keySpace.destroy()
-    balloonManager.destroy()
   },
   update: function (stepInMilliseconds) {
 
@@ -616,8 +553,6 @@ var gameScene = {
         rotation,
         ninjaBody)
 
-    balloonManager.draw(ratio)
-
     for (var i = 0; i < world.bodies.length; i++) {
       var body = world.bodies[i]
 
@@ -649,19 +584,6 @@ var gameScene = {
       this.stage.x = -ninjaGraphics.x + stageToNinjaOffsetX
       backgroundSprite.tilePosition.x = this.stage.x * 0.1
     }
-
-    // draw balloon indicator
-    var closestBalloon = balloonManager.getClosestBalloon()
-
-    var closestBalloonSprite = null
-
-    if (closestBalloon) {
-      closestBalloonSprite = dynamicSprites[closestBalloon.id]
-    }
-
-    indicator.balloonToIndicate = closestBalloonSprite
-
-    indicator.draw()
 
     // debug draw
     if (global.DEBUG_DRAW) {

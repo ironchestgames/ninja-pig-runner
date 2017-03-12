@@ -6,10 +6,7 @@ gameVars.PLAYER = Math.pow(2, 0)
 gameVars.WALL = Math.pow(2, 1)
 gameVars.SENSOR = Math.pow(2, 2)
 gameVars.CEILING = Math.pow(2, 3)
-gameVars.BALLOON = Math.pow(2, 4)
-gameVars.CAPTURED_BALLOON = Math.pow(2, 5)
-gameVars.SPIKES = Math.pow(2, 6)
-gameVars.COIN = Math.pow(2, 7)
+gameVars.COIN = Math.pow(2, 4)
 
 // level themes
 gameVars.themes = {
