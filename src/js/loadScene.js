@@ -49,11 +49,6 @@ var loadScene = {
 
     // game scene
     .add('rope', 'assets/images/rope.png')
-    .add('helparrow_upward', 'assets/images/helpline_upward.png')
-    .add('helparrow_forward', 'assets/images/helpline_forward.png')
-    .add('forward_button', 'assets/images/forward_button.png')
-    .add('upward_button', 'assets/images/upward_button.png')
-    .add('jump_button', 'assets/images/jump_button.png')
     .add('background1', 'assets/images/background1.png')
     .add('backgroundsky1', 'assets/images/backgroundsky1.png')
     .add('antenn001', 'assets/images/antenn001.png')
@@ -69,8 +64,6 @@ var loadScene = {
     .add('headband2', 'assets/images/headband2.png')
     .add('nothing_coin', 'assets/images/nothing_coin.png')
     .add('jump_coin', 'assets/images/jump_coin.png')
-    .add('upward_coin', 'assets/images/upward_coin.png')
-    .add('forward_coin', 'assets/images/forward_coin.png')
     .add('balloon1', 'assets/images/balloon1.png')
     .add('balloon2', 'assets/images/balloon2.png')
     .add('balloon3', 'assets/images/balloon3.png')
@@ -95,13 +88,6 @@ var loadScene = {
 
     // level won scene
     .add('finish_level_1', 'assets/images/finish_level_1.png')
-
-    // intro 1 scene
-    .add('intro1_bg', 'assets/images/intro1_bg.png')
-    .add('intro1_1', 'assets/images/intro1_1.png')
-    .add('intro1_2', 'assets/images/intro1_2.png')
-    .add('intro1_3', 'assets/images/intro1_3.png')
-    .add('intro1_4', 'assets/images/intro1_4.png')
 
     .load(function () {
       this.changeScene(localStorage.scene || 'splash', sceneParams)
