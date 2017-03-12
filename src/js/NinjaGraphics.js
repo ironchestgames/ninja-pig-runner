@@ -6,20 +6,13 @@ var NinjaGraphics = function (config) {
   var spriteSizeFactor = 1.18 // to make up for the whitespace in the frames
   var runningSpriteAnimationBaseSpeed = 0.20 // TODO: what is this in ms?
 
-  var forwardHookAngle = config.forwardHookAngle
-  var upwardHookAngle = config.upwardHookAngle
-  var hookOffsetX = config.hookOffsetX
-  var hookOffsetY = config.hookOffsetY
   var ninjaHeight = config.ninjaHeight
   var pixelsPerMeter = config.pixelsPerMeter
   var scaleRatio = (ninjaHeight * pixelsPerMeter * spriteSizeFactor) / PIXI.loader.resources['inair_upwards'].texture.height
 
-  this.gameMode = config.gameMode
-
   this.config = config
   this.currentState = null
   this.fpsFactor = 60 / global.loop.getFps() // NOTE: developed on 60 fps, TODO: move to update instead
-  this.helpArrowCountDownFactor = 0.05
 
   this.container = new PIXI.Container()
   config.container.addChild(this.container)
@@ -89,25 +82,6 @@ var NinjaGraphics = function (config) {
   this.scaleContainer.addChild(this.headband1)
 
   this.headbandCount = 0
-
-  // add help lines for tutorial mode
-  if (this.gameMode === global.levelManager.GAME_MODES.TUTORIAL_JUMP) { // TODO: not only this mode
-    this.helpArrowUpwardSprite = new PIXI.Sprite(PIXI.loader.resources['helparrow_upward'].texture)
-    this.helpArrowUpwardSprite.anchor.y = 0.5
-    this.helpArrowUpwardSprite.x = hookOffsetX
-    this.helpArrowUpwardSprite.y = hookOffsetY
-    this.helpArrowUpwardSprite.rotation = upwardHookAngle
-    this.helpArrowUpwardSprite.alpha = 0
-    this.container.addChild(this.helpArrowUpwardSprite)
-
-    this.helpArrowForwardSprite = new PIXI.Sprite(PIXI.loader.resources['helparrow_forward'].texture)
-    this.helpArrowForwardSprite.anchor.y = 0.5
-    this.helpArrowForwardSprite.x = hookOffsetX
-    this.helpArrowForwardSprite.y = hookOffsetY
-    this.helpArrowForwardSprite.rotation = forwardHookAngle
-    this.helpArrowForwardSprite.alpha = 0
-    this.container.addChild(this.helpArrowForwardSprite)
-  }
 
 }
 
@@ -181,30 +155,6 @@ NinjaGraphics.prototype.changeState = function (newState) {
   }
 
   this.currentState = newState
-}
-
-NinjaGraphics.prototype.flashForwardHelpLine = function () {
-  if (this.gameMode === global.levelManager.GAME_MODES.TUTORIAL_JUMP) {
-    this.helpArrowForwardSprite.alpha = 1
-  }
-}
-
-NinjaGraphics.prototype.flashUpwardHelpLine = function () {
-  if (this.gameMode === global.levelManager.GAME_MODES.TUTORIAL_JUMP) {
-    this.helpArrowUpwardSprite.alpha = 1
-  }
-}
-
-NinjaGraphics.prototype.update = function () {
-  if (this.gameMode === global.levelManager.GAME_MODES.TUTORIAL_JUMP) {
-    if (this.helpArrowForwardSprite.alpha > 0) {
-      this.helpArrowForwardSprite.alpha -= this.helpArrowCountDownFactor
-    }
-
-    if (this.helpArrowUpwardSprite.alpha > 0) {
-      this.helpArrowUpwardSprite.alpha -= this.helpArrowCountDownFactor
-    }
-  }
 }
 
 NinjaGraphics.prototype.draw = function (x, y, rotation, ninjaBody) {

@@ -5,14 +5,12 @@ var SpriteUtilities = require('../lib/spriteUtilities')
 var gameUtils = require('./gameUtils')
 var NinjaGraphics = require('./NinjaGraphics')
 var NinjaSensor = require('./NinjaSensor')
-var Hook = require('./Hook')
 var MapLoader = require('./MapLoader')
 var gameVars = require('./gameVars')
 var buttonAreaFactory = require('./buttonAreaFactory')
 var KeyButton = require('./KeyButton')
 var BalloonManager = require('./BalloonManager')
 var BalloonIndicator = require('./BalloonIndicator')
-var TutorialButton = require('./TutorialButton')
 
 var actionsLog = debug('gameScene:actions')
 var buttonsLog = debug('gameScene:buttons')
@@ -33,62 +31,31 @@ var stageToNinjaOffsetX
 var world
 var bodiesToRemove = []
 
-var buttonEventQueue = []
-var BUTTON_UPWARD_DOWN = 'BUTTON_UPWARD_DOWN'
-var BUTTON_UPWARD_UP = 'BUTTON_UPWARD_UP'
-var BUTTON_FORWARD_DOWN = 'BUTTON_FORWARD_DOWN'
-var BUTTON_FORWARD_UP = 'BUTTON_FORWARD_UP'
-
 var leftButton
-var rightButton
 
-var keyRight
 var keyUp
-
-var forwardHook
-var shouldRemoveForwardHook = false
-var shouldAddForwardHook = false
-
-var upwardHook
-var shouldRemoveUpwardHook = false
-var shouldAddUpwardHook = false
-
-var currentHook = null
 
 var shouldJump = false
 var isRunning = false
 
-var wallPushForce = 85
-var wallBounceVelocityX = 10
-var wallBounceVelocityY = 8.9
+var wallBounceVelocityX = 8
+var wallBounceVelocityY = 7.12
 var wallBounceUpVelocityThreshold = 1
-var jumpUpVelocity = 10
-var pressingForce = 12
+var jumpUpVelocity = 8
 var minimumRunningSpeed = 10
 var currentRunningSpeed = 0
-var forwardHookShortenSpeed = 0.015
-var forwardHookRelativeAimX = 10
-var forwardHookRelativeAimY = -12
-var upwardHookRelativeAimX = 0
-var upwardHookRelativeAimY = -12
 var dieOfFallY = 13
 var ninjaRadius = 0.375
 var balloonHolderLocalAnchor = [0, 0.25]
 
 var ninjaBody
-var ninjaHandBody
 var ninjaBalloonHolderBody
 var ninjaGraphics
-var ropeSprite
 var backgroundSprite
 var skySprite
 var dynamicSprites = {} // TODO: make sure these are destroyed properly
 var mapLayer
-var leftTutorialButton
-var rightTutorialButton
 var indicator
-var TUTORIAL_BUTTON_RUNNING = 'TUTORIAL_BUTTON_RUNNING'
-var TUTORIAL_BUTTON_IN_AIR = 'TUTORIAL_BUTTON_IN_AIR'
 
 var ninjaBottomSensor
 var ninjaLeftSensor
@@ -98,22 +65,9 @@ var tempVector = [0, 0]
 
 var onLeftDown = function (event) {
   buttonsLog('onLeftDown', event)
-  buttonEventQueue.push(BUTTON_UPWARD_DOWN)
-}
-
-var onLeftUp = function (event) {
-  buttonsLog('onLeftUp', event)
-  buttonEventQueue.push(BUTTON_UPWARD_UP)
-}
-
-var onRightDown = function (event) {
-  buttonsLog('onRightDown', event)
-  buttonEventQueue.push(BUTTON_FORWARD_DOWN)
-}
-
-var onRightUp = function (event) {
-  buttonsLog('onRightUp', event)
-  buttonEventQueue.push(BUTTON_FORWARD_UP)
+  if (isRunning) {
+    shouldJump = true
+  }
 }
 
 // TODO: remove, this is only for debug
@@ -132,9 +86,6 @@ var restartNinja = function () {
 
   ninjaBody.position[0] = mapLoader.ninjaStartPosition[0]
   ninjaBody.position[1] = mapLoader.ninjaStartPosition[1]
-
-  ninjaHandBody.position[0] = mapLoader.ninjaStartPosition[0]
-  ninjaHandBody.position[1] = mapLoader.ninjaStartPosition[1]
 
   ninjaBody.velocity[0] = 0
   ninjaBody.velocity[1] = 0
@@ -161,18 +112,10 @@ var createNinja = function() {
 
   // body
   ninjaBody = new p2.Body({
-    mass: 0.35,
+    mass: 0.45,
     velocity: [0.5, -3],
   })
   ninjaBody.fixedRotation = true
-
-  // hand body
-  ninjaHandBody = new p2.Body({
-    mass: 0.1,
-  })
-  ninjaHandBody.name = 'ninjaHandBody'
-  ninjaHandBody.position[0] = ninjaRadius + 0.07
-  ninjaHandBody.position[1] = -0.15
 
   // balloon holder body
   ninjaBalloonHolderBody = new p2.Body()
@@ -249,35 +192,7 @@ var createNinja = function() {
   ninjaBody.name = 'ninjaBody'
 
   world.addBody(ninjaBody)
-  world.addBody(ninjaHandBody)
   world.addBody(ninjaBalloonHolderBody)
-
-  // hand body constraint
-  ninjaHandBodyConstraint = new p2.LockConstraint(ninjaBody, ninjaHandBody, {
-    collideConnected: false,
-  })
-
-  world.addConstraint(ninjaHandBodyConstraint)
-
-}
-
-var createHooks = function () {
-  
-  forwardHook = new Hook({
-    world: world,
-    source: ninjaHandBody,
-    relativeAimPoint: [forwardHookRelativeAimX, forwardHookRelativeAimY],
-    collisionMask: gameVars.WALL | gameVars.CEILING,
-    shortenSpeed: forwardHookShortenSpeed,
-  })
-
-  upwardHook = new Hook({
-    world: world,
-    source: ninjaHandBody,
-    relativeAimPoint: [upwardHookRelativeAimX, upwardHookRelativeAimY],
-    collisionMask: gameVars.WALL | gameVars.CEILING,
-    shortenSpeed: forwardHookShortenSpeed,
-  })
 
 }
 
@@ -315,71 +230,7 @@ var createCeiling = function () {
 
 }
 
-var createHookSprite = function (layer) {
-  ropeSprite = new PIXI.Sprite(PIXI.loader.resources['rope'].texture)
-  ropeSprite.anchor.y = 0.5
-
-  layer.addChild(ropeSprite)
-}
-
 var postStep = function () {
-  var buttonEvent
-
-  while (buttonEventQueue.length > 0) {
-    buttonEvent = buttonEventQueue.shift()
-
-    switch (buttonEvent) {
-      case BUTTON_UPWARD_DOWN:
-        leftTutorialButton && leftTutorialButton.onDown()
-        if (currentHook) {
-          buttonsLog('unset current on UPWARD')
-          currentHook.unsetHook()
-          currentHook = null
-        }
-        if (isRunning) {
-          shouldJump = true
-        } else {
-          upwardHook.setHook()
-          currentHook = upwardHook
-          ninjaGraphics.flashUpwardHelpLine()
-        }
-        break
-
-      case BUTTON_FORWARD_DOWN:
-        rightTutorialButton && rightTutorialButton.onDown()
-        if (currentHook) {
-          buttonsLog('unset current on FORWARD')
-          currentHook.unsetHook()
-          currentHook = null
-        }
-        if (isRunning) {
-          shouldJump = true
-        } else {
-          forwardHook.setHook()
-          currentHook = forwardHook
-          ninjaGraphics.flashForwardHelpLine()
-        }
-        break
-
-      case BUTTON_UPWARD_UP:
-        leftTutorialButton && leftTutorialButton.onUp()
-        if (currentHook === upwardHook) {
-          buttonsLog('unset upwardHook')
-          currentHook.unsetHook()
-          currentHook = null
-        }
-        break
-
-      case BUTTON_FORWARD_UP:
-        rightTutorialButton && rightTutorialButton.onUp()
-        if (currentHook === forwardHook) {
-          buttonsLog('unset forwardHook')
-          currentHook.unsetHook()
-          currentHook = null
-        }
-        break
-    }
-  }
 
   actionsLog('STEP')
 
@@ -400,53 +251,8 @@ var postStep = function () {
   ninjaRightSensor.postStep()
   ninjaBottomSensor.postStep()
 
-  // remove hook when flying above screen
-  if (currentHook && ninjaBody.position[1] < 0) {
-    currentHook.unsetHook()
-    currentHook = null
-  }
-
-  // if hooked
-  if (currentHook) {
-
-    // shorten the rope
-    currentHook.shorten()
-
-    ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_HOOKED)
-
-    // pressing (leaning back when swinging kind of)
-    if (currentHook.body.position[0] - ninjaBody.position[0] > 0 &&
-        ninjaBody.velocity[0] > 0 &&
-        ninjaBody.velocity[1] < 0 &&
-        ninjaBottomSensor.contactCount <= 0) {
-      ninjaBody.applyForce([pressingForce, pressingForce])
-      actionsLog('PRESSING')
-    }
-
-    // push away from wall on left side
-    if (ninjaLeftSensor.isContactUsable() && ninjaBody.velocity[0] > 0) {
-      if (ninjaBody.velocity[0] < 0) {
-        ninjaBody.velocity[0] = 0
-      }
-      ninjaBody.applyForce([wallPushForce, 0])
-      ninjaLeftSensor.setContactUsed(true)
-      actionsLog('PUSHED LEFT')
-    }
-
-    // push away from wall on right side
-    if (ninjaRightSensor.isContactUsable() && ninjaBody.velocity[0] < 0) {
-      if (ninjaBody.velocity[0] > 0) {
-        ninjaBody.velocity[0] = 0
-      }
-      ninjaBody.applyForce([-wallPushForce, 0])
-      ninjaRightSensor.setContactUsed(true)
-      actionsLog('PUSHED RIGHT')
-    }
-  }
-
   // determine if isRunning
-  if (!currentHook &&
-      !shouldJump &&
+  if (!shouldJump &&
       ninjaBottomSensor.isContactUsable() &&
       ninjaLeftSensor.stepsSinceUsed > 2 &&
       ninjaRightSensor.stepsSinceUsed > 2) {
@@ -462,14 +268,8 @@ var postStep = function () {
     actionsLog('RUNNING')
     ninjaGraphics.changeState(NinjaGraphics.STATE_RUNNING)
 
-    leftTutorialButton && leftTutorialButton.changeState(TUTORIAL_BUTTON_RUNNING)
-    rightTutorialButton && rightTutorialButton.changeState(TUTORIAL_BUTTON_RUNNING)
-
   } else {
     isRunning = false
-
-    leftTutorialButton && leftTutorialButton.changeState(TUTORIAL_BUTTON_IN_AIR)
-    rightTutorialButton && rightTutorialButton.changeState(TUTORIAL_BUTTON_IN_AIR)
 
     if (ninjaGraphics.currentState !== NinjaGraphics.STATE_BOUNCED_RIGHT &&
       ninjaBody.velocity[1] > 0) {
@@ -478,8 +278,7 @@ var postStep = function () {
   }
 
   // jump away from wall on left side
-  if (!currentHook &&
-      !isRunning &&
+  if (!isRunning &&
       ninjaBody.velocity[0] > 0 &&
       ninjaLeftSensor.isContactUsable()) {
 
@@ -495,8 +294,7 @@ var postStep = function () {
   }
 
   // jump away from wall on right side
-  if (!currentHook &&
-      !isRunning &&
+  if (!isRunning &&
       ninjaBody.velocity[0] < 0 &&
       ninjaRightSensor.isContactUsable()) {
 
@@ -520,7 +318,7 @@ var postStep = function () {
     ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_UPWARDS)
   }
 
-  if (!currentHook && ninjaBody.position[1] > dieOfFallY) {
+  if (ninjaBody.position[1] > dieOfFallY) {
     levelFail(sceneParams)
   }
 
@@ -654,13 +452,11 @@ var gameScene = {
     var propLayer = new PIXI.Container()
     var guiLayer = new PIXI.Container()
     this.debugDrawContainer = new PIXI.Container()
-    var tutorialButtonLayer = new PIXI.Container()
 
     global.baseStage.addChild(this.container)
 
     this.container.addChild(this.backgroundLayer)
     this.container.addChild(this.stage)
-    this.container.addChild(tutorialButtonLayer)
     this.container.addChild(guiLayer)
     this.container.addChild(this.debugDrawContainer)
 
@@ -693,29 +489,18 @@ var gameScene = {
 
     // set up input buttons
     leftButton = buttonAreaFactory({
-      width: global.renderer.view.width / 2,
+      width: global.renderer.view.width,
       height: global.renderer.view.height,
       touchStart: onLeftDown,
-      touchEnd: onLeftUp,
-    })
-
-    rightButton = buttonAreaFactory({
-      width: global.renderer.view.width / 2,
-      height: global.renderer.view.height,
-      x: global.renderer.view.width / 2,
-      touchStart: onRightDown,
-      touchEnd: onRightUp,
     })
 
     var indicatorContainer = new PIXI.Container()
 
     guiLayer.addChild(indicatorContainer)
     guiLayer.addChild(leftButton)
-    guiLayer.addChild(rightButton)
 
     // set up physics
     createNinja()
-    createHooks() // depends on createNinja
     mapLoader.loadMap({ // depends on createNinja
       name: currentLevel.name,
       world: world,
@@ -738,18 +523,12 @@ var gameScene = {
       balloonHolderBody: ninjaBalloonHolderBody,
     })
 
-    // set up ninja and hook graphics
-    createHookSprite(this.stage)
+    // set up ninja
     ninjaGraphics = new NinjaGraphics({
       container: this.stage,
       ninjaHeight: 1.5,
       pixelsPerMeter: pixelsPerMeter,
       spriteUtilities: spriteUtilities,
-      forwardHookAngle: Math.atan2(forwardHookRelativeAimY, forwardHookRelativeAimX),
-      upwardHookAngle: Math.atan2(upwardHookRelativeAimY, upwardHookRelativeAimX),
-      hookOffsetX: ninjaHandBody.position[0] * pixelsPerMeter,
-      hookOffsetY: ninjaHandBody.position[1] * pixelsPerMeter,
-      gameMode: currentLevel.gameMode,
     })
     ninjaGraphics.changeState(NinjaGraphics.STATE_INAIR_FALLING)
 
@@ -765,81 +544,10 @@ var gameScene = {
     // set up inputs
     document.addEventListener('keypress', onKeyPress.bind(this))
 
-    keyRight = new KeyButton({
-      key: 'ArrowRight',
-      onKeyDown: onRightDown,
-      onKeyUp: onRightUp,
-    })
-
     keyUp = new KeyButton({
       key: 'ArrowUp',
       onKeyDown: onLeftDown,
-      onKeyUp: onLeftUp,
     })
-
-    if (currentLevel.gameMode === global.levelManager.GAME_MODES.TUTORIAL_JUMP) {
-
-      // left buttons
-      jumpLeftTutorialButtonSprite = new PIXI.Sprite(
-          PIXI.loader.resources['jump_button'].texture)
-      jumpLeftTutorialButtonSprite.anchor.x = 0.5
-      jumpLeftTutorialButtonSprite.anchor.y = 0.5
-      jumpLeftTutorialButtonSprite.x = jumpLeftTutorialButtonSprite.width / 2
-      jumpLeftTutorialButtonSprite.y = heightInPixels - jumpLeftTutorialButtonSprite.height / 2
-      tutorialButtonLayer.addChild(jumpLeftTutorialButtonSprite)
-
-      ropeLeftTutorialButtonSprite = new PIXI.Sprite(
-          PIXI.loader.resources['upward_button'].texture)
-      ropeLeftTutorialButtonSprite.anchor.x = 0.5
-      ropeLeftTutorialButtonSprite.anchor.y = 0.5
-      ropeLeftTutorialButtonSprite.x = ropeLeftTutorialButtonSprite.width / 2
-      ropeLeftTutorialButtonSprite.y = heightInPixels - ropeLeftTutorialButtonSprite.height / 2
-      tutorialButtonLayer.addChild(ropeLeftTutorialButtonSprite)
-
-      leftTutorialButton = new TutorialButton({
-        stateSprites: [
-          {
-            state: TUTORIAL_BUTTON_RUNNING,
-            sprite: jumpLeftTutorialButtonSprite
-          },
-          {
-            state: TUTORIAL_BUTTON_IN_AIR,
-            sprite: ropeLeftTutorialButtonSprite,
-          }
-        ]
-      })
-
-      // right buttons
-      jumpRightTutorialButtonSprite = new PIXI.Sprite(
-          PIXI.loader.resources['jump_button'].texture)
-      jumpRightTutorialButtonSprite.anchor.x = 0.5
-      jumpRightTutorialButtonSprite.anchor.y = 0.5
-      jumpRightTutorialButtonSprite.x = global.renderer.view.width - jumpRightTutorialButtonSprite.width / 2
-      jumpRightTutorialButtonSprite.y = heightInPixels - jumpRightTutorialButtonSprite.height / 2
-      tutorialButtonLayer.addChild(jumpRightTutorialButtonSprite)
-
-      ropeRightTutorialButtonSprite = new PIXI.Sprite(
-          PIXI.loader.resources['forward_button'].texture)
-      ropeRightTutorialButtonSprite.anchor.x = 0.5
-      ropeRightTutorialButtonSprite.anchor.y = 0.5
-      ropeRightTutorialButtonSprite.x = global.renderer.view.width - ropeRightTutorialButtonSprite.width / 2
-      ropeRightTutorialButtonSprite.y = heightInPixels - ropeRightTutorialButtonSprite.height / 2
-      tutorialButtonLayer.addChild(ropeRightTutorialButtonSprite)
-
-      rightTutorialButton = new TutorialButton({
-        stateSprites: [
-          {
-            state: TUTORIAL_BUTTON_RUNNING,
-            sprite: jumpRightTutorialButtonSprite
-          },
-          {
-            state: TUTORIAL_BUTTON_IN_AIR,
-            sprite: ropeRightTutorialButtonSprite,
-          }
-        ]
-      })
-
-    }
 
     isPaused = false
 
@@ -849,7 +557,6 @@ var gameScene = {
   },
   destroy: function () {
     this.container.destroy()
-    keyRight.destroy()
     keyUp.destroy()
     balloonManager.destroy()
   },
@@ -866,16 +573,11 @@ var gameScene = {
     var stepInSeconds = stepInMilliseconds / 1000
     world.step(stepInSeconds)
 
-    ninjaGraphics.update() // TODO: send in stepMs too (but YAGNI)
-
   },
   draw: function (renderer, ratio) {
 
     var a
     var b
-    var currentHook
-    var hookBodyX
-    var hookBodyY
     var rotation
     var x
     var y
@@ -887,8 +589,6 @@ var gameScene = {
     if (isPaused) {
       return
     }
-
-    currentHook = null
 
     x = gameUtils.calcInterpolatedValue(
         ninjaBody.position[0],
@@ -911,56 +611,13 @@ var gameScene = {
         rotation,
         ninjaBody)
 
-    if (forwardHook.isHooked) {
-      currentHook = forwardHook
-    } else if (upwardHook.isHooked) {
-      currentHook = upwardHook
-    }
-
-    if (currentHook) {
-
-      ropeSprite.visible = true
-
-      hookBodyX = gameUtils.calcInterpolatedValue(
-          currentHook.body.position[0],
-          currentHook.body.previousPosition[0],
-          ratio) * pixelsPerMeter
-      hookBodyY = gameUtils.calcInterpolatedValue(
-          currentHook.body.position[1],
-          currentHook.body.previousPosition[1],
-          ratio) * pixelsPerMeter
-
-      handX = gameUtils.calcInterpolatedValue(
-        ninjaHandBody.position[0],
-        ninjaHandBody.previousPosition[0],
-        ratio) * pixelsPerMeter
-
-      handY = gameUtils.calcInterpolatedValue(
-        ninjaHandBody.position[1],
-        ninjaHandBody.previousPosition[1],
-        ratio) * pixelsPerMeter
-
-      a = hookBodyX - handX
-      b = hookBodyY - handY
-      ropeSprite.x = handX
-      ropeSprite.y = handY
-      ropeSprite.width = Math.sqrt(a * a + b * b)
-      ropeSprite.rotation = Math.atan2(b, a)
-
-    } else {
-
-      ropeSprite.visible = false
-    }
-
     balloonManager.draw(ratio)
 
     for (var i = 0; i < world.bodies.length; i++) {
       var body = world.bodies[i]
 
       if (body.type === p2.Body.DYNAMIC &&
-          body.name !== 'ninjaBody' &&
-          body.name !== 'ninjaHandBody' &&
-          body.name !== 'hook') {
+          body.name !== 'ninjaBody') {
 
         x = gameUtils.calcInterpolatedValue(
             body.position[0],
