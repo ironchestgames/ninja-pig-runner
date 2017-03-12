@@ -31,15 +31,10 @@ LevelManager.prototype.addLevel = function (config) {
   var level = {}
   level.name = config.name
   level.theme = config.theme
-  level.gameMode = config.gameMode
   level.isDone = config.isDone || false
   this.levelProgression.push(level)
 
   return this
-}
-
-LevelManager.prototype.GAME_MODES = {
-  TUTORIAL_JUMP: 'TUTORIAL_JUMP',
 }
 
 module.exports = LevelManager

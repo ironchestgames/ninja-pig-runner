@@ -386,8 +386,7 @@ var beginContact = function (contactEvent) {
     // TODO: replace with balloon corpse instead
   }
 
-  if (currentLevel.gameMode === global.levelManager.GAME_MODES.TUTORIAL_JUMP &&
-      (contactEvent.bodyA.name === 'ninjaBody' || contactEvent.bodyB.name === 'ninjaBody') &&
+  if ((contactEvent.bodyA.name === 'ninjaBody' || contactEvent.bodyB.name === 'ninjaBody') &&
       (contactEvent.bodyA.name === 'coin' || contactEvent.bodyB.name === 'coin')) {
 
     var coinBody = contactEvent.bodyA
