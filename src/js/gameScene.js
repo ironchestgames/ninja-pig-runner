@@ -578,7 +578,7 @@ var gameScene = {
     }
 
     var stepInSeconds = stepInMilliseconds / 1000
-    world.step(stepInSeconds)
+    world.step(stepInSeconds * 1.15)
 
   },
   draw: function (renderer, ratio) {
