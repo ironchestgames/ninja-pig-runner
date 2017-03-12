@@ -31,9 +31,10 @@ var stageToNinjaOffsetX
 var world
 var bodiesToRemove = []
 
-var leftButton
+var jumpButton
 
 var keyUp
+var keySpace
 
 var shouldJump = false
 var isRunning = false
@@ -63,8 +64,8 @@ var ninjaRightSensor
 
 var tempVector = [0, 0]
 
-var onLeftDown = function (event) {
-  buttonsLog('onLeftDown', event)
+var onJumpDown = function (event) {
+  buttonsLog('onJumpDown', event)
   if (isRunning) {
     shouldJump = true
   }
@@ -488,16 +489,16 @@ var gameScene = {
     this.backgroundLayer.addChild(backgroundSprite)
 
     // set up input buttons
-    leftButton = buttonAreaFactory({
+    jumpButton = buttonAreaFactory({
       width: global.renderer.view.width,
       height: global.renderer.view.height,
-      touchStart: onLeftDown,
+      touchStart: onJumpDown,
     })
 
     var indicatorContainer = new PIXI.Container()
 
     guiLayer.addChild(indicatorContainer)
-    guiLayer.addChild(leftButton)
+    guiLayer.addChild(jumpButton)
 
     // set up physics
     createNinja()
@@ -546,7 +547,12 @@ var gameScene = {
 
     keyUp = new KeyButton({
       key: 'ArrowUp',
-      onKeyDown: onLeftDown,
+      onKeyDown: onJumpDown,
+    })
+
+    keySpace = new KeyButton({
+      key: ' ',
+      onKeyDown: onJumpDown,
     })
 
     isPaused = false
@@ -558,6 +564,7 @@ var gameScene = {
   destroy: function () {
     this.container.destroy()
     keyUp.destroy()
+    keySpace.destroy()
     balloonManager.destroy()
   },
   update: function (stepInMilliseconds) {

@@ -55,8 +55,8 @@ var splashScene = {
       onKeyUp: startGame,
     })
 
-    this.keyRight = new KeyButton({
-      key: 'ArrowRight',
+    this.keySpace = new KeyButton({
+      key: ' ',
       onKeyUp: startGame,
     })
 
@@ -65,7 +65,7 @@ var splashScene = {
   },
   destroy: function () {
     this.container.destroy()
-    this.keyRight.destroy()
+    this.keySpace.destroy()
     this.keyUp.destroy()
   },
   update: function () {
