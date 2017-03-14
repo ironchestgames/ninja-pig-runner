@@ -34,6 +34,8 @@ var jumpButton
 var keyUp
 var keySpace
 
+var isJumpButtonDown = false
+
 var shouldJump = false
 var isRunning = false
 
@@ -61,9 +63,12 @@ var tempVector = [0, 0]
 
 var onJumpDown = function (event) {
   buttonsLog('onJumpDown', event)
-  if (isRunning) {
-    shouldJump = true
-  }
+  isJumpButtonDown = true
+}
+
+var onJumpUp = function (event) {
+  buttonsLog('onJumpUp', event)
+  isJumpButtonDown = false
 }
 
 // TODO: remove, this is only for debug
@@ -189,6 +194,11 @@ var createNinja = function() {
 var postStep = function () {
 
   actionsLog('STEP')
+
+  // check for input
+  if (isJumpButtonDown && isRunning) {
+    shouldJump = true
+  }
 
   // remove bodies from bodiesToRemove
   while (bodiesToRemove.length > 0) {
@@ -413,7 +423,10 @@ var gameScene = {
       width: global.renderer.view.width,
       height: global.renderer.view.height,
       touchStart: onJumpDown,
+      touchEnd: onJumpUp,
     })
+
+    isJumpButtonDown = false
 
     guiLayer.addChild(jumpButton)
 
@@ -450,11 +463,13 @@ var gameScene = {
     keyUp = new KeyButton({
       key: 'ArrowUp',
       onKeyDown: onJumpDown,
+      onKeyUp: onJumpUp,
     })
 
     keySpace = new KeyButton({
       key: ' ',
       onKeyDown: onJumpDown,
+      onKeyUp: onJumpUp,
     })
 
     isPaused = false
