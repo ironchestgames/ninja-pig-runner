@@ -13,6 +13,177 @@
 			"name" : "coin",
 			"position" : 
 			{
+				"x" : 16.0,
+				"y" : -5
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 12.0,
+				"y" : -6
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"fixture" : 
+			[
+				
+				{
+					"density" : 1,
+					"friction" : 0.2,
+					"name" : "fixture1",
+					"polygon" : 
+					{
+						"vertices" : 
+						{
+							"x" : [ 0.0, 0.0, -4 ],
+							"y" : [ -0.5, 0.5, -0.5 ]
+						}
+					}
+				}
+			],
+			"linearVelocity" : 0,
+			"name" : "wall",
+			"position" : 
+			{
+				"x" : 16.0,
+				"y" : -6.5
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 14.0,
+				"y" : -5.5
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 65.50,
+				"y" : -7
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 69.50,
+				"y" : -7
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 67.50,
+				"y" : -7
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 82.0,
+				"y" : -6
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 78.0,
+				"y" : -7
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 80.0,
+				"y" : -6.5
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "star",
+			"position" : 
+			{
+				"x" : 15.0,
+				"y" : -2
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "star",
+			"position" : 
+			{
 				"x" : 47.0,
 				"y" : -8
 			},
@@ -57,48 +228,6 @@
 			{
 				"x" : 39.0,
 				"y" : -2.5
-			},
-			"type" : 0
-		},
-		
-		{
-			"angle" : 0,
-			"angularVelocity" : 0,
-			"awake" : true,
-			"linearVelocity" : 0,
-			"name" : "coin",
-			"position" : 
-			{
-				"x" : 41.0,
-				"y" : -8
-			},
-			"type" : 0
-		},
-		
-		{
-			"angle" : 0,
-			"angularVelocity" : 0,
-			"awake" : true,
-			"linearVelocity" : 0,
-			"name" : "coin",
-			"position" : 
-			{
-				"x" : 43.0,
-				"y" : -8
-			},
-			"type" : 0
-		},
-		
-		{
-			"angle" : 0,
-			"angularVelocity" : 0,
-			"awake" : true,
-			"linearVelocity" : 0,
-			"name" : "coin",
-			"position" : 
-			{
-				"x" : 45.0,
-				"y" : -8
 			},
 			"type" : 0
 		},
@@ -297,7 +426,7 @@
 			"name" : "coin",
 			"position" : 
 			{
-				"x" : 13.0,
+				"x" : 8,
 				"y" : -6
 			},
 			"type" : 0
@@ -311,7 +440,7 @@
 			"name" : "coin",
 			"position" : 
 			{
-				"x" : 11.0,
+				"x" : 6,
 				"y" : -6
 			},
 			"type" : 0
@@ -356,7 +485,7 @@
 			"name" : "coin",
 			"position" : 
 			{
-				"x" : 15.0,
+				"x" : 10,
 				"y" : -6
 			},
 			"type" : 0

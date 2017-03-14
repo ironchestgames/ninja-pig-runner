@@ -310,7 +310,8 @@ var beginContact = function (contactEvent) {
   }
 
   if ((contactEvent.bodyA.name === 'ninjaBody' || contactEvent.bodyB.name === 'ninjaBody') &&
-      (contactEvent.bodyA.name === 'coin' || contactEvent.bodyB.name === 'coin')) {
+      ((contactEvent.bodyA.name === 'coin' || contactEvent.bodyB.name === 'coin') || 
+      (contactEvent.bodyA.name === 'star' || contactEvent.bodyB.name === 'star'))) {
 
     var coinBody = contactEvent.bodyA
     if (contactEvent.bodyA.name === 'ninjaBody') {

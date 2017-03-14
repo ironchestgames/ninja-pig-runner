@@ -203,7 +203,7 @@ MapLoader.prototype.loadMap = function (config) {
         propLayer.addChild(sprite)
       }
 
-    } else if (bodyData.name === 'coin') {
+    } else if (bodyData.name === 'coin' || bodyData.name === 'star') {
 
       body = new p2.Body({
         position: [bodyData.position.x, -bodyData.position.y],

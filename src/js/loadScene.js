@@ -51,6 +51,7 @@ var loadScene = {
     .add('headband1', 'assets/images/headband1.png')
     .add('headband2', 'assets/images/headband2.png')
     .add('coin', 'assets/images/coin.png')
+    .add('star', 'assets/images/star.png')
     .add('level1', 'assets/json/level1.json') // TODO: bake this into bundle.js instead
     .add('level2', 'assets/json/level2.json') // TODO: bake this into bundle.js instead
     .add('level3', 'assets/json/level3.json') // TODO: bake this into bundle.js instead
