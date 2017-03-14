@@ -13,6 +13,34 @@
 			"name" : "coin",
 			"position" : 
 			{
+				"x" : 89.0,
+				"y" : -3
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "star",
+			"position" : 
+			{
+				"x" : 89.0,
+				"y" : -8
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
 				"x" : 16.0,
 				"y" : -5
 			},

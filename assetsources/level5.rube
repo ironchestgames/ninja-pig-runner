@@ -675,6 +675,36 @@
           "y" : -5
         },
         "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 102,
+        "linearVelocity" : 0,
+        "name" : "star",
+        "position" : 
+        {
+          "x" : 89.0,
+          "y" : -8
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 103,
+        "linearVelocity" : 0,
+        "name" : "coin",
+        "position" : 
+        {
+          "x" : 89.0,
+          "y" : -3
+        },
+        "type" : "static"
       }
     ],
     "positionIterations" : 3,
