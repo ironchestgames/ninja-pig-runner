@@ -161,8 +161,8 @@ var createNinja = function() {
   // sensor left
   ninjaLeftSensor = new NinjaSensor({
     name: 'ninjaLeftSensor',
-    width: 0.15,
-    height: 0.5,
+    width: 0.2,
+    height: 1,
     collisionGroup: gameVars.SENSOR,
     collisionMask: gameVars.WALL,
     relativePosition: [-ninjaRadius, 0],
@@ -173,8 +173,8 @@ var createNinja = function() {
   // sensor right
   ninjaRightSensor = new NinjaSensor({
     name: 'ninjaRightSensor',
-    width: 0.15,
-    height: 0.5,
+    width: 0.2,
+    height: 1,
     collisionGroup: gameVars.SENSOR,
     collisionMask: gameVars.WALL,
     relativePosition: [ninjaRadius, 0],

@@ -215,7 +215,7 @@ MapLoader.prototype.loadMap = function (config) {
       body.name = bodyData.name // NOTE: not in p2 spec, but a nice-to-have for debugging purposes
 
       shape = new p2.Circle({
-        radius: ninjaRadius * 0.7,
+        radius: ninjaRadius,
         collisionGroup: gameVars.COIN,
         collisionMask: gameVars.PLAYER,
         collisionResponse: false,
