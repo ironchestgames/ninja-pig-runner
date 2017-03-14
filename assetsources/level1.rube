@@ -59,107 +59,6 @@
     [
       
       {
-        "angle" : 3.141592502593994,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "fixture" : 
-        [
-          
-          {
-            "density" : 1,
-            "friction" : 0.2,
-            "id" : 1,
-            "name" : "fixture0",
-            "shapes" : 
-            [
-              
-              {
-                "type" : "polygon"
-              }
-            ],
-            "vertices" : 
-            {
-              "x" : [ 2.304837107658386e-05, 3.821372747421265, -3.821357965469360 ],
-              "y" : [ -1.062290191650391, 1.062285065650940, 1.062283873558044 ]
-            }
-          }
-        ],
-        "id" : 1,
-        "linearVelocity" : 0,
-        "name" : "wall",
-        "position" : 
-        {
-          "x" : 122.8469085693359,
-          "y" : -9.069252014160156
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 0,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "fixture" : 
-        [
-          
-          {
-            "density" : 1,
-            "friction" : 0.2,
-            "id" : 2,
-            "name" : "fixture1",
-            "shapes" : 
-            [
-              
-              {
-                "type" : "polygon"
-              }
-            ],
-            "vertices" : 
-            {
-              "x" : 
-              [
-                -2.739212036132812,
-                2.739212036132812,
-                2.739212036132812,
-                -2.739212036132812
-              ],
-              "y" : 
-              [
-                -0.2136211395263672,
-                -0.2136211395263672,
-                0.2167186737060547,
-                0.2167186737060547
-              ]
-            }
-          }
-        ],
-        "id" : 2,
-        "linearVelocity" : 0,
-        "name" : "invisible_wall",
-        "position" : 
-        {
-          "x" : 97.44673156738281,
-          "y" : -4.354670047760010
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 0,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "id" : 3,
-        "linearVelocity" : 0,
-        "name" : "balloon",
-        "position" : 
-        {
-          "x" : 27.47556304931641,
-          "y" : -9.205515861511230
-        },
-        "type" : "static"
-      },
-      
-      {
         "angle" : 0,
         "angularVelocity" : 0,
         "awake" : true,
@@ -184,8 +83,8 @@
           {
             "density" : 1,
             "friction" : 0.2,
-            "id" : 4,
-            "name" : "fixture0",
+            "id" : 3,
+            "name" : "fixture2",
             "shapes" : 
             [
               
@@ -195,208 +94,8 @@
             ],
             "vertices" : 
             {
-              "x" : 
-              [
-                9.010638236999512,
-                -9.010616302490234,
-                -9.010616302490234,
-                9.010638236999512
-              ],
-              "y" : 
-              [
-                2.044120788574219,
-                2.044120788574219,
-                -2.044121742248535,
-                -2.044121742248535
-              ]
-            }
-          }
-        ],
-        "id" : 5,
-        "linearVelocity" : 0,
-        "name" : "wall",
-        "position" : 
-        {
-          "x" : 8.761256217956543,
-          "y" : -9.775070190429688
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 0,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "id" : 6,
-        "linearVelocity" : 0,
-        "name" : "balloon",
-        "position" : 
-        {
-          "x" : 73.25853729248047,
-          "y" : -7.988570213317871
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 0,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "id" : 7,
-        "linearVelocity" : 0,
-        "name" : "balloon",
-        "position" : 
-        {
-          "x" : 50.04052352905273,
-          "y" : -7.172227859497070
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 0,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "id" : 8,
-        "linearVelocity" : 0,
-        "name" : "balloon",
-        "position" : 
-        {
-          "x" : 129.6915740966797,
-          "y" : -9.583588600158691
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 0,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "id" : 9,
-        "linearVelocity" : 0,
-        "name" : "balloon",
-        "position" : 
-        {
-          "x" : 148.4291839599609,
-          "y" : -10.46936130523682
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 0,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "id" : 10,
-        "linearVelocity" : 0,
-        "name" : "balloon",
-        "position" : 
-        {
-          "x" : 198.0003356933594,
-          "y" : -11.31460571289062
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 0,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "id" : 11,
-        "linearVelocity" : 0,
-        "name" : "balloon",
-        "position" : 
-        {
-          "x" : 163.8560180664062,
-          "y" : -10.23211383819580
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 3.141592502593994,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "fixture" : 
-        [
-          
-          {
-            "density" : 1,
-            "friction" : 0.2,
-            "id" : 16,
-            "name" : "fixture0",
-            "shapes" : 
-            [
-              
-              {
-                "type" : "polygon"
-              }
-            ],
-            "vertices" : 
-            {
-              "x" : 
-              [
-                -3.135329484939575,
-                3.135300397872925,
-                3.135298967361450,
-                -3.135330915451050
-              ],
-              "y" : 
-              [
-                -4.430445194244385,
-                -4.430444240570068,
-                4.430441379547119,
-                4.430440425872803
-              ]
-            }
-          }
-        ],
-        "id" : 17,
-        "linearVelocity" : 0,
-        "name" : "wall",
-        "position" : 
-        {
-          "x" : 175.3697967529297,
-          "y" : 0.02468109130859375
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 3.141592502593994,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "fixture" : 
-        [
-          
-          {
-            "density" : 1,
-            "friction" : 0.2,
-            "id" : 17,
-            "name" : "fixture0",
-            "shapes" : 
-            [
-              
-              {
-                "type" : "polygon"
-              }
-            ],
-            "vertices" : 
-            {
-              "x" : 
-              [
-                -0.8679804205894470,
-                0.8679814934730530,
-                0.8679804205894470,
-                -0.8679814934730530
-              ],
-              "y" : 
-              [
-                -3.618470907211304,
-                -3.618470430374146,
-                3.618467569351196,
-                3.618467092514038
-              ]
+              "x" : [ -5, 5, 5, -5 ],
+              "y" : [ -0.5, -0.5, 0.5, 0.5 ]
             }
           }
         ],
@@ -405,14 +104,14 @@
         "name" : "wall",
         "position" : 
         {
-          "x" : 166.9214019775391,
-          "y" : -6.789926528930664
+          "x" : 5,
+          "y" : 0.5
         },
         "type" : "static"
       },
       
       {
-        "angle" : 3.579305887222290,
+        "angle" : 0,
         "angularVelocity" : 0,
         "awake" : true,
         "fixture" : 
@@ -421,8 +120,8 @@
           {
             "density" : 1,
             "friction" : 0.2,
-            "id" : 19,
-            "name" : "fixture0",
+            "id" : 5,
+            "name" : "fixture1",
             "shapes" : 
             [
               
@@ -432,226 +131,33 @@
             ],
             "vertices" : 
             {
-              "x" : 
-              [
-                -6.504775524139404,
-                6.504715442657471,
-                6.504714488983154,
-                -6.504776477813721
-              ],
-              "y" : 
-              [
-                -4.430445671081543,
-                -4.430443763732910,
-                4.430441856384277,
-                4.430439949035645
-              ]
+              "x" : [ -4, 0.0, 0.0 ],
+              "y" : [ -0.5, -0.5, 0.5 ]
             }
           }
         ],
-        "id" : 20,
+        "id" : 19,
         "linearVelocity" : 0,
         "name" : "wall",
         "position" : 
         {
-          "x" : 182.5186309814453,
-          "y" : 2.364156723022461
+          "x" : 14.0,
+          "y" : 0.5
         },
         "type" : "static"
       },
       
       {
-        "angle" : 3.141592502593994,
+        "angle" : 0,
         "angularVelocity" : 0,
         "awake" : true,
-        "fixture" : 
-        [
-          
-          {
-            "density" : 1,
-            "friction" : 0.2,
-            "id" : 21,
-            "name" : "fixture0",
-            "shapes" : 
-            [
-              
-              {
-                "type" : "polygon"
-              }
-            ],
-            "vertices" : 
-            {
-              "x" : 
-              [
-                -4.297912120819092,
-                4.297882556915283,
-                4.297881603240967,
-                -4.297913074493408
-              ],
-              "y" : 
-              [
-                -4.430445194244385,
-                -4.430444240570068,
-                4.430441379547119,
-                4.430440425872803
-              ]
-            }
-          }
-        ],
-        "id" : 22,
+        "id" : 21,
         "linearVelocity" : 0,
-        "name" : "wall",
+        "name" : "coin",
         "position" : 
         {
-          "x" : 176.5323638916016,
-          "y" : -13.68653297424316
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 3.579305887222290,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "fixture" : 
-        [
-          
-          {
-            "density" : 1,
-            "friction" : 0.2,
-            "id" : 22,
-            "name" : "fixture0",
-            "shapes" : 
-            [
-              
-              {
-                "type" : "polygon"
-              }
-            ],
-            "vertices" : 
-            {
-              "x" : 
-              [
-                -6.504775524139404,
-                6.504715442657471,
-                6.504714488983154,
-                -6.504776477813721
-              ],
-              "y" : 
-              [
-                -4.430445671081543,
-                -4.430443763732910,
-                4.430441856384277,
-                4.430439949035645
-              ]
-            }
-          }
-        ],
-        "id" : 23,
-        "linearVelocity" : 0,
-        "name" : "wall",
-        "position" : 
-        {
-          "x" : 182.2037200927734,
-          "y" : -13.07242965698242
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 3.141592502593994,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "fixture" : 
-        [
-          
-          {
-            "density" : 1,
-            "friction" : 0.2,
-            "id" : 23,
-            "name" : "fixture0",
-            "shapes" : 
-            [
-              
-              {
-                "type" : "polygon"
-              }
-            ],
-            "vertices" : 
-            {
-              "x" : 
-              [
-                -2.992491960525513,
-                2.992493391036987,
-                2.992491960525513,
-                -2.992493391036987
-              ],
-              "y" : 
-              [
-                -4.430445194244385,
-                -4.430444240570068,
-                4.430441379547119,
-                4.430440425872803
-              ]
-            }
-          }
-        ],
-        "id" : 24,
-        "linearVelocity" : 0,
-        "name" : "wall",
-        "position" : 
-        {
-          "x" : 189.2097930908203,
-          "y" : -10.73294162750244
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 3.141592502593994,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "fixture" : 
-        [
-          
-          {
-            "density" : 1,
-            "friction" : 0.2,
-            "id" : 24,
-            "name" : "fixture0",
-            "shapes" : 
-            [
-              
-              {
-                "type" : "polygon"
-              }
-            ],
-            "vertices" : 
-            {
-              "x" : 
-              [
-                -4.595763683319092,
-                4.595764636993408,
-                4.595763683319092,
-                -4.595764636993408
-              ],
-              "y" : 
-              [
-                -4.430445194244385,
-                -4.430444240570068,
-                4.430441379547119,
-                4.430440425872803
-              ]
-            }
-          }
-        ],
-        "id" : 25,
-        "linearVelocity" : 0,
-        "name" : "wall",
-        "position" : 
-        {
-          "x" : 187.6065216064453,
-          "y" : 3.413626670837402
+          "x" : 15.750,
+          "y" : 0.5
         },
         "type" : "static"
       },
@@ -699,8 +205,38 @@
         "name" : "goal",
         "position" : 
         {
-          "x" : 224.3582763671875,
-          "y" : 1.562089800834656
+          "x" : 35.0,
+          "y" : 12.0
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 27,
+        "linearVelocity" : 0,
+        "name" : "star",
+        "position" : 
+        {
+          "x" : 17.250,
+          "y" : 0.5
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 32,
+        "linearVelocity" : 0,
+        "name" : "coin",
+        "position" : 
+        {
+          "x" : 47.50,
+          "y" : -5
         },
         "type" : "static"
       },
@@ -715,8 +251,8 @@
           {
             "density" : 1,
             "friction" : 0.2,
-            "id" : 34,
-            "name" : "fixture0",
+            "id" : 10,
+            "name" : "fixture1",
             "shapes" : 
             [
               
@@ -726,36 +262,69 @@
             ],
             "vertices" : 
             {
-              "x" : 
-              [
-                -7.002037048339844,
-                7.002037048339844,
-                7.002037048339844,
-                -7.002037048339844
-              ],
-              "y" : 
-              [
-                -2.106302261352539,
-                -2.106302261352539,
-                2.106301307678223,
-                2.106301307678223
-              ]
+              "x" : [ -4, 0.0, 0.0 ],
+              "y" : [ -0.5, -0.5, 0.5 ]
             }
           }
         ],
-        "id" : 41,
+        "id" : 33,
         "linearVelocity" : 0,
         "name" : "wall",
         "position" : 
         {
-          "x" : 37.22539520263672,
-          "y" : -9.723648071289062
+          "x" : 49.50,
+          "y" : -6
         },
         "type" : "static"
       },
       
       {
-        "angle" : 3.141592502593994,
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 34,
+        "linearVelocity" : 0,
+        "name" : "coin",
+        "position" : 
+        {
+          "x" : 45.50,
+          "y" : -5.5
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 35,
+        "linearVelocity" : 0,
+        "name" : "coin",
+        "position" : 
+        {
+          "x" : 49.50,
+          "y" : -4.5
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 36,
+        "linearVelocity" : 0,
+        "name" : "star",
+        "position" : 
+        {
+          "x" : 52.0,
+          "y" : -6
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
         "angularVelocity" : 0,
         "awake" : true,
         "fixture" : 
@@ -764,8 +333,246 @@
           {
             "density" : 1,
             "friction" : 0.2,
-            "id" : 40,
-            "name" : "fixture0",
+            "id" : 11,
+            "name" : "fixture2",
+            "shapes" : 
+            [
+              
+              {
+                "type" : "polygon"
+              }
+            ],
+            "vertices" : 
+            {
+              "x" : [ -10, 10, 10, -10 ],
+              "y" : [ -2.5, -2.5, 2.5, 2.5 ]
+            }
+          }
+        ],
+        "id" : 37,
+        "linearVelocity" : 0,
+        "name" : "wall",
+        "position" : 
+        {
+          "x" : 11.0,
+          "y" : -9
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "fixture" : 
+        [
+          
+          {
+            "density" : 1,
+            "friction" : 0.2,
+            "id" : 12,
+            "name" : "fixture2",
+            "shapes" : 
+            [
+              
+              {
+                "type" : "polygon"
+              }
+            ],
+            "vertices" : 
+            {
+              "x" : [ -10, 10, 10, -10 ],
+              "y" : [ -2.5, -2.5, 2.5, 2.5 ]
+            }
+          }
+        ],
+        "id" : 38,
+        "linearVelocity" : 0,
+        "name" : "wall",
+        "position" : 
+        {
+          "x" : 43.0,
+          "y" : -9
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "fixture" : 
+        [
+          
+          {
+            "density" : 1,
+            "friction" : 0.2,
+            "id" : 13,
+            "name" : "fixture2",
+            "shapes" : 
+            [
+              
+              {
+                "type" : "polygon"
+              }
+            ],
+            "vertices" : 
+            {
+              "x" : [ -6.299995422363281, 6.3, 6.3, -6.299995422363281 ],
+              "y" : [ -0.5, -0.5, 0.5, 0.5 ]
+            }
+          }
+        ],
+        "id" : 39,
+        "linearVelocity" : 0,
+        "name" : "wall",
+        "position" : 
+        {
+          "x" : 62.79999923706055,
+          "y" : -3.5
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 40,
+        "linearVelocity" : 0,
+        "name" : "coin",
+        "position" : 
+        {
+          "x" : 57.50,
+          "y" : -2
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 41,
+        "linearVelocity" : 0,
+        "name" : "coin",
+        "position" : 
+        {
+          "x" : 59.50,
+          "y" : -2
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 42,
+        "linearVelocity" : 0,
+        "name" : "coin",
+        "position" : 
+        {
+          "x" : 61.50,
+          "y" : -2
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 43,
+        "linearVelocity" : 0,
+        "name" : "coin",
+        "position" : 
+        {
+          "x" : 63.50,
+          "y" : -2
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 44,
+        "linearVelocity" : 0,
+        "name" : "coin",
+        "position" : 
+        {
+          "x" : 65.50,
+          "y" : -2
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "fixture" : 
+        [
+          
+          {
+            "density" : 1,
+            "friction" : 0.2,
+            "id" : 14,
+            "name" : "fixture2",
+            "shapes" : 
+            [
+              
+              {
+                "type" : "polygon"
+              }
+            ],
+            "vertices" : 
+            {
+              "x" : [ -5, 5, 5, -5 ],
+              "y" : [ -2, -2, 2, 2 ]
+            }
+          }
+        ],
+        "id" : 45,
+        "linearVelocity" : 0,
+        "name" : "wall",
+        "position" : 
+        {
+          "x" : 61.50,
+          "y" : -9
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 46,
+        "linearVelocity" : 0,
+        "name" : "star",
+        "position" : 
+        {
+          "x" : 65.50,
+          "y" : -6.5
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 1.570796370506287,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "fixture" : 
+        [
+          
+          {
+            "density" : 1,
+            "friction" : 0.2,
+            "id" : 15,
+            "name" : "fixture2",
             "shapes" : 
             [
               
@@ -777,18 +584,12 @@
             {
               "x" : 
               [
-                -8.303756713867188,
-                8.303863525390625,
-                8.303863525390625,
-                -8.303756713867188
+                -1.963282227516174,
+                1.963281989097595,
+                1.963280081748962,
+                -1.963281989097595
               ],
-              "y" : 
-              [
-                -0.9747479557991028,
-                -0.9747454524040222,
-                0.9747479557991028,
-                0.9747454524040222
-              ]
+              "y" : [ -3, -3, 3, 3 ]
             }
           }
         ],
@@ -797,14 +598,14 @@
         "name" : "wall",
         "position" : 
         {
-          "x" : 141.4623260498047,
-          "y" : -5.173650741577148
+          "x" : 72.0,
+          "y" : -4.963282108306885
         },
         "type" : "static"
       },
       
       {
-        "angle" : 3.141592502593994,
+        "angle" : 0,
         "angularVelocity" : 0,
         "awake" : true,
         "fixture" : 
@@ -813,8 +614,8 @@
           {
             "density" : 1,
             "friction" : 0.2,
-            "id" : 54,
-            "name" : "fixture0",
+            "id" : 16,
+            "name" : "fixture2",
             "shapes" : 
             [
               
@@ -824,8 +625,236 @@
             ],
             "vertices" : 
             {
-              "x" : [ 2.304837107658386e-05, 3.821372747421265, -3.821357965469360 ],
-              "y" : [ -1.062290191650391, 1.062285065650940, 1.062283873558044 ]
+              "x" : 
+              [
+                -4.258750915527344,
+                4.258766174316406,
+                4.258766174316406,
+                -4.258750915527344
+              ],
+              "y" : [ -0.5, -0.5, 0.5, 0.5 ]
+            }
+          }
+        ],
+        "id" : 48,
+        "linearVelocity" : 0,
+        "name" : "wall",
+        "position" : 
+        {
+          "x" : 70.75875854492188,
+          "y" : -10
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 49,
+        "linearVelocity" : 0,
+        "name" : "star",
+        "position" : 
+        {
+          "x" : 65.50,
+          "y" : -6.5
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "fixture" : 
+        [
+          
+          {
+            "density" : 1,
+            "friction" : 0.2,
+            "id" : 18,
+            "name" : "fixture2",
+            "shapes" : 
+            [
+              
+              {
+                "type" : "polygon"
+              }
+            ],
+            "vertices" : 
+            {
+              "x" : 
+              [
+                -4.258750915527344,
+                4.258766174316406,
+                4.258766174316406,
+                -4.258750915527344
+              ],
+              "y" : [ -0.5, -0.5, 0.5, 0.5 ]
+            }
+          }
+        ],
+        "id" : 51,
+        "linearVelocity" : 0,
+        "name" : "wall",
+        "position" : 
+        {
+          "x" : 70.75875854492188,
+          "y" : -10
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : -1.570796370506287,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "fixture" : 
+        [
+          
+          {
+            "density" : 1,
+            "friction" : 0.2,
+            "id" : 19,
+            "name" : "fixture2",
+            "shapes" : 
+            [
+              
+              {
+                "type" : "polygon"
+              }
+            ],
+            "vertices" : 
+            {
+              "x" : [ -6.299995422363281, 6.3, 6.3, -6.299995422363281 ],
+              "y" : [ -0.5, -0.5, 0.5, 0.5 ]
+            }
+          }
+        ],
+        "id" : 52,
+        "linearVelocity" : 0,
+        "name" : "wall",
+        "position" : 
+        {
+          "x" : 79.00000762939453,
+          "y" : -9.299995422363281
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 53,
+        "linearVelocity" : 0,
+        "name" : "star",
+        "position" : 
+        {
+          "x" : 76.0,
+          "y" : -5
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 54,
+        "linearVelocity" : 0,
+        "name" : "star",
+        "position" : 
+        {
+          "x" : 76.0,
+          "y" : -5
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 55,
+        "linearVelocity" : 0,
+        "name" : "coin",
+        "position" : 
+        {
+          "x" : 67.50,
+          "y" : -2
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 57,
+        "linearVelocity" : 0,
+        "name" : "coin",
+        "position" : 
+        {
+          "x" : 87.50,
+          "y" : -2
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 59,
+        "linearVelocity" : 0,
+        "name" : "coin",
+        "position" : 
+        {
+          "x" : 89.50,
+          "y" : -2
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 60,
+        "linearVelocity" : 0,
+        "name" : "coin",
+        "position" : 
+        {
+          "x" : 85.50,
+          "y" : -2
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "fixture" : 
+        [
+          
+          {
+            "density" : 1,
+            "friction" : 0.2,
+            "id" : 20,
+            "name" : "fixture2",
+            "shapes" : 
+            [
+              
+              {
+                "type" : "polygon"
+              }
+            ],
+            "vertices" : 
+            {
+              "x" : [ -6.299995422363281, 6.3, 6.3, -6.299995422363281 ],
+              "y" : [ -0.5, -0.5, 0.5, 0.5 ]
             }
           }
         ],
@@ -834,694 +863,8 @@
         "name" : "wall",
         "position" : 
         {
-          "x" : 111.7425765991211,
-          "y" : -9.069252014160156
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 0,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "fixture" : 
-        [
-          
-          {
-            "density" : 1,
-            "friction" : 0.2,
-            "id" : 56,
-            "name" : "fixture0",
-            "shapes" : 
-            [
-              
-              {
-                "type" : "polygon"
-              }
-            ],
-            "vertices" : 
-            {
-              "x" : 
-              [
-                -7.406034469604492,
-                7.406036376953125,
-                7.406036376953125,
-                -7.406034469604492
-              ],
-              "y" : 
-              [
-                -0.4006948471069336,
-                -0.4006948471069336,
-                0.4006948471069336,
-                0.4006948471069336
-              ]
-            }
-          }
-        ],
-        "id" : 63,
-        "linearVelocity" : 0,
-        "name" : "wall",
-        "position" : 
-        {
-          "x" : 37.22539520263672,
-          "y" : -7.846881866455078
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 3.141592502593994,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "fixture" : 
-        [
-          
-          {
-            "density" : 1,
-            "friction" : 0.2,
-            "id" : 63,
-            "name" : "fixture0",
-            "shapes" : 
-            [
-              
-              {
-                "type" : "polygon"
-              }
-            ],
-            "vertices" : 
-            {
-              "x" : 
-              [
-                -1.296172261238098,
-                1.296181559562683,
-                1.673903584480286,
-                -1.673905253410339
-              ],
-              "y" : 
-              [
-                -5.601962566375732,
-                -5.601962566375732,
-                5.601958751678467,
-                5.601957798004150
-              ]
-            }
-          }
-        ],
-        "id" : 64,
-        "linearVelocity" : 0,
-        "name" : "wall",
-        "position" : 
-        {
-          "x" : 95.99359893798828,
-          "y" : -9.751377105712891
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 0,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "fixture" : 
-        [
-          
-          {
-            "density" : 1,
-            "friction" : 0.2,
-            "id" : 57,
-            "name" : "fixture0",
-            "shapes" : 
-            [
-              
-              {
-                "type" : "polygon"
-              }
-            ],
-            "vertices" : 
-            {
-              "x" : 
-              [
-                -7.002037048339844,
-                7.002037048339844,
-                7.002037048339844,
-                -7.002037048339844
-              ],
-              "y" : 
-              [
-                -2.106302261352539,
-                -2.106302261352539,
-                2.106301307678223,
-                2.106301307678223
-              ]
-            }
-          }
-        ],
-        "id" : 65,
-        "linearVelocity" : 0,
-        "name" : "wall",
-        "position" : 
-        {
-          "x" : 62.52095031738281,
-          "y" : -9.723648071289062
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 0,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "fixture" : 
-        [
-          
-          {
-            "density" : 1,
-            "friction" : 0.2,
-            "id" : 65,
-            "name" : "fixture0",
-            "shapes" : 
-            [
-              
-              {
-                "type" : "polygon"
-              }
-            ],
-            "vertices" : 
-            {
-              "x" : 
-              [
-                -0.867980957031250,
-                0.867980957031250,
-                0.867980957031250,
-                -0.867980957031250
-              ],
-              "y" : 
-              [
-                -2.106302261352539,
-                -2.106302261352539,
-                2.106301307678223,
-                2.106301307678223
-              ]
-            }
-          }
-        ],
-        "id" : 66,
-        "linearVelocity" : 0,
-        "name" : "wall",
-        "position" : 
-        {
-          "x" : 159.5935668945312,
-          "y" : -8.373838424682617
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 0,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "fixture" : 
-        [
-          
-          {
-            "density" : 1,
-            "friction" : 0.2,
-            "id" : 58,
-            "name" : "fixture0",
-            "shapes" : 
-            [
-              
-              {
-                "type" : "polygon"
-              }
-            ],
-            "vertices" : 
-            {
-              "x" : 
-              [
-                -7.406034469604492,
-                7.406036376953125,
-                7.406036376953125,
-                -7.406034469604492
-              ],
-              "y" : 
-              [
-                -0.4006948471069336,
-                -0.4006948471069336,
-                0.4006948471069336,
-                0.4006948471069336
-              ]
-            }
-          }
-        ],
-        "id" : 67,
-        "linearVelocity" : 0,
-        "name" : "wall",
-        "position" : 
-        {
-          "x" : 62.52095031738281,
-          "y" : -7.846881866455078
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 0,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "fixture" : 
-        [
-          
-          {
-            "density" : 1,
-            "friction" : 0.2,
-            "id" : 67,
-            "name" : "fixture0",
-            "shapes" : 
-            [
-              
-              {
-                "type" : "polygon"
-              }
-            ],
-            "vertices" : 
-            {
-              "x" : 
-              [
-                -0.867980957031250,
-                0.867980957031250,
-                0.867980957031250,
-                -0.867980957031250
-              ],
-              "y" : 
-              [
-                -1.199620008468628,
-                -1.199620008468628,
-                1.199619293212891,
-                1.199619293212891
-              ]
-            }
-          }
-        ],
-        "id" : 68,
-        "linearVelocity" : 0,
-        "name" : "wall",
-        "position" : 
-        {
-          "x" : 159.5935668945312,
-          "y" : -0.4407931268215179
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 0,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "fixture" : 
-        [
-          
-          {
-            "density" : 1,
-            "friction" : 0.2,
-            "id" : 59,
-            "name" : "fixture0",
-            "shapes" : 
-            [
-              
-              {
-                "type" : "polygon"
-              }
-            ],
-            "vertices" : 
-            {
-              "x" : 
-              [
-                -9.559616088867188,
-                9.559617996215820,
-                9.559617996215820,
-                -9.559616088867188
-              ],
-              "y" : 
-              [
-                -0.4006948471069336,
-                -0.4006948471069336,
-                0.4006948471069336,
-                0.4006948471069336
-              ]
-            }
-          }
-        ],
-        "id" : 69,
-        "linearVelocity" : 0,
-        "name" : "wall",
-        "position" : 
-        {
-          "x" : 8.590351104736328,
-          "y" : -7.846881866455078
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 0,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "fixture" : 
-        [
-          
-          {
-            "density" : 1,
-            "friction" : 0.2,
-            "id" : 60,
-            "name" : "fixture0",
-            "shapes" : 
-            [
-              
-              {
-                "type" : "polygon"
-              }
-            ],
-            "vertices" : 
-            {
-              "x" : 
-              [
-                -2.273941040039062,
-                2.273941040039062,
-                2.273941040039062,
-                -2.273941040039062
-              ],
-              "y" : 
-              [
-                -1.483877182006836,
-                -1.483877182006836,
-                1.483875274658203,
-                -0.3368635177612305
-              ]
-            }
-          }
-        ],
-        "id" : 70,
-        "linearVelocity" : 0,
-        "name" : "wall",
-        "position" : 
-        {
-          "x" : 92.37175750732422,
-          "y" : -8.827028274536133
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 0,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "fixture" : 
-        [
-          
-          {
-            "density" : 1,
-            "friction" : 0.2,
-            "id" : 61,
-            "name" : "fixture0",
-            "shapes" : 
-            [
-              
-              {
-                "type" : "polygon"
-              }
-            ],
-            "vertices" : 
-            {
-              "x" : 
-              [
-                -2.273941040039062,
-                2.273941040039062,
-                2.273941040039062,
-                -2.273941040039062
-              ],
-              "y" : 
-              [
-                -1.483877182006836,
-                -1.483877182006836,
-                1.483875274658203,
-                -0.3368635177612305
-              ]
-            }
-          }
-        ],
-        "id" : 71,
-        "linearVelocity" : 0,
-        "name" : "wall",
-        "position" : 
-        {
-          "x" : 87.86331176757812,
-          "y" : -8.827028274536133
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 0,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "fixture" : 
-        [
-          
-          {
-            "density" : 1,
-            "friction" : 0.2,
-            "id" : 62,
-            "name" : "fixture0",
-            "shapes" : 
-            [
-              
-              {
-                "type" : "polygon"
-              }
-            ],
-            "vertices" : 
-            {
-              "x" : 
-              [
-                -2.273941040039062,
-                2.273941040039062,
-                2.273941040039062,
-                -2.273941040039062
-              ],
-              "y" : 
-              [
-                -1.483877182006836,
-                -1.483877182006836,
-                1.483875274658203,
-                -0.3368635177612305
-              ]
-            }
-          }
-        ],
-        "id" : 72,
-        "linearVelocity" : 0,
-        "name" : "wall",
-        "position" : 
-        {
-          "x" : 78.84639739990234,
-          "y" : -8.827028274536133
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 0,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "fixture" : 
-        [
-          
-          {
-            "density" : 1,
-            "friction" : 0.2,
-            "id" : 64,
-            "name" : "fixture0",
-            "shapes" : 
-            [
-              
-              {
-                "type" : "polygon"
-              }
-            ],
-            "vertices" : 
-            {
-              "x" : 
-              [
-                -2.273941040039062,
-                2.273941040039062,
-                2.273941040039062,
-                -2.273941040039062
-              ],
-              "y" : 
-              [
-                -1.483877182006836,
-                -1.483877182006836,
-                1.483875274658203,
-                -0.3368635177612305
-              ]
-            }
-          }
-        ],
-        "id" : 73,
-        "linearVelocity" : 0,
-        "name" : "wall",
-        "position" : 
-        {
-          "x" : 83.35484313964844,
-          "y" : -8.827028274536133
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 3.141592502593994,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "fixture" : 
-        [
-          
-          {
-            "density" : 1,
-            "friction" : 0.2,
-            "id" : 66,
-            "name" : "fixture0",
-            "shapes" : 
-            [
-              
-              {
-                "type" : "polygon"
-              }
-            ],
-            "vertices" : 
-            {
-              "x" : 
-              [
-                -1.296172261238098,
-                1.296181559562683,
-                1.673903584480286,
-                -1.673905253410339
-              ],
-              "y" : 
-              [
-                -5.601962566375732,
-                -5.601962566375732,
-                5.601958751678467,
-                5.601957798004150
-              ]
-            }
-          }
-        ],
-        "id" : 74,
-        "linearVelocity" : 0,
-        "name" : "wall",
-        "position" : 
-        {
-          "x" : 98.89925384521484,
-          "y" : -9.751377105712891
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 3.141592502593994,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "fixture" : 
-        [
-          
-          {
-            "density" : 1,
-            "friction" : 0.2,
-            "id" : 68,
-            "name" : "fixture0",
-            "shapes" : 
-            [
-              
-              {
-                "type" : "polygon"
-              }
-            ],
-            "vertices" : 
-            {
-              "x" : 
-              [
-                -0.8328474164009094,
-                0.8328554034233093,
-                0.8328550457954407,
-                -0.8328477740287781
-              ],
-              "y" : 
-              [
-                -1.344880223274231,
-                -1.344879984855652,
-                1.344879269599915,
-                1.344879031181335
-              ]
-            }
-          }
-        ],
-        "id" : 75,
-        "linearVelocity" : 0,
-        "name" : "wall",
-        "position" : 
-        {
-          "x" : 108.8220977783203,
-          "y" : -8.780607223510742
-        },
-        "type" : "static"
-      },
-      
-      {
-        "angle" : 3.141592502593994,
-        "angularVelocity" : 0,
-        "awake" : true,
-        "fixture" : 
-        [
-          
-          {
-            "density" : 1,
-            "friction" : 0.2,
-            "id" : 69,
-            "name" : "fixture0",
-            "shapes" : 
-            [
-              
-              {
-                "type" : "polygon"
-              }
-            ],
-            "vertices" : 
-            {
-              "x" : 
-              [
-                -1.032272338867188,
-                1.032302856445312,
-                1.032302856445312,
-                -1.032272338867188
-              ],
-              "y" : 
-              [
-                -0.2334243357181549,
-                -0.2334240376949310,
-                0.2334243357181549,
-                0.2334240376949310
-              ]
-            }
-          }
-        ],
-        "id" : 76,
-        "linearVelocity" : 0,
-        "name" : "wall",
-        "position" : 
-        {
-          "x" : 108.8220977783203,
-          "y" : -7.498946189880371
+          "x" : 84.80000305175781,
+          "y" : -3.5
         },
         "type" : "static"
       }
