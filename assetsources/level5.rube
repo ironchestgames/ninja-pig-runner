@@ -135,7 +135,7 @@
         "name" : "coin",
         "position" : 
         {
-          "x" : 10,
+          "x" : 9,
           "y" : -6
         },
         "type" : "static"
@@ -187,7 +187,7 @@
         "name" : "coin",
         "position" : 
         {
-          "x" : 6,
+          "x" : 5,
           "y" : -6
         },
         "type" : "static"
@@ -202,7 +202,7 @@
         "name" : "coin",
         "position" : 
         {
-          "x" : 8,
+          "x" : 7,
           "y" : -6
         },
         "type" : "static"
@@ -414,7 +414,13 @@
             ],
             "vertices" : 
             {
-              "x" : [ -10, 10, 10, -10 ],
+              "x" : 
+              [
+                -12.22259902954102,
+                12.22260284423828,
+                12.22260284423828,
+                -12.22259902954102
+              ],
               "y" : [ -0.5, -0.5, 0.5, 0.5 ]
             }
           }
@@ -424,7 +430,7 @@
         "name" : "wall",
         "position" : 
         {
-          "x" : 38.0,
+          "x" : 36.50,
           "y" : -9.5
         },
         "type" : "static"
@@ -484,7 +490,7 @@
         "name" : "star",
         "position" : 
         {
-          "x" : 47.0,
+          "x" : 48.0,
           "y" : -8
         },
         "type" : "static"
@@ -604,7 +610,7 @@
         "name" : "coin",
         "position" : 
         {
-          "x" : 14.0,
+          "x" : 13.0,
           "y" : -5.5
         },
         "type" : "static"
@@ -641,7 +647,7 @@
         "name" : "wall",
         "position" : 
         {
-          "x" : 16.0,
+          "x" : 15.0,
           "y" : -6.5
         },
         "type" : "static"
@@ -656,7 +662,7 @@
         "name" : "coin",
         "position" : 
         {
-          "x" : 12.0,
+          "x" : 11.0,
           "y" : -6
         },
         "type" : "static"
@@ -671,7 +677,7 @@
         "name" : "coin",
         "position" : 
         {
-          "x" : 16.0,
+          "x" : 15.0,
           "y" : -5
         },
         "type" : "static"
@@ -703,6 +709,21 @@
         {
           "x" : 89.0,
           "y" : -3
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "id" : 104,
+        "linearVelocity" : 0,
+        "name" : "star",
+        "position" : 
+        {
+          "x" : 74.0,
+          "y" : -7
         },
         "type" : "static"
       }

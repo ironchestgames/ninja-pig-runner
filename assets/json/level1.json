@@ -10,10 +10,10 @@
 			"angularVelocity" : 0,
 			"awake" : true,
 			"linearVelocity" : 0,
-			"name" : "coin",
+			"name" : "star",
 			"position" : 
 			{
-				"x" : 89.50,
+				"x" : 93.0,
 				"y" : -2
 			},
 			"type" : 0
@@ -27,7 +27,21 @@
 			"name" : "coin",
 			"position" : 
 			{
-				"x" : 85.50,
+				"x" : 27.0,
+				"y" : -3
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 99.0,
 				"y" : -2
 			},
 			"type" : 0
@@ -41,7 +55,21 @@
 			"name" : "coin",
 			"position" : 
 			{
-				"x" : 87.50,
+				"x" : 95.0,
+				"y" : -2
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 97.0,
 				"y" : -2
 			},
 			"type" : 0
@@ -62,7 +90,13 @@
 					{
 						"vertices" : 
 						{
-							"x" : [ 6.3, 6.3, -6.299995422363281, -6.299995422363281 ],
+							"x" : 
+							[
+								10.70999145507812,
+								10.70999145507812,
+								-10.70999145507812,
+								-10.70999145507812
+							],
 							"y" : [ -0.5, 0.5, 0.5, -0.5 ]
 						}
 					}
@@ -72,7 +106,7 @@
 			"name" : "wall",
 			"position" : 
 			{
-				"x" : 84.80000305175781,
+				"x" : 89.20999908447266,
 				"y" : -3.5
 			},
 			"type" : 0
@@ -155,43 +189,6 @@
 			"angle" : 0,
 			"angularVelocity" : 0,
 			"awake" : true,
-			"fixture" : 
-			[
-				
-				{
-					"density" : 1,
-					"friction" : 0.2,
-					"name" : "fixture2",
-					"polygon" : 
-					{
-						"vertices" : 
-						{
-							"x" : 
-							[
-								4.258766174316406,
-								4.258766174316406,
-								-4.258750915527344,
-								-4.258750915527344
-							],
-							"y" : [ -0.5, 0.5, 0.5, -0.5 ]
-						}
-					}
-				}
-			],
-			"linearVelocity" : 0,
-			"name" : "wall",
-			"position" : 
-			{
-				"x" : 70.75875854492188,
-				"y" : -10
-			},
-			"type" : 0
-		},
-		
-		{
-			"angle" : 0,
-			"angularVelocity" : 0,
-			"awake" : true,
 			"linearVelocity" : 0,
 			"name" : "star",
 			"position" : 
@@ -219,10 +216,10 @@
 						{
 							"x" : 
 							[
-								4.258766174316406,
-								4.258766174316406,
-								-4.258750915527344,
-								-4.258750915527344
+								4.258769989013672,
+								4.258769989013672,
+								-4.258749961853027,
+								-4.258749961853027
 							],
 							"y" : [ -0.5, 0.5, 0.5, -0.5 ]
 						}
@@ -233,7 +230,7 @@
 			"name" : "wall",
 			"position" : 
 			{
-				"x" : 70.75875854492188,
+				"x" : 70.75879669189453,
 				"y" : -10
 			},
 			"type" : 0
@@ -572,96 +569,6 @@
 		},
 		
 		{
-			"angle" : 0,
-			"angularVelocity" : 0,
-			"awake" : true,
-			"linearVelocity" : 0,
-			"name" : "star",
-			"position" : 
-			{
-				"x" : 17.250,
-				"y" : 0.5
-			},
-			"type" : 0
-		},
-		
-		{
-			"angle" : 0,
-			"angularVelocity" : 0,
-			"awake" : true,
-			"linearVelocity" : 0,
-			"name" : "coin",
-			"position" : 
-			{
-				"x" : 15.750,
-				"y" : 0.5
-			},
-			"type" : 0
-		},
-		
-		{
-			"angle" : 0,
-			"angularVelocity" : 0,
-			"awake" : true,
-			"fixture" : 
-			[
-				
-				{
-					"density" : 1,
-					"friction" : 0.2,
-					"name" : "fixture1",
-					"polygon" : 
-					{
-						"vertices" : 
-						{
-							"x" : [ 0.0, 0.0, -4 ],
-							"y" : [ -0.5, 0.5, -0.5 ]
-						}
-					}
-				}
-			],
-			"linearVelocity" : 0,
-			"name" : "wall",
-			"position" : 
-			{
-				"x" : 14.0,
-				"y" : 0.5
-			},
-			"type" : 0
-		},
-		
-		{
-			"angle" : 0,
-			"angularVelocity" : 0,
-			"awake" : true,
-			"fixture" : 
-			[
-				
-				{
-					"density" : 1,
-					"friction" : 0.2,
-					"name" : "fixture2",
-					"polygon" : 
-					{
-						"vertices" : 
-						{
-							"x" : [ 5, 5, -5, -5 ],
-							"y" : [ -0.5, 0.5, 0.5, -0.5 ]
-						}
-					}
-				}
-			],
-			"linearVelocity" : 0,
-			"name" : "wall",
-			"position" : 
-			{
-				"x" : 5,
-				"y" : 0.5
-			},
-			"type" : 0
-		},
-		
-		{
 			"angle" : 3.141592502593994,
 			"angularVelocity" : 0,
 			"awake" : true,
@@ -698,8 +605,8 @@
 			"name" : "goal",
 			"position" : 
 			{
-				"x" : 35.0,
-				"y" : 12.0
+				"x" : 125.0559844970703,
+				"y" : -6.081634521484375
 			},
 			"type" : 0
 		},
