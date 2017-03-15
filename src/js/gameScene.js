@@ -41,7 +41,6 @@ var isRunning = false
 
 var wallBounceVelocityX = 8
 var wallBounceVelocityY = 7.12
-var wallBounceUpVelocityThreshold = 1
 var jumpUpVelocity = 8
 var minimumRunningSpeed = 10
 var currentRunningSpeed = 0
@@ -244,7 +243,7 @@ var postStep = function () {
       ninjaBody.velocity[0] > 0 &&
       ninjaLeftSensor.isContactUsable()) {
 
-    if (ninjaBody.velocity[1] <= wallBounceUpVelocityThreshold) {
+    if (isJumpButtonDown) {
       ninjaBody.velocity[1] = -wallBounceVelocityY
     }
 
@@ -260,7 +259,7 @@ var postStep = function () {
       ninjaBody.velocity[0] < 0 &&
       ninjaRightSensor.isContactUsable()) {
 
-    if (ninjaBody.velocity[1] <= wallBounceUpVelocityThreshold) {
+    if (isJumpButtonDown) {
       ninjaBody.velocity[1] = -wallBounceVelocityY
     }
 
