@@ -10,6 +10,746 @@
 			"angularVelocity" : 0,
 			"awake" : true,
 			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 107.50,
+				"y" : -5.5
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 109.50,
+				"y" : -5.5
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 111.50,
+				"y" : -5.5
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 117.50,
+				"y" : -5.5
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 113.50,
+				"y" : -5.5
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 115.50,
+				"y" : -5.5
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "star",
+			"position" : 
+			{
+				"x" : 141.0,
+				"y" : -6
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 123.50,
+				"y" : -5.5
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 121.50,
+				"y" : -5.5
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 119.50,
+				"y" : -5.5
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 1.570796370506287,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"fixture" : 
+			[
+				
+				{
+					"density" : 1,
+					"friction" : 0.2,
+					"name" : "fixture2",
+					"polygon" : 
+					{
+						"vertices" : 
+						{
+							"x" : 
+							[
+								1.963281989097595,
+								1.963280081748962,
+								-1.963281989097595,
+								-1.963282227516174
+							],
+							"y" : [ -3, 3, 3, -3 ]
+						}
+					}
+				}
+			],
+			"linearVelocity" : 0,
+			"name" : "wall",
+			"position" : 
+			{
+				"x" : 177.50,
+				"y" : -4.963282108306885
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "star",
+			"position" : 
+			{
+				"x" : 175.0,
+				"y" : -2
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 165.0,
+				"y" : -2
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 200.50,
+				"y" : -2
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 204.50,
+				"y" : -2
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 202.50,
+				"y" : -2
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "star",
+			"position" : 
+			{
+				"x" : 171.0,
+				"y" : -6.5
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "star",
+			"position" : 
+			{
+				"x" : 181.50,
+				"y" : -5
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"fixture" : 
+			[
+				
+				{
+					"density" : 1,
+					"friction" : 0.2,
+					"name" : "fixture2",
+					"polygon" : 
+					{
+						"vertices" : 
+						{
+							"x" : [ 6.3, 6.3, -6.299995422363281, -6.299995422363281 ],
+							"y" : [ -0.5, 0.5, 0.5, -0.5 ]
+						}
+					}
+				}
+			],
+			"linearVelocity" : 0,
+			"name" : "wall",
+			"position" : 
+			{
+				"x" : 168.3000030517578,
+				"y" : -3.5
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 169.0,
+				"y" : -2
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 132.50,
+				"y" : -3
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "star",
+			"position" : 
+			{
+				"x" : 198.50,
+				"y" : -2
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"fixture" : 
+			[
+				
+				{
+					"density" : 1,
+					"friction" : 0.2,
+					"name" : "fixture2",
+					"polygon" : 
+					{
+						"vertices" : 
+						{
+							"x" : 
+							[
+								10.70999145507812,
+								10.70999145507812,
+								-10.70999145507812,
+								-10.70999145507812
+							],
+							"y" : 
+							[
+								-5.502962112426758,
+								5.502958297729492,
+								5.502958297729492,
+								-5.502962112426758
+							]
+						}
+					}
+				}
+			],
+			"linearVelocity" : 0,
+			"name" : "wall",
+			"position" : 
+			{
+				"x" : 194.7099914550781,
+				"y" : -8.502962112426758
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 151.0,
+				"y" : -5.5
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 153.0,
+				"y" : -5
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "star",
+			"position" : 
+			{
+				"x" : 181.50,
+				"y" : -5
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"fixture" : 
+			[
+				
+				{
+					"density" : 1,
+					"friction" : 0.2,
+					"name" : "fixture2",
+					"polygon" : 
+					{
+						"vertices" : 
+						{
+							"x" : 
+							[
+								4.258769989013672,
+								4.258769989013672,
+								-4.258749961853027,
+								-4.258749961853027
+							],
+							"y" : [ -0.5, 0.5, 0.5, -0.5 ]
+						}
+					}
+				}
+			],
+			"linearVelocity" : 0,
+			"name" : "wall",
+			"position" : 
+			{
+				"x" : 176.25878906250,
+				"y" : -10
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 155.0,
+				"y" : -4.5
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"fixture" : 
+			[
+				
+				{
+					"density" : 1,
+					"friction" : 0.2,
+					"name" : "fixture2",
+					"polygon" : 
+					{
+						"vertices" : 
+						{
+							"x" : 
+							[
+								19.00000762939453,
+								19.00000762939453,
+								-18.99999237060547,
+								-18.99999237060547
+							],
+							"y" : [ -2.5, 2.5, 2.5, -2.5 ]
+						}
+					}
+				}
+			],
+			"linearVelocity" : 0,
+			"name" : "wall",
+			"position" : 
+			{
+				"x" : 107.50,
+				"y" : -9
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 173.0,
+				"y" : -2
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 167.0,
+				"y" : -2
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"fixture" : 
+			[
+				
+				{
+					"density" : 1,
+					"friction" : 0.2,
+					"name" : "fixture2",
+					"polygon" : 
+					{
+						"vertices" : 
+						{
+							"x" : [ 5, 5, -5, -5 ],
+							"y" : [ -2, 2, 2, -2 ]
+						}
+					}
+				}
+			],
+			"linearVelocity" : 0,
+			"name" : "wall",
+			"position" : 
+			{
+				"x" : 167.0,
+				"y" : -9
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 171.0,
+				"y" : -2
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 163.0,
+				"y" : -2
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"fixture" : 
+			[
+				
+				{
+					"density" : 1,
+					"friction" : 0.2,
+					"name" : "fixture1",
+					"polygon" : 
+					{
+						"vertices" : 
+						{
+							"x" : [ 0.0, 0.0, -4 ],
+							"y" : [ -0.5, 0.5, -0.5 ]
+						}
+					}
+				}
+			],
+			"linearVelocity" : 0,
+			"name" : "wall",
+			"position" : 
+			{
+				"x" : 155.0,
+				"y" : -6
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"fixture" : 
+			[
+				
+				{
+					"density" : 1,
+					"friction" : 0.2,
+					"name" : "fixture2",
+					"polygon" : 
+					{
+						"vertices" : 
+						{
+							"x" : [ 10, 10, -10, -10 ],
+							"y" : [ -2.5, 2.5, 2.5, -2.5 ]
+						}
+					}
+				}
+			],
+			"linearVelocity" : 0,
+			"name" : "wall",
+			"position" : 
+			{
+				"x" : 148.50,
+				"y" : -9
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "star",
+			"position" : 
+			{
+				"x" : 157.50,
+				"y" : -6
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "star",
+			"position" : 
+			{
+				"x" : 171.0,
+				"y" : -6.5
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 26.0,
+				"y" : -3
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 24.0,
+				"y" : -3
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
+			"name" : "coin",
+			"position" : 
+			{
+				"x" : 22.0,
+				"y" : -3
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"awake" : true,
+			"linearVelocity" : 0,
 			"name" : "star",
 			"position" : 
 			{
@@ -29,20 +769,6 @@
 			{
 				"x" : 89.0,
 				"y" : -3
-			},
-			"type" : 0
-		},
-		
-		{
-			"angle" : 0,
-			"angularVelocity" : 0,
-			"awake" : true,
-			"linearVelocity" : 0,
-			"name" : "star",
-			"position" : 
-			{
-				"x" : 89.0,
-				"y" : -7
 			},
 			"type" : 0
 		},
@@ -128,8 +854,8 @@
 			"name" : "coin",
 			"position" : 
 			{
-				"x" : 65.50,
-				"y" : -7
+				"x" : 48.50,
+				"y" : -2
 			},
 			"type" : 0
 		},
@@ -142,8 +868,8 @@
 			"name" : "coin",
 			"position" : 
 			{
-				"x" : 69.50,
-				"y" : -7
+				"x" : 52.50,
+				"y" : -2
 			},
 			"type" : 0
 		},
@@ -156,8 +882,8 @@
 			"name" : "coin",
 			"position" : 
 			{
-				"x" : 67.50,
-				"y" : -7
+				"x" : 50.50,
+				"y" : -2
 			},
 			"type" : 0
 		},
@@ -296,7 +1022,13 @@
 								-12.22259902954102,
 								-12.22259902954102
 							],
-							"y" : [ -0.5, 0.5, 0.5, -0.5 ]
+							"y" : 
+							[
+								-2.110015869140625,
+								2.110008239746094,
+								2.110008239746094,
+								-2.110015869140625
+							]
 						}
 					}
 				}
@@ -306,7 +1038,7 @@
 			"position" : 
 			{
 				"x" : 36.50,
-				"y" : -9.5
+				"y" : -11.11000823974609
 			},
 			"type" : 0
 		},
@@ -389,7 +1121,7 @@
 						"vertices" : 
 						{
 							"x" : [ 10, 10, -10, -10 ],
-							"y" : [ -0.5, 0.5, 0.5, -0.5 ]
+							"y" : [ -2.55, 2.550003051757812, 2.550003051757812, -2.55 ]
 						}
 					}
 				}
@@ -399,7 +1131,7 @@
 			"position" : 
 			{
 				"x" : 72.0,
-				"y" : -8.5
+				"y" : -10.54999923706055
 			},
 			"type" : 0
 		},
@@ -510,7 +1242,13 @@
 						"vertices" : 
 						{
 							"x" : [ 10, 10, -10, -10 ],
-							"y" : [ -0.5, 0.5, 0.5, -0.5 ]
+							"y" : 
+							[
+								-2.849998474121094,
+								2.849998474121094,
+								2.849998474121094,
+								-2.849998474121094
+							]
 						}
 					}
 				}
@@ -520,7 +1258,7 @@
 			"position" : 
 			{
 				"x" : 11.0,
-				"y" : -7.5
+				"y" : -9.850002288818359
 			},
 			"type" : 0
 		},
@@ -576,8 +1314,8 @@
 			"name" : "goal",
 			"position" : 
 			{
-				"x" : 109.1195831298828,
-				"y" : 0.8658704757690430
+				"x" : 230.3869323730469,
+				"y" : -7.432243347167969
 			},
 			"type" : 0
 		},
