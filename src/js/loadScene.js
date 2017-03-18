@@ -10,25 +10,25 @@ var loadScene = {
 
     global.levelManager
     .addLevel({
-      name: 'level5',
-      theme: gameVars.themes.sunsetCity,
-    })
-    .addLevel({
       name: 'level1',
       theme: gameVars.themes.sunsetCity,
     })
     .addLevel({
-      name: 'level2',
+      name: 'level5',
       theme: gameVars.themes.sunsetCity,
     })
-    .addLevel({
-      name: 'level3',
-      theme: gameVars.themes.sunsetCity,
-    })
-    .addLevel({
-      name: 'level4',
-      theme: gameVars.themes.sunsetCity,
-    })
+    // .addLevel({
+    //   name: 'level2',
+    //   theme: gameVars.themes.sunsetCity,
+    // })
+    // .addLevel({
+    //   name: 'level3',
+    //   theme: gameVars.themes.sunsetCity,
+    // })
+    // .addLevel({
+    //   name: 'level4',
+    //   theme: gameVars.themes.sunsetCity,
+    // })
 
     // set level as per localStorage for debugging TODO: remove this in prod
     var startingLevelName = localStorage.level || global.levelManager.levelProgression[0].name
